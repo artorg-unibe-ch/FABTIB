@@ -16,7 +16,6 @@ import time
 import struct
 import numpy as np
 
-
 #%% Classes
 
 class Time():
@@ -96,6 +95,7 @@ class Time():
             self.Print()
 
 Time = Time()
+
 
 #%% Functions
 

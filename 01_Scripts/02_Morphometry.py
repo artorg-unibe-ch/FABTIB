@@ -18,9 +18,8 @@ import numpy as np
 import pandas as pd
 from numba import njit
 from pathlib import Path
+import SimpleITK as sitk
 from Utils import ReadISQ, Time
-from skimage.filters import threshold_otsu
-from skimage.morphology import skeletonize
 from scipy.ndimage import distance_transform_edt
 
 #%% Functions
@@ -29,7 +28,8 @@ from scipy.ndimage import distance_transform_edt
 def ComputeHildebrandThickness(
     Thicknesses: np.ndarray,
     Distances: np.ndarray,
-    Indices: np.ndarray) -> np.ndarray:
+    Indices: np.ndarray,
+    Spacing: np.array) -> np.ndarray:
     """
     Use Hildebrand's sphere-fitting method to compute the local thickness field for a
     binary image, given an array to fill in and the sorted distance map of the binary image.
@@ -42,24 +42,17 @@ def ComputeHildebrandThickness(
     computational effort.
     Parameters
     ----------
-    local_thickness : np.ndarray
+    Thicknesses : np.ndarray
         A numpy array that is initialized as zeros.
-    sorted_dists : np.ndarray
+    Distances : np.ndarray
         A numpy array that is the sorted distance ridge of a mask, but the distances only. Each element is a float
         that corresponds to a distance value on the distance ridge, in ascending order.
-    sorted_dists_indices : np.ndarray
+    Indices : np.ndarray
         A numpy array that is the integer indices of the location of the distance. Each row in this array corresponds to
         the distance at the same position in the `dist_ridge` parameter, and then the three elements in each row are
         the i, j, k indices of the location of that voxel of the distance ridge in the binary image.
-    voxel_width : np.ndarray
+    Spacing : np.ndarray
         A numpy array with shape (3,) that gives the width of voxels in each dimension.
-    rd_extra : float
-        An extra bit of distance added to `rd` for the purposes of determining whether a voxel falls within the sphere
-        centered at another voxel. This is needed because if you use the oversampling distance transform, your sphere
-        diameters will be smaller (since they are measuring the distance from that voxel centroid to the boundary of
-        the shape rather than to the nearest centroid outside the shape). This causes voxels along the boundary of a
-        shape to not be included in the spheres centered on voxels further in. Set this to `0.5` if you are using
-        oversampling and `0` if you are not.
     Returns
     -------
     np.ndarray
@@ -67,26 +60,31 @@ def ComputeHildebrandThickness(
     """
 
     for rd, (ri, rj, rk) in zip(Distances, Indices):
-        di_min = np.maximum(np.floor(ri - rd) - 1, 0)
-        di_max = np.minimum(np.ceil(ri + rd) + 2, Thicknesses.shape[0])
-        dj_min = np.maximum(np.floor(rj - rd) - 1, 0)
-        dj_max = np.minimum(np.ceil(rj + rd) + 2, Thicknesses.shape[1])
-        dk_min = np.maximum(np.floor(rk - rd) - 1, 0)
-        dk_max = np.minimum(np.ceil(rk + rd) + 2, Thicknesses.shape[2])
+        rd_vox = rd / Spacing
+        di_min = np.maximum(np.floor(ri - rd_vox[0]) - 1, 0)
+        di_max = np.minimum(np.ceil(ri + rd_vox[0]) + 2, Thicknesses.shape[0])
+        dj_min = np.maximum(np.floor(rj - rd_vox[1]) - 1, 0)
+        dj_max = np.minimum(np.ceil(rj + rd_vox[1]) + 2, Thicknesses.shape[1])
+        dk_min = np.maximum(np.floor(rk - rd_vox[2]) - 1, 0)
+        dk_max = np.minimum(np.ceil(rk + rd_vox[2]) + 2, Thicknesses.shape[2])
         for di in range(di_min, di_max):
             for dj in range(dj_min, dj_max):
                 for dk in range(dk_min, dk_max):
-                    if ((di - ri) ** 2 + (dj - rj) ** 2 + (dk - rk) ** 2) < rd ** 2:
+                    if ((Spacing[0] * (di - ri)) ** 2 
+                        + (Spacing[1] * (dj - rj)) ** 2
+                        + (Spacing[2] * (dk - rk)) ** 2) < rd ** 2:
                         Thicknesses[di, dj, dk] = 2 * rd
     return Thicknesses
 
-def TrabecularThicknesses(BinaryArray:np.array):
+def TrabecularThicknesses(BinaryArray:np.array, VoxelSpacing:np.array):
 
     # Step 1: skeletonize the image
-    Skeleton = skeletonize(BinaryArray)
+    Image = sitk.GetImageFromArray(BinaryArray.astype(int))
+    Skeleton = sitk.BinaryThinning(Image)
+    Skeleton = sitk.GetArrayFromImage(Skeleton).astype(bool)
 
     # Step 2: Compute distances
-    Distances = distance_transform_edt(1-BinaryArray)
+    Distances = distance_transform_edt(BinaryArray, VoxelSpacing)
 
     # Step 3: Keep skeleton distances
     SkeletonDistances = (Skeleton > 0) * Distances
@@ -100,7 +98,7 @@ def TrabecularThicknesses(BinaryArray:np.array):
 
     # Step 5: Compute thickness
     Thicknesses = np.zeros(Skeleton.shape)
-    Thicknesses = ComputeHildebrandThickness(Thicknesses, Distances, Indices)
+    Thicknesses = ComputeHildebrandThickness(Thicknesses, Distances, Indices, VoxelSpacing)
 
     return Thicknesses
 
@@ -150,55 +148,71 @@ def Main(Arguments):
 
     # Read or create data frame to store results
     try:
-        Data = pd.read_csv(Path.cwd().parent / '04_Results/Morphometry.csv', index_col=[0,1])
+        Data = pd.read_csv(Path.cwd().parent / '02_Results/Morphometry.csv', index_col=[0,1])
     except:
-        Cols = ['Tb.Th.','Tb.Sp.','Tb.N.','CV','DA','BVTV']
-        Data = pd.DataFrame(columns=Cols, index=[F.name[:-4] for F in InputROIs])
+        Cols = ['ISQ','ROI','Tb.Th.','Tb.Sp.','Tb.N.','CV','BV/TV']
+        Data = pd.DataFrame(columns=Cols)
+        Data = Data.set_index(['ISQ','ROI'])
         
-    for ROI in enumerate(InputROIs):
+    pROI = None
+    for ROI in InputROIs:
+
+        # Print time
+        Time.Process(1,ROI.name[:-4])
 
         # Read scan
         Array = np.load(ROI)
 
-        # Binarize ROI using full scan otsu threshold
-        ISQ = Path(__file__).parents[1] / '00_Data' / (ROI.name[:-6] + '.ISQ')
-        VoxelModel, AdditionalData = ReadISQ(ISQ, ASCII=False)
-        VoxelSize = round(AdditionalData['ElementSpacing'][0], 6)
-        Otsu = threshold_otsu(VoxelModel.astype(float))
-        BinaryArray = Array > Otsu
+        # If ROI come from same scane as previous ROI, use same threshold
+        if pROI == None or pROI.name[:-6] != ROI.name[:-6]:
+            # ISQ = Path(__file__).parents[1] / '00_Data' / (ROI.name[:-6] + '.ISQ')
+            # AdditionalData = ReadISQ(ISQ, ASCII=False)[1]
+            # Spacing = np.array(AdditionalData['ElementSpacing'])
+            Spacing = np.array([0.0147998046875, 0.0147998046875, 0.014799019607843137])
+        
 
         # Compute bone volume fraction
-        BVTV = np.sum(BinaryArray) / BinaryArray.size
+        BVTV = np.sum(Array) / Array.size
 
         # If bone is present, compute trabecular values
         if BVTV > 0.01:
 
-            # trabecular Thickness
-            Thicknesses = TrabecularThicknesses(BinaryArray) * VoxelSize
+            # Trabecular Thickness
+            Time.Update(1/4,'Tb.Th.')
+            Thicknesses = TrabecularThicknesses(Array, Spacing)
 
             # Trabecular spacing
-            Spacings = TrabecularThicknesses(1-BinaryArray) * VoxelSize
+            Time.Update(2/4,'Tb.Sp.')
+            Spacings = TrabecularThicknesses(1-Array, Spacing)
 
             # Trabecular number
+            Time.Update(3/4,'Tb.N.')
             Number = np.divide(1,Thicknesses+Spacings, where=Thicknesses+Spacings > 0)
 
             # Coefficient of variation
-            CV = ComputeCV(BinaryArray)
+            Time.Update(4/4,'CV')
+            CV = ComputeCV(Array)
 
             # Store data
-            Data.loc[ROI.name[:-4],'Tb.Th.'] = Thicknesses.mean()
-            Data.loc[ROI.name[:-4],'Tb.Sp.'] = Spacings.mean()
-            Data.loc[ROI.name[:-4],'Tb.N.'] = Number.mean()
-            Data.loc[ROI.name[:-4],'CV'] = CV
+            Data.loc[(ROI.name[:-6], ROI.name[-5]),'Tb.Th.'] = Thicknesses[Thicknesses > 0].mean()
+            Data.loc[(ROI.name[:-6], ROI.name[-5]),'Tb.Sp.'] = Spacings[Spacings > 0].mean()
+            Data.loc[(ROI.name[:-6], ROI.name[-5]),'Tb.N.'] = Number.mean()
+            Data.loc[(ROI.name[:-6], ROI.name[-5]),'CV'] = CV
+            Data.loc[(ROI.name[:-6], ROI.name[-5]),'BV/TV'] = np.sum(Array) / Array.size
 
         else:
+            print('BV/TV < 1%')
             Data.loc[ROI,'Tb.Th.'] = np.nan
             Data.loc[ROI,'Tb.Sp.'] = np.nan
             Data.loc[ROI,'Tb.N.'] = np.nan
             Data.loc[ROI,'CV'] = np.nan
 
+        # Print time and update
+        Time.Process(0,ROI.name[:-4])
+        pROI = ROI
 
-
+    # Save data
+    Data.to_csv(Path.cwd().parent / '02_Results/Morphometry.csv')
         
 
 if __name__ == '__main__':
@@ -208,9 +222,7 @@ if __name__ == '__main__':
     # Add optional argument
     ScriptVersion = Parser.prog + ' version ' + __version__
     Parser.add_argument('-v', '--Version', help='Show script version', action='version', version=ScriptVersion)
-    Parser.add_argument('--InputISQ', help='File name of the ISQ scan', type=str)
-    Parser.add_argument('--OutputPath', help='Output path for the ROI and png image of the plot', type=str, default='02_Results/ROIs')
-    Parser.add_argument('--NROIs', help='Number of region of interests to extract', type=int, default=3)
+    Parser.add_argument('--InputROI', help='File name of the ROI npy file', type=str)
 
     # Read arguments from the command line
     Arguments = Parser.parse_args()
