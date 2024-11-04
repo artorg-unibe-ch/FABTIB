@@ -34,8 +34,8 @@ from numba.core import types
 import matplotlib.pyplot as plt
 from numba.typed import Dict, List
 from skimage import measure, morphology
-from pypore3d.p3dSITKPy import py_p3dReadRaw8 as ReadRaw8
-from pypore3d.p3dBlobPy import py_p3dMorphometricAnalysis as MA
+# from pypore3d.p3dSITKPy import py_p3dReadRaw8 as ReadRaw8
+# from pypore3d.p3dBlobPy import py_p3dMorphometricAnalysis as MA
 
 
 # Time info utility functions

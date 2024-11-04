@@ -16,7 +16,6 @@ __version__ = '1.0'
 import argparse
 import numpy as np
 import pyvista as pv
-import tensorflow as tf
 from pathlib import Path
 from Utils import ReadISQ, Time
 
@@ -196,7 +195,7 @@ def rotate_back_to_align_with_direction(Points, Direction, Center):
 
     return RPoints + Center
 
-import numpy as np
+
 
 def dda_ray_trace(grid_shape, origin, direction):
     """
@@ -310,14 +309,14 @@ def ComputeMIL(Array, Subdivision=2, StepSize=5):
                         [X, Y, 0], [X, 0, Z], [0, Y, Z], [X, Y, Z]])
     
     # Define array planes (normal vectors and distances)
-    Planes = np.array([[0, 0, 1],  # z = 0 (XY plane)
+    Planes = np.array([[1, 0, 0],  # x = 0 (YZ plane)
                        [0, 1, 0],  # y = 0 (XZ plane)
-                       [1, 0, 0],  # x = 0 (YZ plane)
-                       [0, 0, -1],  # z = nZ (far XY plane)
+                       [0, 0, 1],  # z = 0 (XY plane)
+                       [-1, 0, 0],  # x = nX (far YZ plane)
                        [0, -1, 0],  # y = nY (far XZ plane)
-                       [-1, 0, 0]]) # x = nX (far YZ plane)
+                       [0, 0, -1]]) # z = nZ (far XY plane)
     
-    PDist = np.array([0, 0, 0, Z, Y, X])  # Distances for near and far planes
+    PDist = np.array([0, 0, 0, X, Y, Z])  # Distances for near and far planes
 
     # Generate directions
     Directions = generate_sphere_directions(Subdivision)
@@ -337,9 +336,9 @@ def ComputeMIL(Array, Subdivision=2, StepSize=5):
     MIL = []
     MILDir = []
     for D in Directions:
+        D = np.array([ 0.97971713,  0.14169376,  0.14169411])
 
         for Sym in range(4):
-            Origin = Corners[Sym]
             if Sym == 0:
                 SymD = np.array([D[0], D[1], D[2]])
             if Sym == 1:
@@ -374,65 +373,42 @@ def ComputeMIL(Array, Subdivision=2, StepSize=5):
             
             e1Grid, e2Grid = np.meshgrid(e1Val, e2Val, indexing='ij')
             Grid = e1Grid[..., np.newaxis] * e1 + e2Grid[..., np.newaxis] * e2
-            Grid = Grid.reshape(-1, 3) + Origin
+            Grid = Grid.reshape(-1, 3)
+
+            # Determine the main direction, corresponding planes and plane distances
+            MDir = np.argmax(np.abs(SymD))
+            if MDir == 0:
+                PPlanes = np.vstack([Planes[0],Planes[3]])
+                if Sym == 1:
+                    PlaneDist = np.array([-PDist[3], PDist[0]])
+                else:
+                    PlaneDist = np.array([PDist[0], PDist[3]])
+            if MDir == 1:
+                PPlanes = np.vstack([Planes[1],Planes[4]])
+                if Sym == 2:
+                    PlaneDist = np.array([-PDist[4], PDist[1]])
+                else:
+                    PlaneDist = np.array([PDist[1], PDist[4]])
+            if MDir == 2:
+                PPlanes = np.vstack([Planes[2],Planes[5]])
+                if Sym == 3:
+                    PlaneDist = np.array([-PDist[5], PDist[2]])
+                else:
+                    PlaneDist = np.array([PDist[2], PDist[5]])
 
             # Find intersections with the box planes
-            Num = -(np.dot(Grid, Planes.T) + PDist)
-            Denom = np.dot(SymD, Planes.T)
-            DLengths = Num / Denom  # Shape: (num_rays, num_planes)
+            Num = -(np.dot(Grid, PPlanes.T) + PlaneDist)
+            Denom = np.dot(SymD, PPlanes.T)
+            DLengths = Num / Denom
 
             # Calculate intersection points
-            Intersections = np.expand_dims(Grid, axis=1) + DLengths[..., np.newaxis] * SymD  # Shape: (num_rays, num_planes, 3)
+            Intersections = np.expand_dims(Grid, axis=1) + DLengths[..., np.newaxis] * SymD
+            Entries = Intersections[:,0]
+            Exits = Intersections[:,1]
 
-            # Separate entry and exit points based on t values
-            if Sym == 0:
-                 # Intersections with near planes
-                Entries = np.vstack([Intersections[:, 0],
-                                     Intersections[:, 1],
-                                     Intersections[:, 2]])
-                # Intersections with far planes
-                Exits = np.vstack([Intersections[:, 3],
-                                   Intersections[:, 4],
-                                   Intersections[:, 5]])
-            if Sym == 1:
-                 # Intersections with near planes
-                Entries = np.vstack([Intersections[:, 0],
-                                     Intersections[:, 4],
-                                     Intersections[:, 5]])
-                # Intersections with far planes
-                Exits = np.vstack([Intersections[:, 3],
-                                   Intersections[:, 1],
-                                   Intersections[:, 2]])
-            if Sym == 2:
-                 # Intersections with near planes
-                Entries = np.vstack([Intersections[:, 3],
-                                     Intersections[:, 1],
-                                     Intersections[:, 5]])
-                # Intersections with far planes
-                Exits = np.vstack([Intersections[:, 0],
-                                   Intersections[:, 4],
-                                   Intersections[:, 2]])
-            if Sym == 3:
-                 # Intersections with near planes
-                Entries = np.vstack([Intersections[:, 3],
-                                     Intersections[:, 4],
-                                     Intersections[:, 2]])
-                # Intersections with far planes
-                Exits = np.vstack([Intersections[:, 0],
-                                   Intersections[:, 1],
-                                   Intersections[:, 5]])
-                
             # Generate rays
             Rays = Exits - Entries
-
-            # Keep ray having the shortest path between 2 planes
-            RayLength = np.sum(Rays**2, axis=1)**0.5
-            Shortest = min(RayLength)
-            Shortest = np.isclose(Shortest, RayLength, rtol=1e-6)
-
-            # Select the corresponding entry and exit points for the shortest rays
-            Entries = Entries[Shortest]
-            RayLength = min(RayLength[Shortest])
+            RayLength = np.sum(Rays[0]**2)**0.5
 
             RayStep = min(1 / np.abs(SymD))
             NSteps = np.round(RayLength / RayStep).astype(int) + 1
@@ -444,28 +420,28 @@ def ComputeMIL(Array, Subdivision=2, StepSize=5):
             for i, Entry in enumerate(Entries):
 
                 # Generate ray
-                Ray = np.round(Steps + Entry).astype(int)
-                # Ray = dda_ray_trace(Array.shape, Entry, D)
+                # Ray = dda_ray_trace(np.array(Array.shape)-1, Entry, SymD)
                 # if len(Ray) == 0:
                 #     continue
+                Ray = np.round(Steps + Entry).astype(int)
 
                 # Filter points within bounds of binary array
-                Points = Ray[(Ray[:, 0] >= 0) & (Ray[:, 1] >= 0) & (Ray[:, 2] >= 0) &
+                Ray = Ray[(Ray[:, 0] >= 0) & (Ray[:, 1] >= 0) & (Ray[:, 2] >= 0) &
                             (Ray[:, 0] <= X) & (Ray[:, 1] <= Y) & (Ray[:, 2] <= Z)]
 
                 # Skip if no valid points
-                if Points.size == 0:
+                if Ray.size == 0:
                     continue
 
                 # Get array values
-                Values = Array[Points[:,0], Points[:,1], Points[:,2]]
+                Values = Array[Ray[:,0], Ray[:,1], Ray[:,2]]
 
                 # Count intercepts
                 RayIntercept = Values[1:] - Values[:-1]
                     
                 # Identify the start and end of each segment of 1s
-                Starts = Points[:-1][RayIntercept == 1]
-                Ends = Points[:-1][RayIntercept == -1]
+                Starts = Ray[:-1][RayIntercept == 1]
+                Ends = Ray[:-1][RayIntercept == -1]
 
                 # Calculate lengths of segments
                 SegmentLengths = np.sum((Ends - Starts)**2, axis=1)**0.5
@@ -476,6 +452,7 @@ def ComputeMIL(Array, Subdivision=2, StepSize=5):
         
             MILDir.append(SymD)
             MIL.append(sum(Lengths) / sum(Intercepts))
+            Med = 10.20768752
 
     # Complete for full values
     MIL = np.concatenate([MIL,MIL])
@@ -562,7 +539,7 @@ def Main(Arguments):
         DataPath = Path(__file__).parents[1] / '02_Results/ROIs'
         InputROIs = sorted([F for F in Path.iterdir(DataPath) if F.name.endswith('.npy')])
         
-    for ROI in [InputROIs[51]]:
+    for ROI in [InputROIs[0]]:
 
         # Print time
         Time.Process(1,ROI.name[:-4])
@@ -574,6 +551,8 @@ def Main(Arguments):
         MIL, Directions = ComputeMIL(Array, Subdivision=2, StepSize=5)
         M = fit_fabric_tensor(MIL, Directions)
         eVal, eVec = np.linalg.eig(M)
+        eVec[np.argsort(eVal)][::-1].T
+        print(f'DA {max(eVal) / min(eVal)}')
 
         # modify for symetries
         eVec[:,0] = -eVec[:,0]
@@ -607,6 +586,7 @@ def Main(Arguments):
         MedM = fit_fabric_tensor(MedVal, MedDir)
         MeVal, MeVec = np.linalg.eig(MedM)
         MeVec[np.argsort(MeVal)]
+        print(f'DA {max(MeVal) / min(MeVal)}')
 
         Points = np.reshape(MIL,(-1,1)) * Directions
         PC = pv.PolyData(Points / max(MIL))
