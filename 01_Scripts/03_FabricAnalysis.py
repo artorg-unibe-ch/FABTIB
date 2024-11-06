@@ -1,12 +1,12 @@
 #%% !/usr/bin/env python3
 
 Description = """
-Read ISQ files and plot them in 3D using pyvista
+Read .npy ROI and compute fabric using mean intercept length
 """
 
 __author__ = ['Mathieu Simon']
 __date_created__ = '28-10-2024'
-__date__ = '29-10-2024'
+__date__ = '06-11-2024'
 __license__ = 'GPL'
 __version__ = '1.0'
 
@@ -16,466 +16,445 @@ __version__ = '1.0'
 import argparse
 import numpy as np
 import pyvista as pv
+from numba import njit
+from Utils import Time
 from pathlib import Path
-from Utils import ReadISQ, Time
 
 #%% Functions
 
-def initialize_octahedron():
-    """Initialize the vertices and faces of an octahedron."""
-    vertices = [
+def Octahedron() -> np.array:
+    
+    """
+    Initialize the vertices and faces of an octahedron.
+    """
+    
+    Vertices = [
         (1, 0, 0), (-1, 0, 0),
         (0, 1, 0), (0, -1, 0),
         (0, 0, 1), (0, 0, -1)
     ]
-    faces = [
-        (vertices[0], vertices[2], vertices[4]),
-        (vertices[0], vertices[2], vertices[5]),
-        (vertices[0], vertices[3], vertices[4]),
-        (vertices[0], vertices[3], vertices[5]),
-        (vertices[1], vertices[2], vertices[4]),
-        (vertices[1], vertices[2], vertices[5]),
-        (vertices[1], vertices[3], vertices[4]),
-        (vertices[1], vertices[3], vertices[5])
+    
+    Faces = [
+        (Vertices[0], Vertices[2], Vertices[4]),
+        (Vertices[0], Vertices[2], Vertices[5]),
+        (Vertices[0], Vertices[3], Vertices[4]),
+        (Vertices[0], Vertices[3], Vertices[5]),
+        (Vertices[1], Vertices[2], Vertices[4]),
+        (Vertices[1], Vertices[2], Vertices[5]),
+        (Vertices[1], Vertices[3], Vertices[4]),
+        (Vertices[1], Vertices[3], Vertices[5])
     ]
-    return faces
+    return Faces
 
-def split_triangle(triangle):
-    """Split a triangle into four smaller triangles."""
-    P1, P2, P3 = triangle
+def SplitTriangle(Triangle:np.array) -> list:
+    
+    """
+    Split a triangle into four smaller triangles.
+    """
+    
+    P1, P2, P3 = Triangle
+    
     # Midpoints of each edge
     P4 = tuple((np.array(P1) + np.array(P2)) / 2)
     P5 = tuple((np.array(P2) + np.array(P3)) / 2)
     P6 = tuple((np.array(P1) + np.array(P3)) / 2)
     
-    return [
-        (P1, P4, P6),
-        (P4, P2, P5),
-        (P4, P5, P6),
-        (P5, P3, P6)
-    ]
+    return [(P1, P4, P6), (P4, P2, P5), (P4, P5, P6), (P5, P3, P6)]
 
-def subdivide_faces(faces, subdivisions):
-    """Recursively subdivide each triangle face into smaller triangles."""
-    for _ in range(subdivisions):
-        new_faces = []
-        for triangle in faces:
-            new_faces.extend(split_triangle(triangle))
-        faces = new_faces
-    return faces
+def SubdivideFaces(Faces:np.array, Subdivisions:int) -> np.array:
+    
+    """
+    Recursively subdivide each triangle face into smaller triangles.
+    """
+    
+    for _ in range(Subdivisions):
+        NewFaces = []
+        for Triangle in Faces:
+            NewFaces.extend(SplitTriangle(Triangle))
+        Faces = NewFaces
+    return Faces
 
-def project_to_unit_sphere(point):
-    """Normalize a point to lie on the unit sphere."""
-    x, y, z = point
-    norm = np.sqrt(x**2 + y**2 + z**2)
-    return (x / norm, y / norm, z / norm)
+def Project2UnitSphere(Face:np.array) -> np.array:
+    
+    """
+    Project each vertex of a face onto the unit sphere.
+    """
 
-def normalize_faces(faces):
-    """Project each vertex of every face onto the unit sphere."""
-    return [
-        (project_to_unit_sphere(face[0]),
-         project_to_unit_sphere(face[1]),
-         project_to_unit_sphere(face[2]))
-        for face in faces
-    ]
+    UnitFace = []
+    for Point in Face:
+        X, Y, Z = Point
+        Norm = (X**2 + Y**2 + Z**2)**0.5
+        UnitFace.append((X/Norm, Y/Norm, Z/Norm))
+        
+    return UnitFace
 
-def calculate_area_and_centroid(triangle):
-    """Calculate the area and centroid of a triangle on the unit sphere."""
-    P1, P2, P3 = map(np.array, triangle)
+def AreaAndCentroid(Face:np.array) -> np.array:
+    
+    """
+    Calculate the area and centroid of an face.
+    """
+    
+    P1, P2, P3 = map(np.array, Face)
     
     # Calculate the vectors for two edges
-    edge1 = P2 - P1
-    edge2 = P3 - P1
+    Edge1 = P2 - P1
+    Edge2 = P3 - P1
     
     # Area calculation (cross product norm gives twice the area of the triangle)
-    area = 0.5 * np.linalg.norm(np.cross(edge1, edge2))
+    Normal = np.cross(Edge1, Edge2)
+    Area = 0.5 * np.sum(Normal**2)**0.5
     
     # Centroid of the triangle
-    centroid = (P1 + P2 + P3) / 3
-    centroid = project_to_unit_sphere(centroid)  # Project the centroid to the unit sphere
+    Centroid = (P1 + P2 + P3) / 3
+    Centroid = Project2UnitSphere([Centroid])[0]  # Project the centroid to the unit sphere
     
-    return area, centroid
+    return Area, Centroid
 
-def generate_sphere_directions(subdivisions=2):
-    """Generate directions by subdividing an octahedron and projecting to a sphere."""
+def GenerateDirections(Subdivisions=2) -> np.array:
+    
+    """
+    Generate directions by subdividing an octahedron and projecting to a sphere.
+    """
+    
     # Initialize the octahedron and subdivide
-    faces = initialize_octahedron()
-    faces = subdivide_faces(faces, subdivisions)
+    OctaFaces = Octahedron()
+    Faces = SubdivideFaces(OctaFaces, Subdivisions)
     
     # Normalize each face to project onto the unit sphere
-    faces = normalize_faces(faces)
+    UnitFaces = []
+    for Face in Faces:
+        UnitFaces.append(Project2UnitSphere(Face))
     
     # Calculate area and centroid of each face
-    directions = []
-    total_area = 0
-    for face in faces:
-        area, centroid = calculate_area_and_centroid(face)
-        directions.append((centroid, area))
-        total_area += area
+    Directions = []
+    Areas = []
+    for Face in UnitFaces:
+        Area, Centroid = AreaAndCentroid(Face)
+        Directions.append(Centroid)
+        Areas.append(Area)
     
     # Normalize areas so they sum up to the sphere's surface area (4π for unit sphere)
-    scale_factor = 4 * np.pi / total_area
-    directions = [(centroid, area * scale_factor) for centroid, area in directions]
+    Factor = 4 * np.pi / sum(Areas)
+    Areas = np.array([A * Factor for A in Areas])
     
-    return directions
+    return np.array(Directions), Areas
 
-def rotate_to_align_with_direction(Points, Direction, Center):
-    
-    """
-    Rotate corners of the binary array to align the z-axis with the given direction vector.
-    
-    Parameters:
-    corners (np.ndarray): Array of corner points of the binary array.
-    direction (np.ndarray): Direction vector to align with.
-    
-    Returns:
-    np.ndarray: Rotated corner coordinates.
-    """
-    
-    # Compute axis of rotation (cross product of z-axis and direction vector)
-    z_axis = np.array([0, 0, 1])
-    rotation_axis = np.cross(z_axis, Direction)
-    rotation_angle = np.arccos(np.dot(z_axis, Direction))
-    
-    if np.allclose(rotation_axis, 0):
-        return Points  # Already aligned with z-axis
-
-    rotation_axis = rotation_axis / np.linalg.norm(rotation_axis)
-    cos_theta = np.cos(rotation_angle)
-    sin_theta = np.sin(rotation_angle)
-    ux, uy, uz = rotation_axis
-
-    # Rodrigues' rotation formula for rotation matrix
-    R = np.array([
-        [cos_theta + ux*ux*(1 - cos_theta), uy*ux*(1 - cos_theta) - uz*sin_theta, uz*ux*(1 - cos_theta) + uy*sin_theta],
-        [ux*uy*(1 - cos_theta) + uz*sin_theta, cos_theta + uy*uy*(1 - cos_theta), uz*uy*(1 - cos_theta) - ux*sin_theta],
-        [ux*uz*(1 - cos_theta) - uy*sin_theta, uy*uz*(1 - cos_theta) + ux*sin_theta, cos_theta + uz*uz*(1 - cos_theta)]
-    ])
-
-    # Rotate corners around their center
-    RPoints = np.einsum('ij,jk->ik', Points - Center, R)
-
-    return RPoints + Center
-
-def rotate_back_to_align_with_direction(Points, Direction, Center):
+# Numba functions
+@njit
+def GenerateVoxelRay(Direction:np.array, X:int, Y:int, Z:int) -> np.array:
     
     """
-    Rotate corners of the binary array to align the z-axis with the given direction vector.
-    
-    Parameters:
-    corners (np.ndarray): Array of corner points of the binary array.
-    direction (np.ndarray): Direction vector to align with.
-    
-    Returns:
-    np.ndarray: Rotated corner coordinates.
+    Generate the path of voxel coordinates traversed by a ray within a 3D grid.
     """
     
-    # Compute axis of rotation (cross product of z-axis and direction vector)
-    z_axis = np.array([0, 0, 1])
-    rotation_axis = np.cross(z_axis, Direction)
-    rotation_angle = np.arccos(np.dot(z_axis, Direction))
+    # Unpack direction components
+    XDir, YDir, ZDir = Direction
+    XSign = 1 if XDir >= 0 else -1
+    YSign = 1 if YDir >= 0 else -1
+    ZSign = 1 if ZDir >= 0 else -1
     
-    if np.allclose(rotation_axis, 0):
-        return Points  # Already aligned with z-axis
+    # Initialize voxel position and allocate array for VoxelRay
+    VoxX, VoxY, VoxZ = 0, 0, 0
+    VoxelRay = [(VoxX, VoxY, VoxZ)]
 
-    rotation_axis = rotation_axis / np.linalg.norm(rotation_axis)
-    cos_theta = np.cos(-rotation_angle)
-    sin_theta = np.sin(-rotation_angle)
-    ux, uy, uz = rotation_axis
-
-    # Rodrigues' rotation formula for rotation matrix
-    R = np.array([
-        [cos_theta + ux*ux*(1 - cos_theta), uy*ux*(1 - cos_theta) - uz*sin_theta, uz*ux*(1 - cos_theta) + uy*sin_theta],
-        [ux*uy*(1 - cos_theta) + uz*sin_theta, cos_theta + uy*uy*(1 - cos_theta), uz*uy*(1 - cos_theta) - ux*sin_theta],
-        [ux*uz*(1 - cos_theta) - uy*sin_theta, uy*uz*(1 - cos_theta) + ux*sin_theta, cos_theta + uz*uz*(1 - cos_theta)]
-    ])
-
-    # Rotate corners around their center
-    RPoints = np.einsum('ij,jk->ik', Points - Center, R)
-
-    return RPoints + Center
-
-
-
-def dda_ray_trace(grid_shape, origin, direction):
-    """
-    Trace a ray through a 3D grid using the DDA algorithm.
+    # Compute tMax and deltaT for each axis
+    MaxStepsX = (1 / abs(XDir)) if XDir != 0 else np.inf
+    MaxStepsY = (1 / abs(YDir)) if YDir != 0 else np.inf
+    MaxStepsZ = (1 / abs(ZDir)) if ZDir != 0 else np.inf
     
-    Parameters:
-        grid_shape (tuple): Shape of the 3D grid (num_x, num_y, num_z).
-        origin (array): Starting point of the ray (x0, y0, z0).
-        direction (array): Ray direction vector (dx, dy, dz).
+    DeltaX = abs(1 / XDir) if XDir != 0 else np.inf
+    DeltaY = abs(1 / YDir) if YDir != 0 else np.inf
+    DeltaZ = abs(1 / ZDir) if ZDir != 0 else np.inf
+    
+    # Determine the primary direction
+    if abs(XDir) >= abs(YDir) and abs(XDir) >= abs(ZDir):
+        PrimDir = 0
+    elif abs(YDir) >= abs(XDir) and abs(YDir) >= abs(ZDir):
+        PrimDir = 1
+    else:
+        PrimDir = 2
         
-    Returns:
-        List of traversed voxel indices and entry points.
-    """
-    # Grid dimensions
-    nx, ny, nz = grid_shape
-    
-    # Bounding box limits
-    bounds_min = np.array([0, 0, 0])
-    bounds_max = np.array([nx - 1, ny - 1, nz - 1])
-    
-    # Check if the ray starts outside the grid and compute entry point if necessary
-    t_min = 0.0
-    t_max = np.inf
-    
-    # Iterate over each axis to compute intersection times with the bounding planes
-    for i in range(3):
-        if direction[i] != 0:
-            # Time to hit the min and max boundary planes along the axis
-            t1 = (bounds_min[i] - origin[i]) / direction[i]
-            t2 = (bounds_max[i] - origin[i]) / direction[i]
-            
-            # Sort so t1 is the entry and t2 is the exit
-            t_entry = min(t1, t2)
-            t_exit = max(t1, t2)
-            
-            # Update global t_min and t_max to confine the ray within bounds
-            t_min = max(t_min, t_entry)
-            t_max = min(t_max, t_exit)
-            
-            # If t_min exceeds t_max, the ray does not intersect the grid
-            if t_min > t_max:
-                return []  # Ray misses the grid entirely
-    
-    # Calculate the entry point inside the grid
-    entry_point = origin + t_min * direction
-
-    # Convert entry point to voxel indices
-    x, y, z = int(entry_point[0]), int(entry_point[1]), int(entry_point[2])
-
-    # Set the sign of the direction for each axis
-    sign_x = 1 if direction[0] > 0 else -1
-    sign_y = 1 if direction[1] > 0 else -1
-    sign_z = 1 if direction[2] > 0 else -1
-
-    # Calculate distances to next voxel boundary
-    if direction[0] != 0:
-        tx_delta = abs(1 / direction[0])  # Distance to cross an x voxel
-        tx = ((x + (sign_x > 0)) - entry_point[0]) / direction[0]
-    else:
-        tx = np.inf
-        tx_delta = np.inf
-
-    if direction[1] != 0:
-        ty_delta = abs(1 / direction[1])  # Distance to cross a y voxel
-        ty = ((y + (sign_y > 0)) - entry_point[1]) / direction[1]
-    else:
-        ty = np.inf
-        ty_delta = np.inf
-
-    if direction[2] != 0:
-        tz_delta = abs(1 / direction[2])  # Distance to cross a z voxel
-        tz = ((z + (sign_z > 0)) - entry_point[2]) / direction[2]
-    else:
-        tz = np.inf
-        tz_delta = np.inf
-
-    # List of traversed voxels
-    path = [(x, y, z)]
-
-    # Traverse the grid within bounds
-    while 0 <= x < nx and 0 <= y < ny and 0 <= z < nz:
-        # Determine the next boundary to cross and move accordingly
-        if tx < ty and tx < tz:
-            x += sign_x
-            tx += tx_delta
-        elif ty < tz:
-            y += sign_y
-            ty += ty_delta
+    # Iteratively build the array
+    for _ in range(max(X, Y, Z)):
+        if MaxStepsX < MaxStepsY:
+            if MaxStepsX < MaxStepsZ:
+                VoxX += int(XSign)
+                MaxStepsX += DeltaX
+            else:
+                VoxZ += int(ZSign)
+                MaxStepsZ += DeltaZ
+        elif MaxStepsY < MaxStepsZ:
+            VoxY += int(YSign)
+            MaxStepsY += DeltaY
         else:
-            z += sign_z
-            tz += tz_delta
+            VoxZ += int(ZSign)
+            MaxStepsZ += DeltaZ
 
-        # Append the new voxel to the path
-        path.append((x, y, z))
+        # If voxel is in array boundaries
+        if 0 <= VoxX < X and 0 <= VoxY < Y and 0 <= VoxZ < Z:
+            if (PrimDir == 0 and VoxX != VoxelRay[-1][0]) or \
+               (PrimDir == 1 and VoxY != VoxelRay[-1][1]) or \
+               (PrimDir == 2 and VoxZ != VoxelRay[-1][2]):
+                VoxelRay.append((VoxX, VoxY, VoxZ))
+    
+    return np.array(VoxelRay)
 
-    return np.array(path)
+@njit
+def NumpyDot(Points:np.array, Vector:np.array) -> np.array:
+    
+    """
+    Computes projections of points onto direction vector.
+    """
+    
+    n = Points.shape[0]
+    m = Vector.shape[0]
+    Proj = np.empty((n, m), dtype=np.float64)
+    
+    # Loop through each point and each vector to compute the dot products
+    for i in range(n):
+        for j in range(m):
+            Proj[i, j] = Points[i, 0] * Vector[j, 0] + \
+                        Points[i, 1] * Vector[j, 1] + \
+                        Points[i, 2] * Vector[j, 2]
 
+    return Proj
 
-def ComputeMIL(Array, Subdivision=2, StepSize=5):
+@njit
+def NumbaGrid(Array1:np.array, Array2:np.array, Vector1:np.array, Vector2:np.array) -> np.array:
+    
+    """
+    Creates a 2D grid of points by linearly combining elements of
+    Array1 and Array2 with Vector1 and Vector2.
+    
+    Parameters:
+        Array1 (1D array): Array of values along the Vector1 direction.
+        Array2 (1D array): Array of values along the Vector2 direction.
+        Vector1 (1D array): 3-element array representing the first direction vector.
+        Vector2 (1D array): 3-element array representing the second direction vector.
+    
+    Returns:
+        2D array: Grid of combined points with shape (len(Array1) * len(Array2), 3).
+    """
+    
+    # Get arrays lengths
+    Len1 = len(Array1)
+    Len2 = len(Array2)
+    
+    # Initialize the result array to hold all points in the grid
+    Grid = np.empty((Len1 * Len2, 3), dtype=np.float64)
+    
+    Index = 0
+    for i in range(Len1):
+        for j in range(Len2):
+            
+            # Compute the linear combination for each grid point
+            Grid[Index, 0] = Array1[i] * Vector1[0] + Array2[j] * Vector2[0]
+            Grid[Index, 1] = Array1[i] * Vector1[1] + Array2[j] * Vector2[1]
+            Grid[Index, 2] = Array1[i] * Vector1[2] + Array2[j] * Vector2[2]
+            Index += 1
+    
+    return Grid
+
+@njit
+def NumbaComputeIntersections(Grid:np.array, Lengths:np.array, Vector:np.array) -> np.array:
+    
+    """
+    Computes intersections of Grid points along the Vector, scaled by Lengths.
+    
+    Parameters:
+        Grid (2D array): Array of points on the grid, shape (n, 3).
+        Lengths (2D array): Scaling factors for each point along each axis, shape (n, 3).
+        Vector (1D array): Direction vector, shape (3,).
+    
+    Returns:
+        3D array: Intersections, shape (n, 3, 3).
+    """
+    
+    n = Grid.shape[0]
+    Intersections = np.empty((3*n, 3), dtype=np.float64)
+    
+    # Loop through each grid point and each plane direction to compute intersections
+    for i in range(n):
+        for j in range(3):  # Assuming Lengths has 3 entries per point
+            Intersections[i + j*n, 0] = Grid[i, 0] + Lengths[i, j] * Vector[0]
+            Intersections[i + j*n, 1] = Grid[i, 1] + Lengths[i, j] * Vector[1]
+            Intersections[i + j*n, 2] = Grid[i, 2] + Lengths[i, j] * Vector[2]
+    
+    return Intersections
+
+@njit
+def NumbaMIL(Array:np.array, Directions:np.array, StepSize:int) -> np.array:
 
     """
-    Compute MIL
+    Function to calculate the Mean Intercept Length (MIL) for 
+    given directions in a 3D binary array. The calculation considers
+    different symmetric ray orientations (for positive and negative axes).
+
+    Parameters:
+        Array (3D array): Binary array of a structure to analyze.
+        Directions (2D array): Direction vectors to compute the MIL.
+        StepSize (int): Distance in voxels between rays.
+    
+    Returns:
+        MIL (1D array): Mean intercept length values.
+        MILDir (2D array): Directions corresponding to MIL values.
     """
 
-    # Pad array to start and end ray in 0
-    Array = np.pad(Array,1,constant_values=0)
-    Z, Y, X = np.array(Array.shape) - 1
-
-    # Define array corners
+    # Get the shape of the input array to define the grid size
+    Z, Y, X = np.array(Array.shape)
+    
+    # Define the 8 corners of the 3D grid (bounding box)
     Corners = np.array([[0, 0, 0], [X, 0, 0], [0, Y, 0], [0, 0, Z],
                         [X, Y, 0], [X, 0, Z], [0, Y, Z], [X, Y, Z]])
     
-    # Define array planes (normal vectors and distances)
-    Planes = np.array([[1, 0, 0],  # x = 0 (YZ plane)
-                       [0, 1, 0],  # y = 0 (XZ plane)
-                       [0, 0, 1],  # z = 0 (XY plane)
-                       [-1, 0, 0],  # x = nX (far YZ plane)
-                       [0, -1, 0],  # y = nY (far XZ plane)
-                       [0, 0, -1]]) # z = nZ (far XY plane)
-    
-    PDist = np.array([0, 0, 0, X, Y, Z])  # Distances for near and far planes
+    # Define the 3 planes for projecting the grid onto (for use with cross-products)
+    Planes = np.array([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
 
-    # Generate directions
-    Directions = generate_sphere_directions(Subdivision)
-    Directions = np.array([D[0] for D in Directions])
-    Areas = np.array([D[1] for D in Directions])
+    # Initialize arrays to store the MIL values and the direction vectors for each ray direction
+    MIL = np.empty(len(Directions)*2*4, dtype=np.float64)  # Mean Intercept Length values
+    MILDir = np.empty((len(Directions)*2*4, 3), dtype=np.float64)  # Direction vectors
+    MILIndex = 0  # Index for tracking where to store results
 
-    # Modifications to compare with Medtool
-    # Directions = MedDir
-    # Areas = np.array([Areas[tuple(n)] for n in Directions])
-
-    # Keep directions in top quadrants (because of octahedron symetries)
-    Areas = Areas[(Directions > 0).all(axis=1)]
-    Directions = Directions[(Directions > 0).all(axis=1)]
-    # Areas = Areas[Directions[:,2] > 0]
-    # Directions = Directions[Directions[:,2] > 0]
-
-    MIL = []
-    MILDir = []
+    # Loop through each direction in the provided Directions list
     for D in Directions:
-        D = np.array([ 0.97971713,  0.14169376,  0.14169411])
+        
+        # Generate the voxel ray for the current direction
+        VoxelRay = GenerateVoxelRay(D, X, Y, Z)
 
+        # Loop through the 4 symmetries (for each axis direction and its inverse)
         for Sym in range(4):
+            
+            # Copy the original voxel ray for the symmetry adjustment
+            SymRay = VoxelRay.copy()
+
+            # Define the direction for each symmetry
             if Sym == 0:
-                SymD = np.array([D[0], D[1], D[2]])
-            if Sym == 1:
-                SymD = np.array([-D[0], D[1], D[2]])
-            if Sym == 2:
-                SymD = np.array([D[0], -D[1], D[2]])
-            if Sym == 3:
-                SymD = np.array([D[0], D[1], -D[2]])
+                SymD = np.array([D[0], D[1], D[2]])  # Original direction
+            elif Sym == 1:
+                SymD = np.array([-D[0], D[1], D[2]])  # Reflect across the X-axis
+                SymRay[:,0] = X - VoxelRay[:,0] - 1   # Adjust the ray positions accordingly
+            elif Sym == 2:
+                SymD = np.array([D[0], -D[1], D[2]])  # Reflect across the Y-axis
+                SymRay[:,1] = Y - VoxelRay[:,1] - 1   # Adjust the ray positions accordingly
+            elif Sym == 3:
+                SymD = np.array([D[0], D[1], -D[2]])  # Reflect across the Z-axis
+                SymRay[:,2] = Z - VoxelRay[:,2] - 1   # Adjust the ray positions accordingly
 
-            # Create an orthonormal basis with D as one of the axes
-            e1 = np.cross(SymD, np.array([0.0, 0.0, 1.0]))
-            e1 = e1 / np.sum(e1**2)**0.5
+            # Cross-product to find orthogonal vectors for ray projection
+            eZ = np.cross(SymD, np.array([0.0, 0.0, 1.0]))
+            e1 = np.cross(SymD, eZ)
+            e1 = e1 / np.sum(e1**2)**0.5  # Normalize the e1 vector
             e2 = np.cross(SymD, e1)
-            e2 = e2 / np.sum(e2**2)**0.5
+            e2 = e2 / np.sum(e2**2)**0.5  # Normalize the e2 vector
 
-            # Project array corners onto the perpendicular plane directions
-            e1Proj = np.matmul(Corners, e1)
-            e2Proj = np.matmul(Corners, e2)
+            # Project the grid corners onto the e1 and e2 directions
+            e1Proj = NumpyDot(Corners, np.reshape(e1, (1, 3)))
+            e2Proj = NumpyDot(Corners, np.reshape(e2, (1, 3)))
 
-            # Determine min and max bounds for the perpendicular plane
+            # Find the min and max values along e1 and e2 projections
             e1Min, e1Max = e1Proj.min(), e1Proj.max()
             e2Min, e2Max = e2Proj.min(), e2Proj.max()
 
-            # Create grid of starting points across the perpendicular plane
-            e1Pos = np.arange(0, e1Max, StepSize)
-            e1Neg = np.arange(-StepSize, e1Min, -StepSize)
-            e1Val = np.hstack([e1Neg[::-1], e1Pos])
+            # Define the range of values for e1 and e2 directions, with the specified step size
+            e1Val = np.arange(e1Min, e1Max + 1, StepSize)
+            e2Val = np.arange(e2Min, e2Max + 1, StepSize)
 
-            e2Pos = np.arange(0, e2Max, StepSize)
-            e2Neg = np.arange(-StepSize, e2Min, -StepSize)
-            e2Val = np.hstack([e2Neg[::-1], e2Pos])
-            
-            e1Grid, e2Grid = np.meshgrid(e1Val, e2Val, indexing='ij')
-            Grid = e1Grid[..., np.newaxis] * e1 + e2Grid[..., np.newaxis] * e2
-            Grid = Grid.reshape(-1, 3)
+            # Create a grid based on the ranges of e1 and e2
+            Grid = NumbaGrid(e1Val, e2Val, e1, e2)
 
-            # Determine the main direction, corresponding planes and plane distances
-            MDir = np.argmax(np.abs(SymD))
-            if MDir == 0:
-                PPlanes = np.vstack([Planes[0],Planes[3]])
-                if Sym == 1:
-                    PlaneDist = np.array([-PDist[3], PDist[0]])
-                else:
-                    PlaneDist = np.array([PDist[0], PDist[3]])
-            if MDir == 1:
-                PPlanes = np.vstack([Planes[1],Planes[4]])
-                if Sym == 2:
-                    PlaneDist = np.array([-PDist[4], PDist[1]])
-                else:
-                    PlaneDist = np.array([PDist[1], PDist[4]])
-            if MDir == 2:
-                PPlanes = np.vstack([Planes[2],Planes[5]])
-                if Sym == 3:
-                    PlaneDist = np.array([-PDist[5], PDist[2]])
-                else:
-                    PlaneDist = np.array([PDist[2], PDist[5]])
+            # Calculate the distances to the planes for each grid point
+            Num = -NumpyDot(Grid, Planes.T)
+            Denom = NumpyDot(np.reshape(SymD, (1, 3)), Planes.T)
+            DLengths = Num / Denom  # Ray lengths to reach each plane
 
-            # Find intersections with the box planes
-            Num = -(np.dot(Grid, PPlanes.T) + PlaneDist)
-            Denom = np.dot(SymD, PPlanes.T)
-            DLengths = Num / Denom
+            # Compute the intersections of the ray with the grid
+            Entries = NumbaComputeIntersections(Grid, DLengths, SymD)
 
-            # Calculate intersection points
-            Intersections = np.expand_dims(Grid, axis=1) + DLengths[..., np.newaxis] * SymD
-            Entries = Intersections[:,0]
-            Exits = Intersections[:,1]
+            # Initialize variables to track the intercepts and total lengths
+            Intercepts = 0.0
+            Lengths = 0.0
 
-            # Generate rays
-            Rays = Exits - Entries
-            RayLength = np.sum(Rays[0]**2)**0.5
+            # Loop through the entries (intersections) to calculate intercepts and lengths
+            for Entry in Entries:
+                
+                # Round the entry points and convert to integer indices
+                Entry = np.array([round(E) for E in Entry], np.int32)
+                
+                # Compute the ray path from the entry point, adjusted for symmetry
+                Ray = Entry + SymRay
+                
+                # Filter out rays that are outside the grid boundaries
+                Ray = Ray[(Ray[:, 0] >= 0) & (Ray[:, 1] >= 0) & (Ray[:, 2] >= 0) & 
+                          (Ray[:, 0] < X) & (Ray[:, 1] < Y) & (Ray[:, 2] < Z)]
 
-            RayStep = min(1 / np.abs(SymD))
-            NSteps = np.round(RayLength / RayStep).astype(int) + 1
-            Steps = np.linspace(0, RayLength, NSteps+1).reshape(-1, 1) * SymD
-
-            # Iterate through each entry points
-            Intercepts = np.zeros(len(Entries))
-            Lengths = np.zeros(len(Entries))
-            for i, Entry in enumerate(Entries):
-
-                # Generate ray
-                # Ray = dda_ray_trace(np.array(Array.shape)-1, Entry, SymD)
-                # if len(Ray) == 0:
-                #     continue
-                Ray = np.round(Steps + Entry).astype(int)
-
-                # Filter points within bounds of binary array
-                Ray = Ray[(Ray[:, 0] >= 0) & (Ray[:, 1] >= 0) & (Ray[:, 2] >= 0) &
-                            (Ray[:, 0] <= X) & (Ray[:, 1] <= Y) & (Ray[:, 2] <= Z)]
-
-                # Skip if no valid points
+                # Skip if no valid rays
                 if Ray.size == 0:
                     continue
 
-                # Get array values
-                Values = Array[Ray[:,0], Ray[:,1], Ray[:,2]]
+                # Initialize the values array for ray intensities or grid values
+                Values = np.empty(len(Ray) + 2, np.int32)
+                Values[0] = 0  # Set to 0 (no bone outside ray)
+                Values[-1] = 0  # Set to 0 (no bone outside ray)
 
-                # Count intercepts
+                # Fill in the intensity values for each ray point
+                for i in range(1, len(Values) - 1):
+                    Values[i] = Array[Ray[i-1, 2], Ray[i-1, 1], Ray[i-1, 0]]
+
+                # Calculate the difference (intercept) between consecutive values
                 RayIntercept = Values[1:] - Values[:-1]
-                    
-                # Identify the start and end of each segment of 1s
-                Starts = Ray[:-1][RayIntercept == 1]
-                Ends = Ray[:-1][RayIntercept == -1]
 
-                # Calculate lengths of segments
+                # Find the start and end points of the ray segments
+                Starts = Ray[RayIntercept[:-1] == 1]
+                Ends = Ray[RayIntercept[1:] == -1]
+
+                # Calculate the segment lengths (Euclidean distance between starts and ends)
                 SegmentLengths = np.sum((Ends - Starts)**2, axis=1)**0.5
 
-                # Store number of intercepts and length
-                Intercepts[i] += len(SegmentLengths)
-                Lengths[i] += np.sum(SegmentLengths)
-        
-            MILDir.append(SymD)
-            MIL.append(sum(Lengths) / sum(Intercepts))
-            Med = 10.20768752
+                # Count the number of intercepts and sum the lengths of valid segments
+                Intercepts += sum(SegmentLengths > 1)
+                Lengths += sum(SegmentLengths)
 
-    # Complete for full values
-    MIL = np.concatenate([MIL,MIL])
-    MILDir = np.vstack([MILDir, -np.array(MILDir)])
+            # Store the MIL value for the current ray direction
+            MIL[MILIndex] = Lengths / Intercepts
+            MILDir[MILIndex] = SymD
+            MILIndex += 1
 
-    # Args = []
-    # for Dir in MedDir:
-    #     Args.append(np.where((MILDir == Dir).all(axis=1))[0][0])
-
-    # import matplotlib.pyplot as plt
-
-    # Figure, Axis = plt.subplots(1,1)
-    # Axis.plot(MedDir[:len(Args)][:,2], MILDir[Args][:,2], linestyle='none', marker='o',color=(1,0,0))
-    # plt.show(Figure)
-
-
-    # Figure, Axis = plt.subplots(1,1)
-    # Axis.plot([MedMIL[(d[0],d[1],d[2])] for d in MedDir], MIL[Args], linestyle='none', marker='o',color=(1,0,0))
-    # plt.show(Figure)
+            # Store the negative of the direction (for symmetry)
+            MIL[MILIndex] = Lengths / Intercepts
+            MILDir[MILIndex] = -SymD
+            MILIndex += 1
 
     return MIL, MILDir
 
-def fit_fabric_tensor(MIL_values, directions):
+def ComputeMIL(Array:np.array, Subdivisions=2, StepSize=5) -> np.array:
+
+    """
+    Function used to compute the mean intercept length of a binary structure
+
+    Parameters:
+        Array (3D array): Binary array of a structure to analyze.
+        Subdivisions (int): Number of subdivision of the initial octahedron.
+        StepSize (int): Distance in voxels between rays.
+    
+    Returns:
+        MIL (1D array): Mean intercept length values.
+        MILDir (2D array): Directions corresponding to MIL values.
+    """
+
+    # Generate directions to compute MIL
+    Directions, Areas = GenerateDirections(Subdivisions)
+
+    # Filter directions to keep only 1 quadrant
+    Areas = Areas[(Directions > 0).all(axis=1)]
+    Directions = Directions[(Directions > 0).all(axis=1)]
+
+    # Compute MIL using numba
+    MIL, MILDir = NumbaMIL(Array, Directions, StepSize)
+
+    return MIL, MILDir
+
+def FitFabricTensor(MIL:np.array, Directions:np.array) -> np.array:
+    
     """
     Ellipsoidal fit of the fabric tensor M directly from MIL values and directions using least squares.
     See T. P. HARRIGAN, R. W. MANN
@@ -483,22 +462,23 @@ def fit_fabric_tensor(MIL_values, directions):
     Journal of materials science 19 (1984) 761-767
     
     Parameters:
-    - MIL_values: Array of MIL values for each direction (shape N).
-    - directions: Array of unit vectors for each direction (shape N x 3).
+    - MIL (1D array): Array of MIL values for each direction (shape N).
+    - Directions (2D array): Array of unit vectors for each direction (shape N x 3).
     
     Returns:
     - Fitted fabric tensor M (3x3 symmetric matrix).
     """
-    N = len(MIL_values)
+    
     
     # Create the design matrix A (N x 6)
+    N = len(MIL)
     A = np.zeros((N, 6))
     for i in range(N):
-        v1, v2, v3 = directions[i]
+        v1, v2, v3 = Directions[i]
         A[i] = [v1**2, v2**2, v3**2, np.sqrt(2)*v1*v2, np.sqrt(2)*v1*v3, np.sqrt(2)*v2*v3]
     
     # The target vector b (MIL values squared inversely)
-    b = 1/MIL_values**2
+    b = 1/MIL**2
 
     # Solve the normal equation: (A.T @ A) v = A.T @ b
     AT_A = np.dot(np.transpose(A), A)
@@ -506,11 +486,9 @@ def fit_fabric_tensor(MIL_values, directions):
     v = np.dot(np.linalg.inv(AT_A), AT_b)
 
     # Construct the fabric tensor from the solution vector v
-    M = np.array([
-        [v[0], v[5] / np.sqrt(2), v[4] / np.sqrt(2)],
-        [v[5] / np.sqrt(2), v[1], v[3] / np.sqrt(2)],
-        [v[4] / np.sqrt(2), v[3] / np.sqrt(2), v[2]]
-    ])
+    M = np.array([[v[0], v[5] / np.sqrt(2), v[4] / np.sqrt(2)],
+                  [v[5] / np.sqrt(2), v[1], v[3] / np.sqrt(2)],
+                  [v[4] / np.sqrt(2), v[3] / np.sqrt(2), v[2]]])
     
     # Compute eigen values and eigen vectors
     eValues, eVectors = np.linalg.eig(M)
@@ -528,6 +506,75 @@ def fit_fabric_tensor(MIL_values, directions):
 
     return M
 
+def PlotFabricROI(ROI:np.array, eValues:np.array, eVectors:np.array, FileName:Path) -> None:
+
+    """
+    Plots a 3D ellipsoid representing a region of interest (ROI) with scaling based on the
+    eigenvalues and eigenvectors provided. The ellipsoid is overlaid on a binary structure mesh,
+    and the plot is generated with the ability to visualize the MIL (Mean Intercept Length) values.
+
+    Parameters:
+    -----------
+    ROI (3D array): A 3D binary array representing the region of interest (ROI).
+        
+    eValues (1D array): A 1D array containing the eigenvalues of the fabric.
+        
+    eVectors (3D array) : A 2D array (shape: 3x3) containing the eigenvectors of the fabric.
+        
+    Returns:
+    --------
+    None
+    """
+
+    # Create a unit sphere and transform it to an ellipsoid
+    Sphere = pv.Sphere(radius=ROI.shape[0]/2, theta_resolution=50, phi_resolution=50)
+
+    # Scale the sphere by the square roots of the eigenvalues
+    ScaleMatrix = np.diag(np.sqrt(eValues))
+    TransformMatrix = np.matmul(eVectors, ScaleMatrix)
+
+    # Transform the sphere points to ellipsoid points
+    Points = np.matmul(Sphere.points, TransformMatrix.T)
+
+    # Center the ellipsoid at the structure's midpoint
+    Offset = np.array(ROI.shape) / 2
+    EllispoidPoints = Points + Offset
+    Ellispoid = pv.PolyData(EllispoidPoints, Sphere.faces)
+
+    # Calculate the radius for each ellipsoid point to color by radius
+    Radii = np.linalg.norm(Ellispoid.points - Offset, axis=1)
+    Radii = (Radii - min(Radii)) / (max(Radii) - min(Radii))
+    Radii = Radii * (max(eValues) - min(eValues)) + min(eValues)
+    Ellispoid['MIL'] = Radii
+
+    # Create the structure mesh from the binary array
+    StructureMesh = pv.wrap(ROI)
+    Structure = StructureMesh.contour([0.5])  # Isosurface at level 0.5
+
+    # Plotting
+    sargs = dict(font_family='times', 
+                    width=0.05,
+                    height=0.75,
+                    vertical=True,
+                    position_x=0.9,
+                    position_y=0.125,
+                    title_font_size=30,
+                    label_font_size=20
+                    )
+    pl = pv.Plotter(off_screen=True)
+    pl.add_mesh(Ellispoid, scalars='MIL', cmap='jet', opacity=1, scalar_bar_args=sargs)
+    pl.add_mesh(Structure, color=(0.87,0.91,0.91), opacity=1, show_edges=False)
+    pl.camera_position = 'xz'
+    pl.camera.roll = 0
+    pl.camera.elevation = 30
+    pl.camera.azimuth = 30
+    pl.camera.zoom(1.0)
+    pl.add_axes(viewport=(0,0,0.25,0.25))
+    pl.screenshot(FileName)
+    # pl.show()
+
+    return
+
 #%% Main
 
 def Main(Arguments):
@@ -538,8 +585,13 @@ def Main(Arguments):
     else:
         DataPath = Path(__file__).parents[1] / '02_Results/ROIs'
         InputROIs = sorted([F for F in Path.iterdir(DataPath) if F.name.endswith('.npy')])
+    
+    if Arguments.OutputPath:
+        Path.mkdir(Path(Arguments.OutputPath), exist_ok=True)
+    else:
+        Path.mkdir(Path('FabricResults'), exist_ok=True)
         
-    for ROI in [InputROIs[0]]:
+    for i, ROI in enumerate(InputROIs[90:]):
 
         # Print time
         Time.Process(1,ROI.name[:-4])
@@ -548,144 +600,37 @@ def Main(Arguments):
         Array = np.load(ROI)
 
         # Compute MIL
-        MIL, Directions = ComputeMIL(Array, Subdivision=2, StepSize=5)
-        M = fit_fabric_tensor(MIL, Directions)
-        eVal, eVec = np.linalg.eig(M)
-        eVec[np.argsort(eVal)][::-1].T
-        print(f'DA {max(eVal) / min(eVal)}')
+        Time.Update(1/2, 'Compute MIL')
+        MIL, Directions = ComputeMIL(Array, Subdivisions=2, StepSize=5)
 
-        # modify for symetries
-        eVec[:,0] = -eVec[:,0]
-        eVec[:,1] = -eVec[:,1]
-        eVal[:2] = eVal[:2][::-1]
-        print(eVal)
-        print(MeVal)
-        print(eVec)
-        print(MeVec)
+        # Fit fabric tensor
+        M = FitFabricTensor(MIL, Directions)
 
-        # File name for output
-        # FName = Path(Arguments.OutputPath) / ROI.name[:-4]
-        
-        
-        
-        Morphometry.nX = Array.shape[2]  
-        Morphometry.nY = Array.shape[1]  
-        Morphometry.nZ = Array.shape[0]  
-        MedMIL, _, _, Areas, Dict1, DictList, ListNLs, ListSumL, Voxels = Morphometry.OriginalDistribution(Array,Step=5,Power=2)
-        Keys = [K for K in Dict1.keys()]
-        R0 = [K for K in Voxels[Keys[0]].keys()]
-        VoxRay = [Voxels[Keys[0]][C] for C in R0]
+        # Save result
+        FName = Path(Arguments.OutputPath) / (ROI.name[:-4] + '.npy')
+        np.save(FName, M)
 
-        MedDir = np.array([k for k in MedMIL.keys()])
-        MedVal = np.array([MedMIL[k] for k in MedMIL.keys()])
-        MedRay = np.array([Dict1[k] for k in Keys]) - 1
-        MedNum = np.array([ListNLs[3][k] for k in Keys])
-        MedSum = np.array([ListSumL[3][k] for k in Keys])
-
-
-        MedM = fit_fabric_tensor(MedVal, MedDir)
-        MeVal, MeVec = np.linalg.eig(MedM)
-        MeVec[np.argsort(MeVal)]
-        print(f'DA {max(MeVal) / min(MeVal)}')
-
-        Points = np.reshape(MIL,(-1,1)) * Directions
-        PC = pv.PolyData(Points / max(MIL))
-        MedPoints = np.reshape(MILVal,(-1,1)) * MedDir
-        MedPC = pv.PolyData(MedPoints / max(MILVal))
-
-        pl = pv.Plotter(off_screen=True)
-        pl.add_mesh(PC, color="red", point_size=10, render_points_as_spheres=True)
-        pl.add_mesh(MedPC, color="blue", point_size=10, render_points_as_spheres=True)
-        pl.camera_position = 'xz'
-        pl.camera.roll = 0
-        pl.camera.elevation = 30
-        pl.camera.azimuth = 30
-        pl.camera.zoom(1.2)
-        pl.add_axes(viewport=(0,0,0.3,0.3))
-        # pl.screenshot(FName.parent / (FName.name + '.png'))
-        pl.show()
-
-    
-
-
-
-
-
-        chart = pv.Chart2D()
-        plot = chart.scatter(MedVals, MIL)
-        chart.show()
-        
-        # Weight MIL according to area
-        MIL = MIL * Areas / np.sum(Areas)
-
-        M = fit_fabric_tensor(MIL, Directions)
+        # Plot fabric with ROI
+        Time.Update(1.0, 'Plot MIL')
         eValues, eVectors = np.linalg.eig(M)
+        FName = Path(Arguments.OutputPath) / (ROI.name[:-4] + '.png')
+        PlotFabricROI(Array, eValues, eVectors, FName)
 
-        # Sort eigen values and egein vectors
-        eVectors = eVectors[np.argsort(eValues)]
-        eValues = np.abs(np.sort(eValues))
-
-        # Create a unit sphere and transform it to an ellipsoid
-        sphere = pv.Sphere(radius=Array.shape[0]/2, theta_resolution=50, phi_resolution=50)
-
-        # Scale the sphere by the square roots of the eigenvalues
-        scaling_matrix = np.diag(np.sqrt(eValues))
-        transformation_matrix = np.matmul(eVectors, scaling_matrix)
-
-        # Transform the sphere points to ellipsoid points
-        ellipsoid_points = np.matmul(sphere.points, transformation_matrix.T)
-
-        # Center the ellipsoid at the structure's midpoint
-        center_offset = np.array(Array.shape) / 2
-        ellipsoid_points += center_offset
-        ellipsoid = pv.PolyData(ellipsoid_points, sphere.faces)
-
-        # Calculate the radius for each ellipsoid point to color by radius
-        radii = np.linalg.norm(ellipsoid.points - center_offset, axis=1)
-        radii = (radii - min(radii)) / (max(radii) - min(radii))
-        radii = radii * (max(eValues) - min(eValues)) + min(eValues)
-        ellipsoid['MIL'] = radii
-
-        # Create the structure mesh from the binary array
-        structure_mesh = pv.wrap(Array)
-        structure_iso = structure_mesh.contour([0.5])  # Isosurface at level 0.5
-
-        # Plotting
-        sargs = dict(font_family='times', 
-                     width=0.05,
-                     height=0.75,
-                     vertical=True,
-                     position_x=0.9,
-                     position_y=0.125,
-                     title_font_size=30,
-                     label_font_size=20
-                     )
-        pl = pv.Plotter(off_screen=True)
-        pl.add_mesh(ellipsoid, scalars='MIL', cmap='jet', opacity=1, scalar_bar_args=sargs)
-        pl.add_mesh(structure_iso, color=(0.87,0.91,0.91), opacity=1, show_edges=False)
-        pl.camera_position = 'xz'
-        pl.camera.roll = 0
-        pl.camera.elevation = 30
-        pl.camera.azimuth = 30
-        pl.camera.zoom(1.2)
-        pl.add_axes(viewport=(0,0,0.3,0.3))
-        # pl.screenshot(FName.parent / (FName.name + '.png'))
-        pl.show()
-
-
-        # Save ROI for later analysis
-        # np.save(FName.parent / (FName.name + '.npy'), ROI)
+        # Print time
+        Time.Process(0,f'ROI {i+1}/{len(InputROIs)} done')
+        
+    return
 
 if __name__ == '__main__':
+    
     # Initiate the parser with a description
     Parser = argparse.ArgumentParser(description=Description, formatter_class=argparse.RawDescriptionHelpFormatter)
 
     # Add optional argument
     ScriptVersion = Parser.prog + ' version ' + __version__
     Parser.add_argument('-v', '--Version', help='Show script version', action='version', version=ScriptVersion)
-    Parser.add_argument('--InputISQ', help='File name of the ISQ scan', type=str)
-    Parser.add_argument('--OutputPath', help='Output path for the ROI and png image of the plot', type=str, default='02_Results/ROIs')
-    Parser.add_argument('--NROIs', help='Number of region of interests to extract', type=int, default=3)
+    Parser.add_argument('--InputROI', help='File name of the binary ROI', type=str)
+    Parser.add_argument('--OutputPath', help='Output path for the ROI fabric and png image of the plot', type=str, default='02_Results/Fabric')
 
     # Read arguments from the command line
     Arguments = Parser.parse_args()
