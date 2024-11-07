@@ -7,4 +7,6 @@
 # Ignore results files
 *.npy
 *.png
+*.mhd
+*.raw
 *.msh
