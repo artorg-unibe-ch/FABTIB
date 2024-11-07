@@ -35,6 +35,7 @@ def Main(Arguments):
     for ISQ in InputISQs:
         
         # Read scan
+        Time.Process(1, 'Read ' + ISQ.name[:-4])
         VoxelModel, AdditionalData = ReadISQ(ISQ, ASCII=False)
         VoxelModel = VoxelModel.astype(float)
 
@@ -44,12 +45,12 @@ def Main(Arguments):
         Scaled = (VoxelModel - Min) / (Max - Min)
 
         # Plot using pyvista
-        Time.Process(1, 'Plot ' + ISQ.name[:-4])
+        Time.Update(1/2, 'Plot ' + ISQ.name[:-4])
         pl = pv.Plotter(off_screen=True)
-        actors = pl.add_volume(Scaled[::2,::2,::2].T,
+        actors = pl.add_volume(Scaled[::5,::5,::5].T,
                     cmap='bone',
                     show_scalar_bar=False,
-                    opacity=[0, 0.02, 0.2, 0.4, 1]
+                    opacity=[0, 0.05, 0.2, 0.4, 1]
                     )
         actors.prop.interpolation_type = 'linear'
         pl.camera_position = 'xz'
@@ -60,6 +61,7 @@ def Main(Arguments):
         pl.screenshot(Path(Arguments.OutputPath) / (Path(ISQ).name[:-4] + '.png'))
         Time.Process(0)
         pl.show()
+
 
 if __name__ == '__main__':
     # Initiate the parser with a description

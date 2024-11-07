@@ -591,7 +591,7 @@ def Main(Arguments):
     else:
         Path.mkdir(Path('FabricResults'), exist_ok=True)
         
-    for i, ROI in enumerate(InputROIs[90:]):
+    for i, ROI in enumerate(InputROIs):
 
         # Print time
         Time.Process(1,ROI.name[:-4])
