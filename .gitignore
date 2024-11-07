@@ -1,2 +1,9 @@
 # Ignore raw data files
 *.ISQ
+
+# Ignore reference script
+*Medtool.py
+
+# Ignore results files
+*.npy
+*.png
