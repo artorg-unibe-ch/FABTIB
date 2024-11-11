@@ -93,12 +93,10 @@ def Main(Arguments):
         InputROIs = sorted([F for F in Path.iterdir(DataPath) if F.name.endswith('.npy')])
     
     if Arguments.OutputPath:
-        Path.mkdir(Path(Arguments.OutputPath), exist_ok=True)
-    else:
-        Path.mkdir(Path('FabricResults'), exist_ok=True)
+        Path.mkdir(Path(__file__).parents[1] / Path(Arguments.OutputPath), exist_ok=True)
         
 
-    for i, ROI in enumerate([InputROIs[0]]):
+    for i, ROI in enumerate(InputROIs):
 
         # Print time
         Time.Process(1,ROI.name[:-4])
@@ -154,7 +152,7 @@ def Main(Arguments):
 
         # Write file
         Time.Update(5/6,'Write mesh file')
-        FName = Path(Arguments.OutputPath) / (ROI.name[:-4] + '.msh')
+        FName = ROI.parent / Path(Arguments.OutputPath) / (ROI.name[:-4] + '.msh')
         with open(FName,'w') as File:
 
             # Write heading
