@@ -1,0 +1,211 @@
+<!DOCTYPE MedToolXML>
+<MedToolXML level="Expert" writeonly="yes" resfile="" exefile="" workdir="C:/Users/mathi" paramfile="C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/01_Scripts/Samples.csv" cpu="1">
+ <_02_imgToFe_ script="imgToFe" active="yes">
+  <modulName>
+   <description>Template Script</description>
+  </modulName>
+  <in>
+   <description>Image file name | filename</description>
+   <type>fileEntryIn</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/ROIs/$Sample.mhd</value>
+   <default>image.mhd</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>mhd;nhdr</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </in>
+  <out>
+   <description>FEA job output file | filename</description>
+   <type>fileEntryOut</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Abaqus/$Sample.inp</value>
+   <default>model.inp</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>inp;fem</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </out>
+  <smooth>
+   <description>Mesh smoothing | niter;lambda;kPB;interface;boundary;jacobian</description>
+   <type>splitEntry</type>
+   <value>5;0.6307;0.1;0;1;0.05</value>
+   <default>5;0.6307;0.1;0;1;0.05</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </smooth>
+  <matelas>
+   <description>Elastic Standard | GV;E;nu;GV;E;nu;GV;E;nu</description>
+   <type>entry</type>
+   <value>255;10000;0.3</value>
+   <default>251;1000;0.3</default>
+   <optional>yes</optional>
+   <active>yes</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Materials</menu>
+  </matelas>
+  <matpow>
+   <description>Elastic Power Law | GV;E0;nu;k</description>
+   <type>entry</type>
+   <value>1-250;10000;0.3;2</value>
+   <default>1-250;10000;0.3;2</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Materials</menu>
+  </matpow>
+  <nsetfa>
+   <description>Node Set Boundary Face | flag</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>yes</active>
+   <info>-</info>
+   <level>Simple</level>
+   <menu>Sets</menu>
+  </nsetfa>
+  <disp>
+   <description>Displacement | region;dofs;mag;region;dofs;mag;region;dofs;mag</description>
+   <type>entry</type>
+   <value>ALL_NODE_B;1-3;0.0;ALL_NODE_T;3;-0.1</value>
+   <default>ALL_NODE_B;1-3;0.0;ALL_NODE_T;3;-0.1</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Boundary Conditions</menu>
+  </disp>
+  <force>
+   <description>Force | region;dof;mag;region;dof;mag;region;dof;mag</description>
+   <type>entry</type>
+   <value>ALL_NODE_N;3;100.</value>
+   <default>ALL_NODE_N;3;100.</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Boundary Conditions</menu>
+  </force>
+  <step>
+   <description>Analysis Type | type</description>
+   <type>combo</type>
+   <value>Static</value>
+   <default>Static</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>STATIC;STATIC_NLGEOM</info>
+   <level>Expert</level>
+   <menu>Analysis Step</menu>
+  </step>
+  <spar>
+   <description>Analysis Parameters | increment;time period</description>
+   <type>entry</type>
+   <value>0.2;1.0</value>
+   <default>0.2;1.0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Analysis Step</menu>
+  </spar>
+  <nodefrd>
+   <description>Node results FRD Output | var1;var2;var3;var4</description>
+   <type>entry</type>
+   <value>U;RF</value>
+   <default>U;RF</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Result Output</menu>
+  </nodefrd>
+  <elemfrd>
+   <description>Element results FRD Output | var1;var2;var3;var4</description>
+   <type>entry</type>
+   <value>S;E;ENER</value>
+   <default>S;E;ENER</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Result Output</menu>
+  </elemfrd>
+  <nodedat>
+   <description>Node results DAT Output | region;var1;var2;var3</description>
+   <type>entry</type>
+   <value>ALL_NODE_T;RF</value>
+   <default>ALL_NODE_T;RF</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Result Output</menu>
+  </nodedat>
+ </_02_imgToFe_>
+ <_03_cbc_ script="cbc" active="yes">
+  <modulName>
+   <description>cbc</description>
+  </modulName>
+  <in>
+   <description>Abaqus Input File Name</description>
+   <type>fileEntryInEdit</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Abaqus/$Sample.inp</value>
+   <default>testIn.inp</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>inp</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </in>
+  <out>
+   <description>Abaqus Output File Name</description>
+   <type>fileEntryOut</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Abaqus/$Sample_KUBC.inp</value>
+   <default>testOut.inp</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>bcs;inp</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </out>
+  <bcid>
+   <description>BCs Identifier</description>
+   <type>combo</type>
+   <value>CK3</value>
+   <default>CP3</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>CP2;CP3;SP2;SP3;CK3;SET</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </bcid>
+  <code>
+   <description>FEM Code Name</description>
+   <type>combo</type>
+   <value>abaqus</value>
+   <default>calculix</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>calculix;abaqus</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </code>
+  <tol>
+   <description>Relative Tolerance</description>
+   <type>entry</type>
+   <value>1.0E-05</value>
+   <default>1.0E-05</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </tol>
+ </_03_cbc_>
+</MedToolXML>
