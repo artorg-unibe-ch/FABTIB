@@ -21,11 +21,10 @@ from pathlib import Path
 def WriteMain(FileName):
 
     L1, L2, L3 = 5.28, 5.28, 5.28
-    Mesh = FileName + '.inp'
-    BCs = FileName + '_KUBC.inp'
+    Mesh = FileName.name[:10] + '.inp'
+    BCs = FileName.name[:10] + '_KUBC.inp'
 
-    Text = f"""
-**********************************************
+    Text = f"""**********************************************
 **
 **         Main Abaqus input File
 **
@@ -38,13 +37,9 @@ def WriteMain(FileName):
 **  (Unit Cell Dimensions l1,l2,l3=h)
 **********************************************
 *PARAMETER
-l1  = {L1}
-l2  = {L2}
-l3  = {L3}
-**********
-l1l2=l1*l2
-l2l3=l2*l3
-l1l3=l1*l3
+u1  = {L1/1000}
+u2  = {L2/1000}
+u3  = {L3/1000}
 **
 ** Node, Element, and Material Definitons 
 **********************************************
@@ -54,30 +49,136 @@ l1l3=l1*l3
 **********************************************
 *INCLUDE, INPUT={BCs}
 **
-** Boundary Conditions
-**********************************************
-*BOUNDARY, TYPE=DISPLACEMENT
-SWB, 1, 3, 0
-SEB, 3, 3, 0
-NWB, 3, 3, 0
-NWB, 1, 1, 0
-**
 ** Steps Definitions
 ***************** Tensile 1 ******************
 *STEP
 *STATIC
 *BOUNDARY, OP=NEW
-SEB, 1,  <l2l3>
+ALL_NODE_E, 1, 1, <u1>
+ALL_NODE_W, 1, 1, 0
+ALL_NODE_S, 2, 2, 0
+ALL_NODE_N, 2, 2, 0
+ALL_NODE_B, 3, 3, 0
+ALL_NODE_T, 3, 3, 0
 *NODE FILE
 U
 *EL FILE
 S
-*EL PRINT
-EVOL, S, E
+*EL PRINT, ELSET=SET2
+EVOL
+*EL PRINT, ELSET=SET2
+S
+*EL PRINT, ELSET=SET2
+E
+*END STEP
+***************** Tensile 2 ******************
+*STEP
+*STATIC
+*BOUNDARY, OP=NEW
+ALL_NODE_E, 1, 1, 0
+ALL_NODE_W, 1, 1, 0
+ALL_NODE_S, 2, 2, <u2>
+ALL_NODE_N, 2, 2, 0
+ALL_NODE_B, 3, 3, 0
+ALL_NODE_T, 3, 3, 0
+*NODE FILE
+U
+*EL FILE
+S
+*EL PRINT, ELSET=SET2
+EVOL
+*EL PRINT, ELSET=SET2
+S
+*EL PRINT, ELSET=SET2
+E
+*END STEP
+***************** Tensile 3 ******************
+*STEP
+*STATIC
+*BOUNDARY, OP=NEW
+ALL_NODE_E, 1, 1, 0
+ALL_NODE_W, 1, 1, 0
+ALL_NODE_S, 2, 2, 0
+ALL_NODE_N, 2, 2, 0
+ALL_NODE_B, 3, 3, <u3>
+ALL_NODE_T, 3, 3, 0
+*NODE FILE
+U
+*EL FILE
+S
+*EL PRINT, ELSET=SET2
+EVOL
+*EL PRINT, ELSET=SET2
+S
+*EL PRINT, ELSET=SET2
+E
+*END STEP
+****************** Shear 23 ******************
+*STEP
+*STATIC
+*BOUNDARY, OP=NEW
+ALL_NODE_E, 1, 1, 0
+ALL_NODE_W, 1, 1, 0
+ALL_NODE_S, 3, 3, 0
+ALL_NODE_N, 3, 3, <u3>
+ALL_NODE_B, 2, 2, 0
+ALL_NODE_T, 2, 2, <u2>
+*NODE FILE
+U
+*EL FILE
+S
+*EL PRINT, ELSET=SET2
+EVOL
+*EL PRINT, ELSET=SET2
+S
+*EL PRINT, ELSET=SET2
+E
+*END STEP
+****************** Shear 13 ******************
+*STEP
+*STATIC
+*BOUNDARY, OP=NEW
+ALL_NODE_E, 3, 3, 0
+ALL_NODE_W, 3, 3, <u3>
+ALL_NODE_S, 2, 2, 0
+ALL_NODE_N, 2, 2, 0
+ALL_NODE_B, 1, 1, 0
+ALL_NODE_T, 1, 1, <u1>
+*NODE FILE
+U
+*EL FILE
+S
+*EL PRINT, ELSET=SET2
+EVOL
+*EL PRINT, ELSET=SET2
+S
+*EL PRINT, ELSET=SET2
+E
+*END STEP
+****************** Shear 21 ******************
+*STEP
+*STATIC
+*BOUNDARY, OP=NEW
+ALL_NODE_E, 2, 2, 0
+ALL_NODE_W, 2, 2, <u2>
+ALL_NODE_S, 1, 1, 0
+ALL_NODE_N, 1, 1, <u1>
+ALL_NODE_B, 3, 3, 0
+ALL_NODE_T, 3, 3, 0
+*NODE FILE
+U
+*EL FILE
+S
+*EL PRINT, ELSET=SET2
+EVOL
+*EL PRINT, ELSET=SET2
+S
+*EL PRINT, ELSET=SET2
+E
 *END STEP
 """
 
-    with open(FileName + '_Main.inp','w') as File:
+    with open(FileName.parent / (FileName.name[:10] + '_Main.inp'),'w') as File:
         File.write(Text)
 
     return
@@ -91,10 +192,7 @@ def Main(Arguments):
         InputISQs = [Arguments.InputISQ]
     else:
         DataPath = Path(__file__).parents[1] / '02_Results/Abaqus'
-        AbaqusInps = [F.name[:10] for F in Path.iterdir(DataPath) if F.name.endswith('temp.inp')]
-
-    # Create output directory if necessary
-    Path.mkdir(Path(Arguments.OutputPath), exist_ok=True)
+        AbaqusInps = [F for F in Path.iterdir(DataPath) if F.name.endswith('temp.inp')]
 
     for Input in AbaqusInps:
         WriteMain(Input)
