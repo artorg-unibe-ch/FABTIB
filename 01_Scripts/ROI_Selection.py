@@ -383,13 +383,12 @@ def Main(Arguments):
         Scaled = VoxelModel / Otsu
 
         # Plot using pyvista
-        Opacity = [0, 0.05, 0.2, 0.2, 1, 1, 1]
         Time.Update(2/5,'Plot scan')
         pl = pv.Plotter(off_screen=True)
         actors = pl.add_volume(Scaled[::5,::5,::5].T,
                     cmap='bone',
                     show_scalar_bar=False,
-                    opacity=Opacity)
+                    opacity='sigmoid_5')
         actors.prop.interpolation_type = 'linear'
         pl.camera_position = 'xz'
         pl.camera.azimuth = 0
@@ -422,7 +421,7 @@ def Main(Arguments):
             actors = pl.add_volume(ROI,
                         cmap='bone',
                         show_scalar_bar=False,
-                        opacity=Opacity)
+                        opacity='sigmoid_5')
             actors.prop.interpolation_type = 'linear'
             pl.camera_position = 'xz'
             pl.camera.roll = 0
@@ -432,10 +431,10 @@ def Main(Arguments):
             pl.screenshot(Name)
     
         # Update time
-        Time.Process(0, f'Done sample {iISQ+1} / {len(InputISQs)}')
+        Time.Process(0, f'Done ISQ {iISQ+1} / {len(InputISQs)}')
 
     Data.to_csv(Arguments.OutputPath.parent / 'Parameters.csv',
-                index=False, sep=';', lineterminator=';\n')
+                index=False, sep=';', line_terminator=';\n')
 
 
 if __name__ == '__main__':
