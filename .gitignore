@@ -10,3 +10,5 @@
 *.mhd
 *.raw
 *.msh
+*.inp
+*.csv
