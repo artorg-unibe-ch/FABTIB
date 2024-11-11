@@ -383,13 +383,13 @@ def Main(Arguments):
         Scaled = VoxelModel / Otsu
 
         # Plot using pyvista
+        Opacity = [0, 0.05, 0.2, 0.2, 1, 1, 1]
         Time.Update(2/5,'Plot scan')
         pl = pv.Plotter(off_screen=True)
         actors = pl.add_volume(Scaled[::5,::5,::5].T,
                     cmap='bone',
                     show_scalar_bar=False,
-                    opacity=[0, 0.05, 0.2, 0.4, 1]
-                    )
+                    opacity=Opacity)
         actors.prop.interpolation_type = 'linear'
         pl.camera_position = 'xz'
         pl.camera.azimuth = 0
@@ -397,14 +397,14 @@ def Main(Arguments):
         pl.camera.roll = 0
         pl.camera.zoom(1.2)
         pl.screenshot(Path(Arguments.OutputPath) / (Path(ISQ).name[:-4] + '.png'))
-        Time.Process(0)
-        pl.show()
 
         # Select ROI at center of gravity
         Time.Update(3/5,f'Select {Arguments.NROIs} ROIs')
         ROISize = 5.3   # ROI side length in mm
         Dim = int(round(ROISize // AdditionalData['ElementSpacing'][0]))
         Coords = ROICoords(VoxelModel, AdditionalData, Dim, N=Arguments.NROIs)
+        
+        Time.Update(4/5,f'Plot {Arguments.NROIs} ROIs')
         for i, C in enumerate(Coords):
             Index = iISQ * Arguments.NROIs + i
             Data.loc[Index,'$Sample'] = ISQ.name[:-4]
@@ -413,10 +413,29 @@ def Main(Arguments):
             Data.loc[Index,'$YPos'] = C[1]
             Data.loc[Index,'$ZPos'] = C[2]
             Data.loc[Index,'$Dim'] = Dim
-            Data.loc[Index,'$Threshold'] = Otsu
+            Data.loc[Index,'$Threshold'] = round(Otsu)
+
+            ROI = Scaled[C[2]:C[2]+Dim,C[1]:C[1]+Dim,C[0]:C[0]+Dim].T
+            Name = Arguments.OutputPath / (ISQ.name[:-4] + '_' + str(i+1) + '.png')
+
+            pl = pv.Plotter(off_screen=True)
+            actors = pl.add_volume(ROI,
+                        cmap='bone',
+                        show_scalar_bar=False,
+                        opacity=Opacity)
+            actors.prop.interpolation_type = 'linear'
+            pl.camera_position = 'xz'
+            pl.camera.roll = 0
+            pl.camera.elevation = 30
+            pl.camera.azimuth = 30
+            pl.camera.zoom(1.0)
+            pl.screenshot(Name)
     
         # Update time
-        Time.Process(0, f'Done ISQ {iISQ+1} / {len(InputISQs)}')
+        Time.Process(0, f'Done sample {iISQ+1} / {len(InputISQs)}')
+
+    Data.to_csv(Arguments.OutputPath.parent / 'Parameters.csv',
+                index=False, sep=';', lineterminator=';\n')
 
 
 if __name__ == '__main__':
@@ -427,7 +446,7 @@ if __name__ == '__main__':
     ScriptVersion = Parser.prog + ' version ' + __version__
     Parser.add_argument('-v', '--Version', help='Show script version', action='version', version=ScriptVersion)
     Parser.add_argument('--InputISQ', help='File name of the ISQ scan', type=str)
-    Parser.add_argument('--OutputPath', help='Output path for the ROI and png image of the plot', type=str, default='02_Results/ROIs')
+    Parser.add_argument('--OutputPath', help='Output path for the ROI and png image of the plot', default=Path(__file__).parents[1] / '02_Results/Scans')
     Parser.add_argument('--NROIs', help='Number of region of interests to extract', type=int, default=3)
 
     # Read arguments from the command line
