@@ -18,6 +18,9 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 
+np.set_printoptions(linewidth=500,
+                    suppress=True,
+                    formatter={'float_kind':'{:3}'.format})
 #%% Functions
 
 def Engineering2MandelNotation(A):
@@ -348,6 +351,27 @@ def TransformTensor(A,OriginalBasis,NewBasis):
 
     return TransformedA
 
+def Mandel2EngineeringNotation(A):
+
+    B = np.zeros((6,6))
+
+    for i in range(6):
+        for j in range(6):
+
+            if i < 3 and j >= 3:
+                B[i,j] = A[i,j] / np.sqrt(2)
+
+            elif i >= 3 and j < 3:
+                B[i,j] = A[i,j] / np.sqrt(2)
+
+            elif i >= 3 and j >= 3:
+                B[i,j] = A[i,j] / 2
+
+            else:
+                B[i, j] = A[i, j]
+
+    return B
+
 #%% Main
 
 def Main(Arguments):
@@ -373,7 +397,35 @@ def Main(Arguments):
         
     for s, Sample in enumerate(Samples):
 
+        # Step 1: Get fabric info
         Morpho = pd.read_csv(MorphoPath / (Sample + '.csv'), delimiter=';')
+
+        # Eigenvalues
+        m1 = Morpho['$DA_lam_1'].values[0]
+        m2 = Morpho['$DA_lam_2'].values[0]
+        m3 = Morpho['$DA_lam_3'].values[0]
+        eValues = np.array([m1,m2,m3])
+
+        # Eigenvectors
+        m11 = Morpho['$DA_vec_1x'].values[0]
+        m12 = Morpho['$DA_vec_1y'].values[0]
+        m13 = Morpho['$DA_vec_1z'].values[0]
+
+        m21 = Morpho['$DA_vec_2x'].values[0]
+        m22 = Morpho['$DA_vec_2y'].values[0]
+        m23 = Morpho['$DA_vec_2z'].values[0]
+
+        m31 = Morpho['$DA_vec_3x'].values[0]
+        m32 = Morpho['$DA_vec_3y'].values[0]
+        m33 = Morpho['$DA_vec_3z'].values[0]
+        eVectors = np.array([[m11,m12,m13], [m21,m22,m23], [m31,m32,m33]])
+
+        # Sort fabric
+        Arg = np.argsort(eValues)
+        eValues = eValues[Arg]
+        eVectors = eVectors[Arg]
+
+        # Step 2: Get stiffness info
         Abaqus = open(AbaqusPath / (Sample + '.out'), 'r').readlines()
 
         Stress = np.zeros((6,6))
@@ -392,11 +444,42 @@ def Main(Arguments):
         # Write tensor into mandel notation
         Mandel = Engineering2MandelNotation(Stiffness)
 
-        # Transform tensor into fabric coordinate system
+        # Step 3: Transform tensor into fabric coordinate system
         I = np.eye(3)
-        Q = np.array(EigenVectors)
+        Q = np.array(eVectors)
         TS4 = TransformTensor(IsoMorphism66_3333(Mandel), I, Q)
         TransformedStiffness = IsoMorphism3333_66(TS4)
+
+        # Project onto orthotropy
+        OrthotropicTransformedStiffness = np.zeros(TransformedStiffness.shape)
+
+        for i in range(OrthotropicTransformedStiffness.shape[0]):
+            for j in range(OrthotropicTransformedStiffness.shape[1]):
+                if i < 3 and j < 3:
+                    OrthotropicTransformedStiffness[i, j] = TransformedStiffness[i, j]
+                elif i == j:
+                    OrthotropicTransformedStiffness[i, j] = TransformedStiffness[i, j]
+
+        # Get engineering constants in fabric coordinate system
+        Stiffness = Mandel2EngineeringNotation(OrthotropicTransformedStiffness)
+        Compliance = np.linalg.inv(Stiffness)
+        TransformedConstants = TransformedConstants.append({
+            'Scan':Scan,
+            'ROI Number': ROINumber,
+            'BVTV': FabricData['BVTV'][0],
+            'm1': EigenValues[0],
+            'm2': EigenValues[1],
+            'm3': EigenValues[2],
+            'DA': FabricData['DA'][0],
+            'E1': 1 / Compliance[0, 0],
+            'E2': 1 / Compliance[1, 1],
+            'E3': 1 / Compliance[2, 2],
+            'Mu23': 1 / Compliance[3, 3],
+            'Mu31': 1 / Compliance[4, 4],
+            'Mu12': 1 / Compliance[5, 5],
+            'Nu12': -Compliance[0, 1] / Compliance[0, 0],
+            'Nu13': -Compliance[0, 2] / Compliance[0, 0],
+            'Nu23': -Compliance[1, 2] / Compliance[1, 1]}, ignore_index=True)
 
         S11 = Stiffness[0,0]
         S22 = Stiffness[1,1]
