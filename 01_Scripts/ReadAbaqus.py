@@ -107,114 +107,122 @@ class abqSeReader :
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-def getSeAverageAbaqus(odbName, BVTV, spec=None):
-  """ Print max mises location and value given odbName
-      and elset(optional)
-  """
-  stdout.write("   ... reading from file %s\n" % (odbName) )
+def getSeAverageAbaqus(odbName, sizes, spec=None):
+    """ Print max mises location and value given odbName
+        and elset(optional)
+    """
+    stdout.write("   ... reading from file %s\n" % (odbName) )
 
-  readAllSij = False
-  readAllEij = False
-  if spec != None : 
-    if spec.find('STRESS') > -1 : readAllSij = True
-    if spec.find('STRAIN') > -1 : readAllEij = True
-  else : 
-    readAllSij = True
-    readAllEij = True
-
-
-  region = "over the entire model"
-  """ Open the output database """
-  odb = openOdb(odbName)
-  coordSys = odb.rootAssembly.DatumCsysByThreePoints(name='CSYS-1', 
-                                                      coordSysType=CARTESIAN,
-                                                      origin=(0.0, 0.0, 0.0),
-                                                      point1=(1.0, 0.0, 0.0),
-                                                      point2=(0.0, 1.0, 0.0))
-
-  S_step = {}
-  E_step = {}
-
-  for step in list(odb.steps.values()):
-      S_sum={}
-      S_sum['S11']=0.
-      S_sum['S22']=0.
-      S_sum['S33']=0.
-      S_sum['S12']=0.
-      S_sum['S13']=0.
-      S_sum['S23']=0.
-      
-      E_sum={}
-      E_sum['E11']=0.
-      E_sum['E22']=0.
-      E_sum['E33']=0.
-      E_sum['E12']=0.
-      E_sum['E13']=0.
-      E_sum['E23']=0.
-
-      nS = 0
-      nE = 0      
-      stdout.write('   ... Processing Step : %s\n' % step.name)
-      stdout.flush()
-      for frame in step.frames:
-        if frame.incrementNumber == 1:
-          allFields = frame.fieldOutputs
-          if readAllSij == True:
-            if ('S' in allFields):
-              stressSet = allFields['S'].getTransformedField(datumCsys=coordSys)
-              for stressValue in stressSet.values:
-                if stressValue.position == INTEGRATION_POINT : 
-                  S_sum['S11'] += stressValue.data[0]
-                  S_sum['S22'] += stressValue.data[1]
-                  S_sum['S33'] += stressValue.data[2]
-                  S_sum['S12'] += stressValue.data[3]
-                  S_sum['S13'] += stressValue.data[4]
-                  S_sum['S23'] += stressValue.data[5]
-                  nS+=1
-                  #print elId, ipId, S_sum['S23']/V_sum
-          if readAllEij == True:
-            if ('E' in allFields):
-              strainSet = allFields['E'].getTransformedField(datumCsys=coordSys)
-              for strainValue in strainSet.values:
-                if strainValue.position == INTEGRATION_POINT : 
-                  E_sum['E11'] += strainValue.data[0]
-                  E_sum['E22'] += strainValue.data[1]
-                  E_sum['E33'] += strainValue.data[2]
-                  E_sum['E12'] += strainValue.data[3]
-                  E_sum['E13'] += strainValue.data[4]
-                  E_sum['E23'] += strainValue.data[5]
-                  nE+=1
-
-      for Sij in S_sum : 
-        S_sum[Sij] = S_sum[Sij]
-      S_step[step.name] = S_sum
-
-      for Eij in E_sum : 
-        E_sum[Eij] = E_sum[Eij]
-      E_step[step.name] = E_sum          
-
-      #if nV != nS or nV!=nE or nE != nS : 
-      #  print ' **ERROR** Number of IP and S/E value not the same!'
-      #  exit(1)
-
-  """ Close the output database before exiting the program """
-  odb.close()
-
-  if readAllSij == False : S_step = None
-  if readAllEij == False : E_step = None
+    readAllSij = False
+    readAllEij = False
+    if spec != None : 
+      if spec.find('STRESS') > -1 : readAllSij = True
+      if spec.find('STRAIN') > -1 : readAllEij = True
+    else : 
+      readAllSij = True
+      readAllEij = True
 
 
-  # if readAllEij == True and abs(V_sum/volume-1.0) > 0.000001 : 
-  #     stdout.write("\n **ERROR**: Strain averaging select but denstity < 1.0! \n" ); stdout.flush()
-  #     stdout.write( '\n E N D E D  with ERRORS \n\n' ); stdout.flush()
-  #     exit(1)
-  # if  V_sum/volume > 1.0 : 
-  #     stdout.write("\n **ERROR**: Check the RVE dimensions: denstity > 1.0! \n" ); stdout.flush()
-  #     stdout.write( '\n E N D E D  with ERRORS \n\n' ); stdout.flush()
-  #     exit(1)
+    region = "over the entire model"
+    """ Open the output database """
+    odb = openOdb(odbName)
+    assembly = odb.rootAssembly
+    coordSys = odb.rootAssembly.DatumCsysByThreePoints(name='CSYS-1', 
+                                                       coordSysType=CARTESIAN,
+                                                       origin=(0.0, 0.0, 0.0),
+                                                       point1=(1.0, 0.0, 0.0),
+                                                       point2=(0.0, 1.0, 0.0))
+
+    S_step = {}
+    E_step = {}
+    ivols = {}
+    volume = float(sizes[0])*float(sizes[1])*float(sizes[2])
+    V_sum = 0.
+    nV = 0
+
+    for step in list(odb.steps.values()):
+        stdout.write('   ... processing IVOL\n')
+        stdout.flush()
+        for frame in step.frames:
+          if frame.incrementNumber == 1:
+            allFields = frame.fieldOutputs
+            if ('IVOL' in allFields):
+                ivolSet = allFields['IVOL']
+                for ivolValue in  ivolSet.values:
+                  elId = ivolValue.elementLabel
+                  ipId = ivolValue.integrationPoint
+                  ivol = ivolValue.data
+                  if elId not in ivols : ivols[elId] = {}
+                  ivols[elId][ipId] = ivol
+                  V_sum += ivol
+                  nV+=1
+            break
+        break
+
+    for step in list(odb.steps.values()):
+        S_sum={}
+        S_sum['S11']=0.
+        S_sum['S22']=0.
+        S_sum['S33']=0.
+        S_sum['S12']=0.
+        S_sum['S13']=0.
+        S_sum['S23']=0.
+        
+        E_sum={}
+        E_sum['E11']=0.
+        E_sum['E22']=0.
+        E_sum['E33']=0.
+        E_sum['E12']=0.
+        E_sum['E13']=0.
+        E_sum['E23']=0.
+
+        nS = 0
+        stdout.write('   ... Processing Step : %s\n' % step.name)
+        stdout.flush()
+        for frame in step.frames:
+          if frame.incrementNumber == 1:
+            allFields = frame.fieldOutputs
+            if readAllSij == True:
+              if ('S' in allFields):
+                stressSet = allFields['S'].getTransformedField(datumCsys=coordSys)
+                for stressValue in stressSet.values:
+                  if stressValue.position == INTEGRATION_POINT : 
+                    elId = stressValue.elementLabel
+                    ipId = stressValue.integrationPoint 
+                    S_sum['S11'] += stressValue.data[0]
+                    S_sum['S22'] += stressValue.data[1]
+                    S_sum['S33'] += stressValue.data[2]
+                    S_sum['S12'] += stressValue.data[3]
+                    S_sum['S13'] += stressValue.data[4]
+                    S_sum['S23'] += stressValue.data[5]
+                    nS+=1
+ 
+        for Sij in S_sum : 
+          S_sum[Sij] = S_sum[Sij]/nS
+        S_step[step.name] = S_sum       
+
+        #if nV != nS or nV!=nE or nE != nS : 
+        #  print ' **ERROR** Number of IP and S/E value not the same!'
+        #  exit(1)
+
+    """ Close the output database before exiting the program """
+    odb.close()
+
+    if readAllSij == False : S_step = None
+    if readAllEij == False : E_step = None
 
 
-  return S_step, E_step
+    if readAllEij == True and abs(V_sum/volume-1.0) > 0.000001 : 
+        stdout.write("\n **ERROR**: Strain averaging select but denstity < 1.0! \n" ); stdout.flush()
+        stdout.write( '\n E N D E D  with ERRORS \n\n' ); stdout.flush()
+        exit(1)
+    if  V_sum/volume > 1.0 : 
+        stdout.write("\n **ERROR**: Check the RVE dimensions: denstity > 1.0! \n" ); stdout.flush()
+        stdout.write( '\n E N D E D  with ERRORS \n\n' ); stdout.flush()
+        exit(1)
+
+
+    return S_step, E_step, V_sum/volume
 
 #################################################################
 
@@ -255,7 +263,7 @@ if __name__ == '__main__':
 
     inName = None
     outName = None
-    BVTV    = None
+    size    = None
     spec    = None
     argList = argv
     argc = len(argList)
@@ -266,7 +274,7 @@ if __name__ == '__main__':
    +"*fileEntryIn     -in   'Abaqus ODB File         | filename'          testIn.odb     no          odb           \n"\
    +"*fileEntryOut    -out  'Output File Name        | filename'          testOut.out    no          out;txt;dat   \n"\
    +"*entry           -exe  'Run Command             | filename;option'   /programs/hks/Commands/abq;python  yes  1   \n"\
-   +"*entry           -BVTV 'Bone volume fraction    | bvtv'              >1%            no          3             \n"\
+   +"*entry           -size 'Size of Volume Element  | size1;size2;size3' 3.;3.;3.       no          3             \n"\
    +"*combo           -spec 'Variable Specifier      | type'              STRESS         yes         STRESS;STRAIN \n"
 
     argList  = argv
@@ -279,9 +287,9 @@ if __name__ == '__main__':
         elif (argList[i][:4] == "-out"):
             i += 1
             outName = argList[i]
-        elif (argList[i][:5] == "-BVTV"):
+        elif (argList[i][:5] == "-size"):
             i += 1
-            BVTV = argList[i]
+            size = argList[i]
         elif (argList[i][:5] == "-spec"):
             i += 1
             spec = argList[i]        
@@ -312,11 +320,12 @@ if __name__ == '__main__':
         stdout.write( "\n **ERROR** '-out' file name not given\n\n" ); stdout.flush()
         stdout.write( '\n E N D E D  with ERRORS \n\n' ); stdout.flush()
         exit(1)            
-    if not (BVTV):
+    if not (size):
         stdout.write( __doc__ ); stdout.flush()
-        stdout.write( "\n **ERROR** '-BVTV' bone volume fraction not given\n\n" ); stdout.flush()
+        stdout.write( "\n **ERROR** '-size' dimensions not given\n\n" ); stdout.flush()
         stdout.write( '\n E N D E D  with ERRORS \n\n' ); stdout.flush()
         exit(1)
+
 
     # if apriori stress/strain is given avoid to long reading/analyses!
     typ = None
@@ -331,12 +340,13 @@ if __name__ == '__main__':
         exit(1)
 
     # read analyse
+    sizes = dpUtils.userSplit(size)
     if inName.upper().find("ODB") > -1 :
       if abqImportError: 
          stdout.write( "\n **ERROR** ABAQUS python modules could not be loaded!\n\n" ); stdout.flush()
          stdout.write( '\n E N D E D  with ERRORS \n\n' ); stdout.flush()
          exit(1)
-      S_avg, E_avg = getSeAverageAbaqus(inName,BVTV,spec=typ)
+      S_avg, E_avg, density = getSeAverageAbaqus(inName,sizes,spec=typ)
     else :
       stdout.write(" **ERROR** -in: Inpute file format in %s not known!" % (inName) )
       stdout.write( '\n E N D E D  with ERRORS \n\n' ); stdout.flush()
@@ -344,6 +354,7 @@ if __name__ == '__main__':
 
     # write to file
     OS = open(outName,'w')
+    stdout.write("   ... ROI density %f\n" % density )
     stdout.write("   ... write to file %s\n" % (outName) )
     write(OS, S_avg, E_avg)
     #write(stdout, S_avg, E_avg)

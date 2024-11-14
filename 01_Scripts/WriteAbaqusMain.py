@@ -38,9 +38,9 @@ def WriteMain(FileName):
 **  (Unit Cell Dimensions l1,l2,l3=h)
 **********************************************
 *PARAMETER
-u1  = {L1/100}
-u2  = {L2/100}
-u3  = {L3/100}
+u1  = {L1/1000}
+u2  = {L2/1000}
+u3  = {L3/1000}
 **
 ** Node, Element, and Material Definitons 
 **********************************************
@@ -50,17 +50,20 @@ u3  = {L3/100}
 **********************************************
 *INCLUDE, INPUT=/home/ms20s284/FABTIB2/02_Results/Abaqus/{BCs}
 **
+** Boundary Conditions
+*****************************************
+*BOUNDARY, TYPE=DISPLACEMENT
+SWB, 1, 3, 0
+SEB, 3, 3, 0
+NWB, 3, 3, 0
+NWB, 1, 1, 0
+**
 ** Steps Definitions
 ***************** Tensile 1 ******************
 *STEP
 *STATIC
 *BOUNDARY, OP=NEW
-ALL_NODE_E, 1, 1, <u1>
-ALL_NODE_W, 1, 1, 0
-ALL_NODE_S, 2, 2, 0
-ALL_NODE_N, 2, 2, 0
-ALL_NODE_B, 3, 3, 0
-ALL_NODE_T, 3, 3, 0
+SEB, 1, 1, <u1>
 ** Element Output 
 *OUTPUT, FIELD
 *ELEMENT OUTPUT
@@ -70,12 +73,7 @@ IVOL, S, E
 *STEP
 *STATIC
 *BOUNDARY, OP=NEW
-ALL_NODE_E, 1, 1, 0
-ALL_NODE_W, 1, 1, 0
-ALL_NODE_S, 2, 2, <u2>
-ALL_NODE_N, 2, 2, 0
-ALL_NODE_B, 3, 3, 0
-ALL_NODE_T, 3, 3, 0
+NWB, 2, 2, <u2>
 ** Element Output 
 *OUTPUT, FIELD
 *ELEMENT OUTPUT
@@ -85,12 +83,7 @@ IVOL, S, E
 *STEP
 *STATIC
 *BOUNDARY, OP=NEW
-ALL_NODE_E, 1, 1, 0
-ALL_NODE_W, 1, 1, 0
-ALL_NODE_S, 2, 2, 0
-ALL_NODE_N, 2, 2, 0
-ALL_NODE_B, 3, 3, <u3>
-ALL_NODE_T, 3, 3, 0
+SWT, 3, 3, <u3>
 ** Element Output 
 *OUTPUT, FIELD
 *ELEMENT OUTPUT
@@ -100,12 +93,8 @@ IVOL, S, E
 *STEP
 *STATIC
 *BOUNDARY, OP=NEW
-ALL_NODE_E, 1, 1, 0
-ALL_NODE_W, 1, 1, 0
-ALL_NODE_S, 3, 3, 0
-ALL_NODE_N, 3, 3, <u3>
-ALL_NODE_B, 2, 2, 0
-ALL_NODE_T, 2, 2, <u2>
+SWT, 2, 2, <u2>
+**NWB, 3, 3, <u3>
 ** Element Output 
 *OUTPUT, FIELD
 *ELEMENT OUTPUT
@@ -115,12 +104,8 @@ IVOL, S, E
 *STEP
 *STATIC
 *BOUNDARY, OP=NEW
-ALL_NODE_E, 3, 3, 0
-ALL_NODE_W, 3, 3, <u3>
-ALL_NODE_S, 2, 2, 0
-ALL_NODE_N, 2, 2, 0
-ALL_NODE_B, 1, 1, 0
-ALL_NODE_T, 1, 1, <u1>
+SWT, 1, 1, <u1>
+**SEB, 3, 3, <u3>
 ** Element Output 
 *OUTPUT, FIELD
 *ELEMENT OUTPUT
@@ -130,12 +115,8 @@ IVOL, S, E
 *STEP
 *STATIC
 *BOUNDARY, OP=NEW
-ALL_NODE_E, 2, 2, 0
-ALL_NODE_W, 2, 2, <u2>
-ALL_NODE_S, 1, 1, 0
-ALL_NODE_N, 1, 1, <u1>
-ALL_NODE_B, 3, 3, 0
-ALL_NODE_T, 3, 3, 0
+SEB, 2, 2, <u2>
+**NWB, 1, 1, <u1>
 ** Element Output 
 *OUTPUT, FIELD
 *ELEMENT OUTPUT
@@ -170,7 +151,7 @@ def Main(Arguments):
         InputISQs = [Arguments.InputISQ]
     else:
         DataPath = Path(__file__).parents[1] / '02_Results/Abaqus/'
-        AbaqusInps = [F for F in Path.iterdir(DataPath) if F.name.endswith('temp.inp')]
+        AbaqusInps = [F for F in Path.iterdir(DataPath) if F.name.endswith('Mesh.inp')]
 
     for Input in AbaqusInps:
         WriteMain(Input)
