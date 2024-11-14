@@ -21,8 +21,9 @@ from pathlib import Path
 def WriteMain(FileName):
 
     L1, L2, L3 = 5.28, 5.28, 5.28
-    Mesh = FileName.name[:10] + '.inp'
-    BCs = FileName.name[:10] + '_KUBC.inp'
+    Shift = 10
+    Mesh = FileName.name[:Shift] + '_Mesh.inp'
+    BCs = FileName.name[:Shift] + '_KUBC.inp'
 
     Text = f"""**********************************************
 **
@@ -37,17 +38,17 @@ def WriteMain(FileName):
 **  (Unit Cell Dimensions l1,l2,l3=h)
 **********************************************
 *PARAMETER
-u1  = {L1/1000}
-u2  = {L2/1000}
-u3  = {L3/1000}
+u1  = {L1/100}
+u2  = {L2/100}
+u3  = {L3/100}
 **
 ** Node, Element, and Material Definitons 
 **********************************************
-*INCLUDE, INPUT={Mesh}
+*INCLUDE, INPUT=/home/ms20s284/FABTIB2/02_Results/Abaqus/{Mesh}
 **
 ** Interactions (*Equation and *Nset)
 **********************************************
-*INCLUDE, INPUT={BCs}
+*INCLUDE, INPUT=/home/ms20s284/FABTIB2/02_Results/Abaqus/{BCs}
 **
 ** Steps Definitions
 ***************** Tensile 1 ******************
@@ -60,16 +61,10 @@ ALL_NODE_S, 2, 2, 0
 ALL_NODE_N, 2, 2, 0
 ALL_NODE_B, 3, 3, 0
 ALL_NODE_T, 3, 3, 0
-*NODE FILE
-U
-*EL FILE
-S
-*EL PRINT, ELSET=SET2
-EVOL
-*EL PRINT, ELSET=SET2
-S
-*EL PRINT, ELSET=SET2
-E
+** Element Output 
+*OUTPUT, FIELD
+*ELEMENT OUTPUT
+IVOL, S, E
 *END STEP
 ***************** Tensile 2 ******************
 *STEP
@@ -81,16 +76,10 @@ ALL_NODE_S, 2, 2, <u2>
 ALL_NODE_N, 2, 2, 0
 ALL_NODE_B, 3, 3, 0
 ALL_NODE_T, 3, 3, 0
-*NODE FILE
-U
-*EL FILE
-S
-*EL PRINT, ELSET=SET2
-EVOL
-*EL PRINT, ELSET=SET2
-S
-*EL PRINT, ELSET=SET2
-E
+** Element Output 
+*OUTPUT, FIELD
+*ELEMENT OUTPUT
+IVOL, S, E
 *END STEP
 ***************** Tensile 3 ******************
 *STEP
@@ -102,16 +91,10 @@ ALL_NODE_S, 2, 2, 0
 ALL_NODE_N, 2, 2, 0
 ALL_NODE_B, 3, 3, <u3>
 ALL_NODE_T, 3, 3, 0
-*NODE FILE
-U
-*EL FILE
-S
-*EL PRINT, ELSET=SET2
-EVOL
-*EL PRINT, ELSET=SET2
-S
-*EL PRINT, ELSET=SET2
-E
+** Element Output 
+*OUTPUT, FIELD
+*ELEMENT OUTPUT
+IVOL, S, E
 *END STEP
 ****************** Shear 23 ******************
 *STEP
@@ -123,16 +106,10 @@ ALL_NODE_S, 3, 3, 0
 ALL_NODE_N, 3, 3, <u3>
 ALL_NODE_B, 2, 2, 0
 ALL_NODE_T, 2, 2, <u2>
-*NODE FILE
-U
-*EL FILE
-S
-*EL PRINT, ELSET=SET2
-EVOL
-*EL PRINT, ELSET=SET2
-S
-*EL PRINT, ELSET=SET2
-E
+** Element Output 
+*OUTPUT, FIELD
+*ELEMENT OUTPUT
+IVOL, S, E
 *END STEP
 ****************** Shear 13 ******************
 *STEP
@@ -144,16 +121,10 @@ ALL_NODE_S, 2, 2, 0
 ALL_NODE_N, 2, 2, 0
 ALL_NODE_B, 1, 1, 0
 ALL_NODE_T, 1, 1, <u1>
-*NODE FILE
-U
-*EL FILE
-S
-*EL PRINT, ELSET=SET2
-EVOL
-*EL PRINT, ELSET=SET2
-S
-*EL PRINT, ELSET=SET2
-E
+** Element Output 
+*OUTPUT, FIELD
+*ELEMENT OUTPUT
+IVOL, S, E
 *END STEP
 ****************** Shear 21 ******************
 *STEP
@@ -165,21 +136,28 @@ ALL_NODE_S, 1, 1, 0
 ALL_NODE_N, 1, 1, <u1>
 ALL_NODE_B, 3, 3, 0
 ALL_NODE_T, 3, 3, 0
-*NODE FILE
-U
-*EL FILE
-S
-*EL PRINT, ELSET=SET2
-EVOL
-*EL PRINT, ELSET=SET2
-S
-*EL PRINT, ELSET=SET2
-E
+** Element Output 
+*OUTPUT, FIELD
+*ELEMENT OUTPUT
+IVOL, S, E
 *END STEP
 """
 
-    with open(FileName.parent / (FileName.name[:10] + '_Main.inp'),'w') as File:
+
+
+    with open(FileName.parent / (FileName.name[:Shift] + '_Main.inp'),'w') as File:
         File.write(Text)
+
+
+    # Check that no step is written in the mesh file
+    with open(FileName.parent / Mesh, 'r') as File:
+        Text = File.read()
+    StepStart = Text.find('*STEP')
+
+    # If yes, remove it
+    if StepStart > 0:
+        with open(FileName.parent / Mesh, 'w') as File:
+            File.write(Text[:StepStart])
 
     return
 
@@ -191,7 +169,7 @@ def Main(Arguments):
     if Arguments.AbaqusInp:
         InputISQs = [Arguments.InputISQ]
     else:
-        DataPath = Path(__file__).parents[1] / '02_Results/Abaqus'
+        DataPath = Path(__file__).parents[1] / '02_Results/Abaqus/'
         AbaqusInps = [F for F in Path.iterdir(DataPath) if F.name.endswith('temp.inp')]
 
     for Input in AbaqusInps:
@@ -213,3 +191,5 @@ if __name__ == '__main__':
     # Read arguments from the command line
     Arguments = Parser.parse_args()
     Main(Arguments)
+
+#%%
