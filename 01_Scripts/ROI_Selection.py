@@ -365,8 +365,12 @@ def Main(Arguments):
     Path.mkdir(Path(Arguments.OutputPath), exist_ok=True)
 
     # Create csv file for coordinates
-    Variables = ['$Sample','$ROI','$XPos','$YPos','$ZPos','$Dim','$Threshold']
-    Data = pd.DataFrame(columns=Variables)
+    try:
+        Data = pd.read_csv(Path(__file__).parents[1] / '02_Results' / 'Parameters.csv', sep=';')
+        del Data['Unnamed: 7']
+    except:
+        Variables = ['$Sample','$ROI','$XPos','$YPos','$ZPos','$Dim','$Threshold']
+        Data = pd.DataFrame(columns=Variables)
 
     for iISQ, ISQ in enumerate(InputISQs):
 
@@ -395,17 +399,17 @@ def Main(Arguments):
         pl.camera.elevation = 30
         pl.camera.roll = 0
         pl.camera.zoom(1.2)
-        pl.screenshot(Path(Arguments.OutputPath) / (Path(ISQ).name[:-4] + '.png'))
+        pl.screenshot(Path(__file__).parents[1] / '02_Results/Scans' / (Path(ISQ).name[:-4] + '.png'))
 
         # Select ROI at center of gravity
         Time.Update(3/5,f'Select {Arguments.NROIs} ROIs')
         ROISize = 5.3   # ROI side length in mm
         Dim = int(round(ROISize // AdditionalData['ElementSpacing'][0]))
-        Coords = ROICoords(VoxelModel, AdditionalData, Dim, N=Arguments.NROIs)
+        Coords = ROICoords(VoxelModel, AdditionalData, Dim, N=3)
         
         Time.Update(4/5,f'Plot {Arguments.NROIs} ROIs')
         for i, C in enumerate(Coords):
-            Index = iISQ * Arguments.NROIs + i
+            Index = iISQ * 3 + i
             Data.loc[Index,'$Sample'] = ISQ.name[:-4]
             Data.loc[Index,'$ROI'] = i+1
             Data.loc[Index,'$XPos'] = C[0]
@@ -415,7 +419,7 @@ def Main(Arguments):
             Data.loc[Index,'$Threshold'] = round(Otsu)
 
             ROI = Scaled[C[2]:C[2]+Dim,C[1]:C[1]+Dim,C[0]:C[0]+Dim].T
-            Name = Arguments.OutputPath / (ISQ.name[:-4] + '_' + str(i+1) + '.png')
+            Name = Path(__file__).parents[1] / '02_Results/Scans' / (ISQ.name[:-4] + '_' + str(i+1) + '.png')
 
             pl = pv.Plotter(off_screen=True)
             actors = pl.add_volume(ROI,
@@ -432,8 +436,7 @@ def Main(Arguments):
     
         # Update time
         Time.Process(0, f'Done ISQ {iISQ+1} / {len(InputISQs)}')
-
-    Data.to_csv(Arguments.OutputPath.parent / 'Parameters.csv',
+        Data.to_csv(Path(__file__).parents[1] / '02_Results' / 'Parameters.csv',
                 index=False, sep=';', line_terminator=';\n')
 
 
