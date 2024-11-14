@@ -1,0 +1,2683 @@
+<!DOCTYPE MedToolXML>
+<MedToolXML cpu="1" writeonly="yes" workdir="C:/Users/mathi" level="Expert" paramfile="C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/TestMedtool/Test.csv" exefile="" resfile="">
+ <_01_ROISelection active="yes" script="mic">
+  <modulName>
+   <description>mic - medical image converter</description>
+  </modulName>
+  <in>
+   <description>Image input file name | filename</description>
+   <type>fileEntryIn</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/00_Data/$Sample.ISQ</value>
+   <default>slice.mhd</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>mhd;nhdr;raw;png;jpg;gif;bmp;tif;aim;bin;AIM;bst;isq;ISQ;dcm;log</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </in>
+  <din>
+   <description>Image directory name | dirname </description>
+   <type>dirEntry</type>
+   <value>imageDir</value>
+   <default>imageDir</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Standard</level>
+   <menu>Common</menu>
+  </din>
+  <out>
+   <description>Image output file name | filename</description>
+   <type>fileEntryOut</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/ROIs/Test.mhd</value>
+   <default>test.mhd</default>
+   <optional>yes</optional>
+   <active>yes</active>
+   <info>mhd;nhdr;raw;png;jpg;gif;bmp;tif;inp;bin;fem;in;aim;gz;svx</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </out>
+  <form>
+   <description>Raw image write format | format</description>
+   <type>combo</type>
+   <value>uint8</value>
+   <default>uint8</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>B;H;h;i;f;uint8;uint16;int16;int32;float32</info>
+   <level>Standard</level>
+   <menu>Common</menu>
+  </form>
+  <zipf>
+   <description>Output file Compression | flag</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Standard</level>
+   <menu>Common</menu>
+  </zipf>
+  <mid>
+   <description>Midplanes output file name | filename</description>
+   <type>fileEntryOut</type>
+   <value>test.png</value>
+   <default>test.png</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>png;jpg;gif;bmp;tif;case</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </mid>
+  <proj>
+   <description>Projected output file name | filename</description>
+   <type>fileEntryOut</type>
+   <value>test.png</value>
+   <default>test.png</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>png;jpg;gif;bmp;tif</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </proj>
+  <imr>
+   <description>2D image read parameters | startId;step;endId</description>
+   <type>splitEntry</type>
+   <value>1;1;60</value>
+   <default>1;1;60</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Read parameters</menu>
+  </imr>
+  <raw>
+   <description>Raw image read parameters | binFormat;headerSize;endianess;fastestDiret</description>
+   <type>splitEntry</type>
+   <value>B;64;little;x</value>
+   <default>B;64;little;x</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Read parameters</menu>
+  </raw>
+  <ldim>
+   <description>Voxel dimensions in 123 | len1;len2;len3</description>
+   <type>splitEntry</type>
+   <value>0.05;0.05;0.05</value>
+   <default>0.05;0.05;0.05</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Read parameters</menu>
+  </ldim>
+  <ndim>
+   <description>Numbers of voxel in 123 | nVox1;nVox2;nVox3</description>
+   <type>splitEntry</type>
+   <value>60;60;60</value>
+   <default>60;60;60</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Read parameters</menu>
+  </ndim>
+  <temp>
+   <description>FE template file name | filename</description>
+   <type>fileEntryInEdit</type>
+   <value>main_temp.inp</value>
+   <default>main_temp.inp</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>inp;txt;mesh;in</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </temp>
+  <muscal>
+   <description>AIM mu scaling | scaleFactor</description>
+   <type>entry</type>
+   <value>8192</value>
+   <default>8192</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </muscal>
+  <smooth>
+   <description>Mesh smoothing | niter;lambda;kPB;interface;boundary;jacobian</description>
+   <type>splitEntry</type>
+   <value>5;0.6307;0.1;0;1;0.05</value>
+   <default>5;0.6307;0.1;0;1;0.05</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </smooth>
+  <posmid>
+   <description>Midplane Postion in % | posx;posy;posz</description>
+   <type>splitEntry</type>
+   <value>50.;50.;50.</value>
+   <default>50.;50.;50.</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Standard</level>
+   <menu>Write Parameters</menu>
+  </posmid>
+  <mesh2d3>
+   <description>Output 2D contour tria mesh | filename</description>
+   <type>fileEntryOut</type>
+   <value>test.case</value>
+   <default>test.case</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>inp;case;off;msh;geom;stl</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </mesh2d3>
+  <mesh2d4>
+   <description>Output 2D contour quad mesh | filename</description>
+   <type>fileEntryOut</type>
+   <value>test.case</value>
+   <default>test.case</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>inp;case;off;msh;geom</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </mesh2d4>
+  <sing>
+   <description>Output single 2d plane | filename;direction;sliceId</description>
+   <type>splitEntry</type>
+   <value>test.png;1+;30</value>
+   <default>test.png;1+;30</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </sing>
+  <geom>
+   <description>Output geometric object | type;grayValue;voxelSize;filename;dim1;dim2;dim3</description>
+   <type>entry</type>
+   <value>cyl;255;0.05;test.mhd;5;10</value>
+   <default>cyl;255;0.05;test.mhd;5;10</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </geom>
+  <offs>
+   <description>Reset Offset in 123 | off1;off2;off3</description>
+   <type>splitEntry</type>
+   <value>0;0;0</value>
+   <default>0;0;0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Standard</level>
+   <menu>Transformation Filters</menu>
+  </offs>
+  <flip>
+   <description>Flip image* | axis1;axis2;axis3</description>
+   <type>entry</type>
+   <value>x;y;z</value>
+   <default>x;y;z</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Transformation Filters</menu>
+  </flip>
+  <rota>
+   <description>Rotate image by angles* | axi1;axi2;axi3;angle1;angle2;angle3;interpolate</description>
+   <type>entry</type>
+   <value>3;2;1;1.6;-4.6;-39.8;YES</value>
+   <default>3;2;1;1.6;-4.6;-39.8;YES</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Transformation Filters</menu>
+  </rota>
+  <rotm>
+   <description>Rotate image by matrix* | R11;R12;R13;R21;R22;R23;R31;R32;R33;interpolate</description>
+   <type>entry</type>
+   <value>0.7071;-0.7071;0;0.7071;0.7071;0;0;0;1;YES</value>
+   <default>0.7071;-0.7071;0;0.7071;0.7071;0;0;0;1;YES</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Transformation Filters</menu>
+  </rotm>
+  <rotf>
+   <description>Rotate image by file* | filename;interpolate</description>
+   <type>entry</type>
+   <value>test.nhdr;YES</value>
+   <default>test.nhdr;YES</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Transformation Filters</menu>
+  </rotf>
+  <mask>
+   <description>Mask image | filename</description>
+   <type>fileEntryIn</type>
+   <value>mask.mhd</value>
+   <default>mask.mhd</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>mhd;nhdr;raw;png;jpg;gif;aim;bin;AIM;bst;isq;ISQ</info>
+   <level>Standard</level>
+   <menu>Compute Filters</menu>
+  </mask>
+  <bool>
+   <description>Combine images* | operator;filename</description>
+   <type>splitEntry</type>
+   <value>+;combine.mhd</value>
+   <default>+;combine.mhd</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Compute Filters</menu>
+  </bool>
+  <repl>
+   <description>Combine mesh+images* | filename;elset;grayvalue;resolution</description>
+   <type>entry</type>
+   <value>mesh.inp;SET77;254</value>
+   <default>mesh.inp;SET77;254</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Compute Filters</menu>
+  </repl>
+  <arith>
+   <description>Compute equation | operation1;operation2;operation3;operation4</description>
+   <type>entry</type>
+   <value>?&lt;0=0;/8;*7;-5;&lt;A;+3;&lt;B;>A;^2;/B</value>
+   <default>?&lt;0=0;/8;*7;-5;&lt;A;+3;&lt;B;>A;^2;/B</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Compute Filters</menu>
+  </arith>
+  <labvox>
+   <description>Create Labels | outValue;roiValue;i0;j0;k0;di;dj;dk;type</description>
+   <type>entry</type>
+   <value>None;1;0;0;0;30;40;50</value>
+   <default>None;1;0;0;0;30;40;50</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Compute Filters</menu>
+  </labvox>
+  <scale>
+   <description>Scale gray-value range | newMin;newMax;[oldMin];[oldMax];[format]</description>
+   <type>entry</type>
+   <value>0;255</value>
+   <default>0;255</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Standard</level>
+   <menu>Compute Filters</menu>
+  </scale>
+  <fill>
+   <description>Fill pors | threshold;valid;type;kernel;[minThick];[niter];[kernel2];[bx0];[bx1];[by0];[by1];[bz0];[bz1]</description>
+   <type>entry</type>
+   <value>130;6;out;3</value>
+   <default>130;6;out;3</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Compute Filters</menu>
+  </fill>
+  <cont>
+   <description>Extract contour | threshold</description>
+   <type>entry</type>
+   <value>75</value>
+   <default>75</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Compute Filters</menu>
+  </cont>
+  <distt>
+   <description>Distance Map (Saito) | value</description>
+   <type>entry</type>
+   <value>None</value>
+   <default>None</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Compute Filters</menu>
+  </distt>
+  <skel>
+   <description>Sekeletonize 3d | value</description>
+   <type>entry</type>
+   <value>None</value>
+   <default>None</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Compute Filters</menu>
+  </skel>
+  <sitkf>
+   <description>Simple ITK File Name | filename</description>
+   <type>fileEntryInEdit</type>
+   <value>filter.py</value>
+   <default>filter.py</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>py</info>
+   <level>Expert</level>
+   <menu>External SITK Filters</menu>
+  </sitkf>
+  <sitkp>
+   <description>Simple ITK Parameters | Option;Value(s)</description>
+   <type>table</type>
+   <value>seed1;;30;45;37;;;seed2;;5;30;35;;;lower;;75;;;upper;;255;;;replaceValue;;1</value>
+   <default>seed1;;30;45;37;;;seed2;;5;30;35;;;lower;;75;;;upper;;255;;;replaceValue;;1</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-;2</info>
+   <level>Expert</level>
+   <menu>External SITK Filters</menu>
+  </sitkp>
+  <laham>
+   <description>Laplac Hamming filter | weight;cutoff;amplitude</description>
+   <type>splitEntry</type>
+   <value>0.5;0.4;1.0</value>
+   <default>0.5;0.4;1.0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </laham>
+  <sobel>
+   <description>Sobel filter</description>
+   <type>entry</type>
+   <value>None</value>
+   <default>None</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Neighborhood Filters</menu>
+  </sobel>
+  <mean>
+   <description>Mean filter | kernel;thres1;thres2</description>
+   <type>splitEntry</type>
+   <value>k3x3;0;255</value>
+   <default>k3x3;0;255</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Neighborhood Filters</menu>
+  </mean>
+  <median>
+   <description>Median filter | kernel;thres1;thres2</description>
+   <type>splitEntry</type>
+   <value>k3x3;0;255</value>
+   <default>k3x3;0;255</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </median>
+  <gauss>
+   <description>Gauss filter | radius;sigma;thres1;thres2</description>
+   <type>splitEntry</type>
+   <value>1;0.8;0;75</value>
+   <default>1;0.8;0;75</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Neighborhood Filters</menu>
+  </gauss>
+  <morph>
+   <description>Morphological operations | radius;type;shape;thres</description>
+   <type>splitEntry</type>
+   <value>3;o;1;140</value>
+   <default>3;o;1;140</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </morph>
+  <morpk>
+   <description>Morphological operations 2 | kernel;type;thres</description>
+   <type>splitEntry</type>
+   <value>k6;o;140</value>
+   <default>k6;o;140</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Neighborhood Filters</menu>
+  </morpk>
+  <grad>
+   <description>Gradient filter</description>
+   <type>entry</type>
+   <value>None</value>
+   <default>None</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </grad>
+  <lapl>
+   <description>Laplacian filter</description>
+   <type>entry</type>
+   <value>None</value>
+   <default>None</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </lapl>
+  <avg>
+   <description>Average regions | filename;phyWinSize;thres;maskValue</description>
+   <type>splitEntry</type>
+   <value>test.txt;3.0;None;None</value>
+   <default>test.txt;3.0;None;None</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </avg>
+  <cfill>
+   <description>Cube fill filter | nlevels</description>
+   <type>entry</type>
+   <value>2</value>
+   <default>2</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </cfill>
+  <cut>
+   <description>Crop image by voxel ROI* | n0Vox1;n0Vox2;n0Vox3;dnVox1;dnVox2;dnVox3</description>
+   <type>splitEntry</type>
+   <value>335;355;20;40;40;40</value>
+   <default>0;0;0;30;40;50</default>
+   <optional>yes</optional>
+   <active>yes</active>
+   <info>int</info>
+   <level>Standard</level>
+   <menu>Resize Filters</menu>
+  </cut>
+  <bbcut>
+   <description>Crop image by bounding box* | threshold;extVox1;extVox2;extVox3</description>
+   <type>splitEntry</type>
+   <value>75;0;0;0</value>
+   <default>75;0;0;0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </bbcut>
+  <roicut>
+   <description>Crop image by physical ROI* | x0;y0;z0;x1;y1;z1</description>
+   <type>splitEntry</type>
+   <value>0.1;0.2;0.3;1.0;1.5;2.0</value>
+   <default>0.1;0.2;0.3;1.0;1.5;2.0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </roicut>
+  <roitxt>
+   <description>Crop image by physical ROI* | filename</description>
+   <type>fileEntryIn</type>
+   <value>roi.txt</value>
+   <default>roi.txt</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>txt;csv</info>
+   <level>Standard</level>
+   <menu>Resize Filters</menu>
+  </roitxt>
+  <mcut>
+   <description>Crop ROI from the middle* | dnVox1;dnVox2;dnVox3</description>
+   <type>splitEntry</type>
+   <value>30;40;50</value>
+   <default>30;40;50</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Simple</level>
+   <menu>Resize Filters</menu>
+  </mcut>
+  <res2>
+   <description>Change image resolution | res1;res2;res3</description>
+   <type>splitEntry</type>
+   <value>20;30;40</value>
+   <default>20;30;40</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </res2>
+  <res3>
+   <description>Change resolution by length | len1;len2;len3</description>
+   <type>splitEntry</type>
+   <value>0.15;0.17;0.18</value>
+   <default>0.15;0.17;0.18</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </res3>
+  <res4>
+   <description>Change resolution by length | len1;len2;len3</description>
+   <type>splitEntry</type>
+   <value>0.15;0.17;0.18</value>
+   <default>0.15;0.17;0.18</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </res4>
+  <resf>
+   <description>Change resolution by factor | factor</description>
+   <type>splitEntry</type>
+   <value>4</value>
+   <default>2</default>
+   <optional>yes</optional>
+   <active>yes</active>
+   <info>int</info>
+   <level>Simple</level>
+   <menu>Resize Filters</menu>
+  </resf>
+  <refi>
+   <description>Refine resolution by factor | direction;factor</description>
+   <type>splitEntry</type>
+   <value>1;4</value>
+   <default>1;4</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Standard</level>
+   <menu>Resize Filters</menu>
+  </refi>
+  <mirr>
+   <description>Mirror image | axis1;axis2;axis3</description>
+   <type>entry</type>
+   <value>x;y;z</value>
+   <default>x;y;z</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </mirr>
+  <mir2>
+   <description>Mirror image | nVox1;nVox2;nVox3</description>
+   <type>splitEntry</type>
+   <value>91;92;93</value>
+   <default>91;92;93</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </mir2>
+  <autot>
+   <description>Auto threshold with BVTV | BVTV;error;estimate</description>
+   <type>splitEntry</type>
+   <value>0.2;0.01;100</value>
+   <default>0.2;0.01;100</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Segmentation Filters</menu>
+  </autot>
+  <fixt>
+   <description>Fixed threshold by value | thresRatio;minimum;maximum</description>
+   <type>splitEntry</type>
+   <value>0.3;minVal;200</value>
+   <default>0.3;minVal;200</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Segmentation Filters</menu>
+  </fixt>
+  <slevt>
+   <description>Auto single level threshold | threshold</description>
+   <type>entry</type>
+   <value>-32768</value>
+   <default>-32768</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Simple</level>
+   <menu>Segmentation Filters</menu>
+  </slevt>
+  <dlevt>
+   <description>Auto double level threshold | thres1;thres2</description>
+   <type>splitEntry</type>
+   <value>40;80</value>
+   <default>40;80</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Segmentation Filters</menu>
+  </dlevt>
+  <rthres>
+   <description>Threshold for range | lower;upper;thres</description>
+   <type>splitEntry</type>
+   <value>40;80;70</value>
+   <default>40;80;70</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Standard</level>
+   <menu>Segmentation Filters</menu>
+  </rthres>
+  <lthres>
+   <description>Local adaptive threshold | type;alpha;LT;UT</description>
+   <type>entry</type>
+   <value>stddev;1</value>
+   <default>stddev;1</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Segmentation Filters</menu>
+  </lthres>
+  <gthres>
+   <description>Global adaptive threshold | type</description>
+   <type>combo</type>
+   <value>mean</value>
+   <default>mean</default>
+   <optional>yes</optional>
+   <active>yes</active>
+   <info>mean;median</info>
+   <level>Expert</level>
+   <menu>Segmentation Filters</menu>
+  </gthres>
+  <thres>
+   <description>Threshold by value(s) | thres1;thres2;thres3</description>
+   <type>entry</type>
+   <value>1</value>
+   <default>75</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Standard</level>
+   <menu>Segmentation Filters</menu>
+  </thres>
+  <thre0>
+   <description>Threshold by value (zero BG) | threshold</description>
+   <type>entry</type>
+   <value>$Threshold</value>
+   <default>75</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Simple</level>
+   <menu>Segmentation Filters</menu>
+  </thre0>
+  <clean>
+   <description>Clean image | type</description>
+   <type>entry</type>
+   <value>FAST</value>
+   <default>FAST</default>
+   <optional>yes</optional>
+   <active>yes</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Modify Filters</menu>
+  </clean>
+  <extend>
+   <description>Extend image* | direction;thickVox;[newGrayvalue]</description>
+   <type>entry</type>
+   <value>3;1</value>
+   <default>3;1</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Modify Filters</menu>
+  </extend>
+  <close>
+   <description>Close slice models | direction;threshold;kernel;newGrayValue</description>
+   <type>splitEntry</type>
+   <value>3;130;3;253</value>
+   <default>3;130;3;253</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Modify Filters</menu>
+  </close>
+  <embed>
+   <description>Embed image* | direction;thickVoxIn;thickVoxOut;newGrayValue</description>
+   <type>splitEntry</type>
+   <value>3;20;10;255</value>
+   <default>3;20;10;255</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Standard</level>
+   <menu>Modify Filters</menu>
+  </embed>
+  <cap>
+   <description>Attach end caps* | direction;thickVox;newGrayValue</description>
+   <type>splitEntry</type>
+   <value>3;10;254</value>
+   <default>3;10;254</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Simple</level>
+   <menu>Modify Filters</menu>
+  </cap>
+  <cover>
+   <description>Cover image* | thickVox;newGrayValue</description>
+   <type>splitEntry</type>
+   <value>5;253</value>
+   <default>5;253</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Standard</level>
+   <menu>Modify Filters</menu>
+  </cover>
+  <block>
+   <description>Place image in block* | nVox1;nVox2;nVox3;newGrayValue</description>
+   <type>splitEntry</type>
+   <value>100;110;120;0</value>
+   <default>100;110;120;0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Modify Filters</menu>
+  </block>
+  <mfil>
+   <description>Multi Filter Run | Option;Value(s)</description>
+   <type>table</type>
+   <value>mcut;;20;30;40;;;mid;;test1.png</value>
+   <default>mcut;;20;30;40;;;mid;;test1.png</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>*;2</info>
+   <level>Standard</level>
+   <menu>Multi Run</menu>
+  </mfil>
+  <shist>
+   <description>Show histogram Output | type;filename;mode</description>
+   <type>entry</type>
+   <value>0</value>
+   <default>0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Image Infos</menu>
+  </shist>
+  <histo>
+   <description>Output histogram | filename;normalize;nIntervals</description>
+   <type>splitEntry</type>
+   <value>test.dat;n;100</value>
+   <default>test.dat;n;100</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Image Infos</menu>
+  </histo>
+  <ifo>
+   <description>Output general info as CSV | filename;mode</description>
+   <type>splitEntry</type>
+   <value>test.csv;w</value>
+   <default>test.csv;w</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Image Infos</menu>
+  </ifo>
+  <sifo>
+   <description>Output selected info as CSV | filename;mode;preName;value1;value2</description>
+   <type>entry</type>
+   <value>test.csv;w;$;graySum;voxSum</value>
+   <default>test.csv;w;$;graySum;voxSum</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Image Infos</menu>
+  </sifo>
+  <cen>
+   <description>Output Image center | threshold;filename;mode</description>
+   <type>entry</type>
+   <value>75;test.txt;a</value>
+   <default>75;test.txt;a</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Image Infos</menu>
+  </cen>
+  <bbox>
+   <description>Output Bounding box | type;threshold;filename;mode;i;j;k</description>
+   <type>entry</type>
+   <value>out;75;test.txt;a</value>
+   <default>out;75;test.txt;a</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Image Infos</menu>
+  </bbox>
+  <cog>
+   <description>Output Center of gravity | newGrayValue</description>
+   <type>entry</type>
+   <value>255</value>
+   <default>255</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Image Infos</menu>
+  </cog>
+ </_01_ROISelection>
+ <_02_ROISegmentation active="yes" script="mic">
+  <modulName>
+   <description>mic - medical image converter</description>
+  </modulName>
+  <in>
+   <description>Image input file name | filename</description>
+   <type>fileEntryIn</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/ROIs/Test.mhd</value>
+   <default>slice.mhd</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>mhd;nhdr;raw;png;jpg;gif;bmp;tif;aim;bin;AIM;bst;isq;ISQ;dcm;log</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </in>
+  <din>
+   <description>Image directory name | dirname </description>
+   <type>dirEntry</type>
+   <value>imageDir</value>
+   <default>imageDir</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Standard</level>
+   <menu>Common</menu>
+  </din>
+  <out>
+   <description>Image output file name | filename</description>
+   <type>fileEntryOut</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/ROIs/Test.mhd</value>
+   <default>test.mhd</default>
+   <optional>yes</optional>
+   <active>yes</active>
+   <info>mhd;nhdr;raw;png;jpg;gif;bmp;tif;inp;bin;fem;in;aim;gz;svx</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </out>
+  <form>
+   <description>Raw image write format | format</description>
+   <type>combo</type>
+   <value>uint8</value>
+   <default>uint8</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>B;H;h;i;f;uint8;uint16;int16;int32;float32</info>
+   <level>Standard</level>
+   <menu>Common</menu>
+  </form>
+  <zipf>
+   <description>Output file Compression | flag</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Standard</level>
+   <menu>Common</menu>
+  </zipf>
+  <mid>
+   <description>Midplanes output file name | filename</description>
+   <type>fileEntryOut</type>
+   <value>test.png</value>
+   <default>test.png</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>png;jpg;gif;bmp;tif;case</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </mid>
+  <proj>
+   <description>Projected output file name | filename</description>
+   <type>fileEntryOut</type>
+   <value>test.png</value>
+   <default>test.png</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>png;jpg;gif;bmp;tif</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </proj>
+  <imr>
+   <description>2D image read parameters | startId;step;endId</description>
+   <type>splitEntry</type>
+   <value>1;1;60</value>
+   <default>1;1;60</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Read parameters</menu>
+  </imr>
+  <raw>
+   <description>Raw image read parameters | binFormat;headerSize;endianess;fastestDiret</description>
+   <type>splitEntry</type>
+   <value>B;64;little;x</value>
+   <default>B;64;little;x</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Read parameters</menu>
+  </raw>
+  <ldim>
+   <description>Voxel dimensions in 123 | len1;len2;len3</description>
+   <type>splitEntry</type>
+   <value>0.05;0.05;0.05</value>
+   <default>0.05;0.05;0.05</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Read parameters</menu>
+  </ldim>
+  <ndim>
+   <description>Numbers of voxel in 123 | nVox1;nVox2;nVox3</description>
+   <type>splitEntry</type>
+   <value>60;60;60</value>
+   <default>60;60;60</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Read parameters</menu>
+  </ndim>
+  <temp>
+   <description>FE template file name | filename</description>
+   <type>fileEntryInEdit</type>
+   <value>main_temp.inp</value>
+   <default>main_temp.inp</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>inp;txt;mesh;in</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </temp>
+  <muscal>
+   <description>AIM mu scaling | scaleFactor</description>
+   <type>entry</type>
+   <value>8192</value>
+   <default>8192</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </muscal>
+  <smooth>
+   <description>Mesh smoothing | niter;lambda;kPB;interface;boundary;jacobian</description>
+   <type>splitEntry</type>
+   <value>5;0.6307;0.1;0;1;0.05</value>
+   <default>5;0.6307;0.1;0;1;0.05</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </smooth>
+  <posmid>
+   <description>Midplane Postion in % | posx;posy;posz</description>
+   <type>splitEntry</type>
+   <value>50.;50.;50.</value>
+   <default>50.;50.;50.</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Standard</level>
+   <menu>Write Parameters</menu>
+  </posmid>
+  <mesh2d3>
+   <description>Output 2D contour tria mesh | filename</description>
+   <type>fileEntryOut</type>
+   <value>test.case</value>
+   <default>test.case</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>inp;case;off;msh;geom;stl</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </mesh2d3>
+  <mesh2d4>
+   <description>Output 2D contour quad mesh | filename</description>
+   <type>fileEntryOut</type>
+   <value>test.case</value>
+   <default>test.case</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>inp;case;off;msh;geom</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </mesh2d4>
+  <sing>
+   <description>Output single 2d plane | filename;direction;sliceId</description>
+   <type>splitEntry</type>
+   <value>test.png;1+;30</value>
+   <default>test.png;1+;30</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </sing>
+  <geom>
+   <description>Output geometric object | type;grayValue;voxelSize;filename;dim1;dim2;dim3</description>
+   <type>entry</type>
+   <value>cyl;255;0.05;test.mhd;5;10</value>
+   <default>cyl;255;0.05;test.mhd;5;10</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Expert</level>
+   <menu>Write Parameters</menu>
+  </geom>
+  <offs>
+   <description>Reset Offset in 123 | off1;off2;off3</description>
+   <type>splitEntry</type>
+   <value>0;0;0</value>
+   <default>0;0;0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Standard</level>
+   <menu>Transformation Filters</menu>
+  </offs>
+  <flip>
+   <description>Flip image* | axis1;axis2;axis3</description>
+   <type>entry</type>
+   <value>x;y;z</value>
+   <default>x;y;z</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Transformation Filters</menu>
+  </flip>
+  <rota>
+   <description>Rotate image by angles* | axi1;axi2;axi3;angle1;angle2;angle3;interpolate</description>
+   <type>entry</type>
+   <value>3;2;1;1.6;-4.6;-39.8;YES</value>
+   <default>3;2;1;1.6;-4.6;-39.8;YES</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Transformation Filters</menu>
+  </rota>
+  <rotm>
+   <description>Rotate image by matrix* | R11;R12;R13;R21;R22;R23;R31;R32;R33;interpolate</description>
+   <type>entry</type>
+   <value>0.7071;-0.7071;0;0.7071;0.7071;0;0;0;1;YES</value>
+   <default>0.7071;-0.7071;0;0.7071;0.7071;0;0;0;1;YES</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Transformation Filters</menu>
+  </rotm>
+  <rotf>
+   <description>Rotate image by file* | filename;interpolate</description>
+   <type>entry</type>
+   <value>test.nhdr;YES</value>
+   <default>test.nhdr;YES</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Transformation Filters</menu>
+  </rotf>
+  <mask>
+   <description>Mask image | filename</description>
+   <type>fileEntryIn</type>
+   <value>mask.mhd</value>
+   <default>mask.mhd</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>mhd;nhdr;raw;png;jpg;gif;aim;bin;AIM;bst;isq;ISQ</info>
+   <level>Standard</level>
+   <menu>Compute Filters</menu>
+  </mask>
+  <bool>
+   <description>Combine images* | operator;filename</description>
+   <type>splitEntry</type>
+   <value>+;combine.mhd</value>
+   <default>+;combine.mhd</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Compute Filters</menu>
+  </bool>
+  <repl>
+   <description>Combine mesh+images* | filename;elset;grayvalue;resolution</description>
+   <type>entry</type>
+   <value>mesh.inp;SET77;254</value>
+   <default>mesh.inp;SET77;254</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Compute Filters</menu>
+  </repl>
+  <arith>
+   <description>Compute equation | operation1;operation2;operation3;operation4</description>
+   <type>entry</type>
+   <value>?==0=1;?>1=2</value>
+   <default>?&lt;0=0;/8;*7;-5;&lt;A;+3;&lt;B;>A;^2;/B</default>
+   <optional>yes</optional>
+   <active>yes</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Compute Filters</menu>
+  </arith>
+  <labvox>
+   <description>Create Labels | outValue;roiValue;i0;j0;k0;di;dj;dk;type</description>
+   <type>entry</type>
+   <value>None;1;0;0;0;30;40;50</value>
+   <default>None;1;0;0;0;30;40;50</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Compute Filters</menu>
+  </labvox>
+  <scale>
+   <description>Scale gray-value range | newMin;newMax;[oldMin];[oldMax];[format]</description>
+   <type>entry</type>
+   <value>0;255</value>
+   <default>0;255</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Standard</level>
+   <menu>Compute Filters</menu>
+  </scale>
+  <fill>
+   <description>Fill pors | threshold;valid;type;kernel;[minThick];[niter];[kernel2];[bx0];[bx1];[by0];[by1];[bz0];[bz1]</description>
+   <type>entry</type>
+   <value>130;6;out;3</value>
+   <default>130;6;out;3</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Compute Filters</menu>
+  </fill>
+  <cont>
+   <description>Extract contour | threshold</description>
+   <type>entry</type>
+   <value>75</value>
+   <default>75</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Compute Filters</menu>
+  </cont>
+  <distt>
+   <description>Distance Map (Saito) | value</description>
+   <type>entry</type>
+   <value>None</value>
+   <default>None</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Compute Filters</menu>
+  </distt>
+  <skel>
+   <description>Sekeletonize 3d | value</description>
+   <type>entry</type>
+   <value>None</value>
+   <default>None</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Compute Filters</menu>
+  </skel>
+  <sitkf>
+   <description>Simple ITK File Name | filename</description>
+   <type>fileEntryInEdit</type>
+   <value>filter.py</value>
+   <default>filter.py</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>py</info>
+   <level>Expert</level>
+   <menu>External SITK Filters</menu>
+  </sitkf>
+  <sitkp>
+   <description>Simple ITK Parameters | Option;Value(s)</description>
+   <type>table</type>
+   <value>seed1;;30;45;37;;;seed2;;5;30;35;;;lower;;75;;;upper;;255;;;replaceValue;;1</value>
+   <default>seed1;;30;45;37;;;seed2;;5;30;35;;;lower;;75;;;upper;;255;;;replaceValue;;1</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-;2</info>
+   <level>Expert</level>
+   <menu>External SITK Filters</menu>
+  </sitkp>
+  <laham>
+   <description>Laplac Hamming filter | weight;cutoff;amplitude</description>
+   <type>splitEntry</type>
+   <value>0.5;0.4;1.0</value>
+   <default>0.5;0.4;1.0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </laham>
+  <sobel>
+   <description>Sobel filter</description>
+   <type>entry</type>
+   <value>None</value>
+   <default>None</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Neighborhood Filters</menu>
+  </sobel>
+  <mean>
+   <description>Mean filter | kernel;thres1;thres2</description>
+   <type>splitEntry</type>
+   <value>k3x3;0;255</value>
+   <default>k3x3;0;255</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Neighborhood Filters</menu>
+  </mean>
+  <median>
+   <description>Median filter | kernel;thres1;thres2</description>
+   <type>splitEntry</type>
+   <value>k3x3;0;255</value>
+   <default>k3x3;0;255</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </median>
+  <gauss>
+   <description>Gauss filter | radius;sigma;thres1;thres2</description>
+   <type>splitEntry</type>
+   <value>1;0.8;0;75</value>
+   <default>1;0.8;0;75</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Neighborhood Filters</menu>
+  </gauss>
+  <morph>
+   <description>Morphological operations | radius;type;shape;thres</description>
+   <type>splitEntry</type>
+   <value>3;o;1;140</value>
+   <default>3;o;1;140</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </morph>
+  <morpk>
+   <description>Morphological operations 2 | kernel;type;thres</description>
+   <type>splitEntry</type>
+   <value>k6;o;140</value>
+   <default>k6;o;140</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Neighborhood Filters</menu>
+  </morpk>
+  <grad>
+   <description>Gradient filter</description>
+   <type>entry</type>
+   <value>None</value>
+   <default>None</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </grad>
+  <lapl>
+   <description>Laplacian filter</description>
+   <type>entry</type>
+   <value>None</value>
+   <default>None</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </lapl>
+  <avg>
+   <description>Average regions | filename;phyWinSize;thres;maskValue</description>
+   <type>splitEntry</type>
+   <value>test.txt;3.0;None;None</value>
+   <default>test.txt;3.0;None;None</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </avg>
+  <cfill>
+   <description>Cube fill filter | nlevels</description>
+   <type>entry</type>
+   <value>2</value>
+   <default>2</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Neighborhood Filters</menu>
+  </cfill>
+  <cut>
+   <description>Crop image by voxel ROI* | n0Vox1;n0Vox2;n0Vox3;dnVox1;dnVox2;dnVox3</description>
+   <type>splitEntry</type>
+   <value>$XPos;$YPos;$ZPos;$Dim;$Dim;$Dim</value>
+   <default>0;0;0;30;40;50</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Standard</level>
+   <menu>Resize Filters</menu>
+  </cut>
+  <bbcut>
+   <description>Crop image by bounding box* | threshold;extVox1;extVox2;extVox3</description>
+   <type>splitEntry</type>
+   <value>75;0;0;0</value>
+   <default>75;0;0;0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </bbcut>
+  <roicut>
+   <description>Crop image by physical ROI* | x0;y0;z0;x1;y1;z1</description>
+   <type>splitEntry</type>
+   <value>0.1;0.2;0.3;1.0;1.5;2.0</value>
+   <default>0.1;0.2;0.3;1.0;1.5;2.0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </roicut>
+  <roitxt>
+   <description>Crop image by physical ROI* | filename</description>
+   <type>fileEntryIn</type>
+   <value>roi.txt</value>
+   <default>roi.txt</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>txt;csv</info>
+   <level>Standard</level>
+   <menu>Resize Filters</menu>
+  </roitxt>
+  <mcut>
+   <description>Crop ROI from the middle* | dnVox1;dnVox2;dnVox3</description>
+   <type>splitEntry</type>
+   <value>30;40;50</value>
+   <default>30;40;50</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Simple</level>
+   <menu>Resize Filters</menu>
+  </mcut>
+  <res2>
+   <description>Change image resolution | res1;res2;res3</description>
+   <type>splitEntry</type>
+   <value>20;30;40</value>
+   <default>20;30;40</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </res2>
+  <res3>
+   <description>Change resolution by length | len1;len2;len3</description>
+   <type>splitEntry</type>
+   <value>0.15;0.17;0.18</value>
+   <default>0.15;0.17;0.18</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </res3>
+  <res4>
+   <description>Change resolution by length | len1;len2;len3</description>
+   <type>splitEntry</type>
+   <value>0.15;0.17;0.18</value>
+   <default>0.15;0.17;0.18</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </res4>
+  <resf>
+   <description>Change resolution by factor | factor</description>
+   <type>splitEntry</type>
+   <value>4</value>
+   <default>2</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Simple</level>
+   <menu>Resize Filters</menu>
+  </resf>
+  <refi>
+   <description>Refine resolution by factor | direction;factor</description>
+   <type>splitEntry</type>
+   <value>1;4</value>
+   <default>1;4</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Standard</level>
+   <menu>Resize Filters</menu>
+  </refi>
+  <mirr>
+   <description>Mirror image | axis1;axis2;axis3</description>
+   <type>entry</type>
+   <value>x;y;z</value>
+   <default>x;y;z</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </mirr>
+  <mir2>
+   <description>Mirror image | nVox1;nVox2;nVox3</description>
+   <type>splitEntry</type>
+   <value>91;92;93</value>
+   <default>91;92;93</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Resize Filters</menu>
+  </mir2>
+  <autot>
+   <description>Auto threshold with BVTV | BVTV;error;estimate</description>
+   <type>splitEntry</type>
+   <value>0.2;0.01;100</value>
+   <default>0.2;0.01;100</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Segmentation Filters</menu>
+  </autot>
+  <fixt>
+   <description>Fixed threshold by value | thresRatio;minimum;maximum</description>
+   <type>splitEntry</type>
+   <value>0.3;minVal;200</value>
+   <default>0.3;minVal;200</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Segmentation Filters</menu>
+  </fixt>
+  <slevt>
+   <description>Auto single level threshold | threshold</description>
+   <type>entry</type>
+   <value>-32768</value>
+   <default>-32768</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Simple</level>
+   <menu>Segmentation Filters</menu>
+  </slevt>
+  <dlevt>
+   <description>Auto double level threshold | thres1;thres2</description>
+   <type>splitEntry</type>
+   <value>40;80</value>
+   <default>40;80</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Segmentation Filters</menu>
+  </dlevt>
+  <rthres>
+   <description>Threshold for range | lower;upper;thres</description>
+   <type>splitEntry</type>
+   <value>40;80;70</value>
+   <default>40;80;70</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Standard</level>
+   <menu>Segmentation Filters</menu>
+  </rthres>
+  <lthres>
+   <description>Local adaptive threshold | type;alpha;LT;UT</description>
+   <type>entry</type>
+   <value>stddev;1</value>
+   <default>stddev;1</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Segmentation Filters</menu>
+  </lthres>
+  <gthres>
+   <description>Global adaptive threshold | type</description>
+   <type>combo</type>
+   <value>mean</value>
+   <default>mean</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>mean;median</info>
+   <level>Expert</level>
+   <menu>Segmentation Filters</menu>
+  </gthres>
+  <thres>
+   <description>Threshold by value(s) | thres1;thres2;thres3</description>
+   <type>entry</type>
+   <value>1</value>
+   <default>75</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Standard</level>
+   <menu>Segmentation Filters</menu>
+  </thres>
+  <thre0>
+   <description>Threshold by value (zero BG) | threshold</description>
+   <type>entry</type>
+   <value>$Threshold</value>
+   <default>75</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Simple</level>
+   <menu>Segmentation Filters</menu>
+  </thre0>
+  <clean>
+   <description>Clean image | type</description>
+   <type>entry</type>
+   <value>FAST</value>
+   <default>FAST</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Modify Filters</menu>
+  </clean>
+  <extend>
+   <description>Extend image* | direction;thickVox;[newGrayvalue]</description>
+   <type>entry</type>
+   <value>3;1</value>
+   <default>3;1</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Modify Filters</menu>
+  </extend>
+  <close>
+   <description>Close slice models | direction;threshold;kernel;newGrayValue</description>
+   <type>splitEntry</type>
+   <value>3;130;3;253</value>
+   <default>3;130;3;253</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Modify Filters</menu>
+  </close>
+  <embed>
+   <description>Embed image* | direction;thickVoxIn;thickVoxOut;newGrayValue</description>
+   <type>splitEntry</type>
+   <value>3;20;10;255</value>
+   <default>3;20;10;255</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Standard</level>
+   <menu>Modify Filters</menu>
+  </embed>
+  <cap>
+   <description>Attach end caps* | direction;thickVox;newGrayValue</description>
+   <type>splitEntry</type>
+   <value>3;10;254</value>
+   <default>3;10;254</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Simple</level>
+   <menu>Modify Filters</menu>
+  </cap>
+  <cover>
+   <description>Cover image* | thickVox;newGrayValue</description>
+   <type>splitEntry</type>
+   <value>5;253</value>
+   <default>5;253</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Standard</level>
+   <menu>Modify Filters</menu>
+  </cover>
+  <block>
+   <description>Place image in block* | nVox1;nVox2;nVox3;newGrayValue</description>
+   <type>splitEntry</type>
+   <value>100;110;120;0</value>
+   <default>100;110;120;0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Modify Filters</menu>
+  </block>
+  <mfil>
+   <description>Multi Filter Run | Option;Value(s)</description>
+   <type>table</type>
+   <value>mcut;;20;30;40;;;mid;;test1.png</value>
+   <default>mcut;;20;30;40;;;mid;;test1.png</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>*;2</info>
+   <level>Standard</level>
+   <menu>Multi Run</menu>
+  </mfil>
+  <shist>
+   <description>Show histogram Output | type;filename;mode</description>
+   <type>entry</type>
+   <value>0</value>
+   <default>0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Image Infos</menu>
+  </shist>
+  <histo>
+   <description>Output histogram | filename;normalize;nIntervals</description>
+   <type>splitEntry</type>
+   <value>test.dat;n;100</value>
+   <default>test.dat;n;100</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Image Infos</menu>
+  </histo>
+  <ifo>
+   <description>Output general info as CSV | filename;mode</description>
+   <type>splitEntry</type>
+   <value>test.csv;w</value>
+   <default>test.csv;w</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Image Infos</menu>
+  </ifo>
+  <sifo>
+   <description>Output selected info as CSV | filename;mode;preName;value1;value2</description>
+   <type>entry</type>
+   <value>test.csv;w;$;graySum;voxSum</value>
+   <default>test.csv;w;$;graySum;voxSum</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Image Infos</menu>
+  </sifo>
+  <cen>
+   <description>Output Image center | threshold;filename;mode</description>
+   <type>entry</type>
+   <value>75;test.txt;a</value>
+   <default>75;test.txt;a</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Image Infos</menu>
+  </cen>
+  <bbox>
+   <description>Output Bounding box | type;threshold;filename;mode;i;j;k</description>
+   <type>entry</type>
+   <value>out;75;test.txt;a</value>
+   <default>out;75;test.txt;a</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Image Infos</menu>
+  </bbox>
+  <cog>
+   <description>Output Center of gravity | newGrayValue</description>
+   <type>entry</type>
+   <value>255</value>
+   <default>255</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Expert</level>
+   <menu>Image Infos</menu>
+  </cog>
+ </_02_ROISegmentation>
+ <_03_Morphometry active="yes" script="hma">
+  <modulName>
+   <description>hma</description>
+  </modulName>
+  <in>
+   <description>Binary image file name</description>
+   <type>fileEntryIn</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/ROIs/Test.mhd</value>
+   <default>image.mhd</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>mhd;nhdr;aim;AIM;isq;ISQ</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </in>
+  <resf>
+   <description>Resampling Image by Factor</description>
+   <type>entry</type>
+   <value>1</value>
+   <default>1</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Standard</level>
+   <menu>Common</menu>
+  </resf>
+  <bvtv>
+   <description>Bone to Total Volume BV/TV</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>yes</active>
+   <info>-</info>
+   <level>Simple</level>
+   <menu>Trabecular Bone (Volume)</menu>
+  </bvtv>
+  <bv>
+   <description>Bone Volume BV</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Standard</level>
+   <menu>Trabecular Bone (Volume)</menu>
+  </bv>
+  <tv>
+   <description>Total Volume TV</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Standard</level>
+   <menu>Trabecular Bone (Volume)</menu>
+  </tv>
+  <tbth>
+   <description>Thickness Tb.Th</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Simple</level>
+   <menu>Trabecular Bone (Volume)</menu>
+  </tbth>
+  <tbsp>
+   <description>Spacing Tb.Sp</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Simple</level>
+   <menu>Trabecular Bone (Volume)</menu>
+  </tbsp>
+  <tbn>
+   <description>Number Tb.N</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Simple</level>
+   <menu>Trabecular Bone (Volume)</menu>
+  </tbn>
+  <bs>
+   <description>Bone Surface Area BS</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Standard</level>
+   <menu>Trabecular Bone (Surface)</menu>
+  </bs>
+  <is>
+   <description>Interface Surface Area I.S</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Expert</level>
+   <menu>Trabecular Bone (Surface)</menu>
+  </is>
+  <ts>
+   <description>Total Surface Area TS</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Expert</level>
+   <menu>Trabecular Bone (Surface)</menu>
+  </ts>
+  <bsbv>
+   <description>Bone Surface to Bone Volume BSBV</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Standard</level>
+   <menu>Trabecular Bone (Surface)</menu>
+  </bsbv>
+  <bstv>
+   <description>Bone Surface to Total Volume BSTV</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Standard</level>
+   <menu>Trabecular Bone (Surface)</menu>
+  </bstv>
+  <smi>
+   <description>Struct Model Index SMI</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Standard</level>
+   <menu>Trabecular Bone (Surface)</menu>
+  </smi>
+  <stype>
+   <description>Surface Extraction Algorithm</description>
+   <type>combo</type>
+   <value>vxi_m</value>
+   <default>vxi_m</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>vxi_m;vxi_mi</info>
+   <level>Expert</level>
+   <menu>Trabecular Bone (Surface)</menu>
+  </stype>
+  <smooth>
+   <description>Mesh smoothing | nIter;lambda;kPB</description>
+   <type>splitEntry</type>
+   <value>10;0.6307;0.1</value>
+   <default>10;0.6307;0.1</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Trabecular Bone (Surface)</menu>
+  </smooth>
+  <da>
+   <description>Degree of Anisotropy DA</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Standard</level>
+   <menu>Trabecular Bone (Anisotropy)</menu>
+  </da>
+  <damsl>
+   <description>Degree of Anisotropy DA MSL</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Expert</level>
+   <menu>Trabecular Bone (Anisotropy)</menu>
+  </damsl>
+  <datri>
+   <description>Degree of Anisotropy DA TRI</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Standard</level>
+   <menu>Trabecular Bone (Anisotropy)</menu>
+  </datri>
+  <norm>
+   <description>Fabric Normalization</description>
+   <type>combo</type>
+   <value>trace</value>
+   <default>trace</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>det;rank;trace</info>
+   <level>Expert</level>
+   <menu>Trabecular Bone (Anisotropy)</menu>
+  </norm>
+  <ctth>
+   <description>Thickness Ct.Th</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Standard</level>
+   <menu>Cortical Bone</menu>
+  </ctth>
+  <pos>
+   <description>Pore Surface Po.S</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Expert</level>
+   <menu>Cortical Bone</menu>
+  </pos>
+  <pov>
+   <description>Pore Volume Po.V</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Expert</level>
+   <menu>Cortical Bone</menu>
+  </pov>
+  <por>
+   <description>Porosity Po</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Standard</level>
+   <menu>Cortical Bone</menu>
+  </por>
+  <pon>
+   <description>Pores Number Po.N</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Standard</level>
+   <menu>Cortical Bone</menu>
+  </pon>
+  <csmi>
+   <description>Moment of Inertia</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Expert</level>
+   <menu>Cortical Bone</menu>
+  </csmi>
+  <mrve>
+   <description>RVE Size (mm)</description>
+   <type>entry</type>
+   <value>7.5</value>
+   <default>7.5</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Standard</level>
+   <menu>Multi Run Options</menu>
+  </mrve>
+  <np>
+   <description>Number of parallel processes</description>
+   <type>entry</type>
+   <value>4</value>
+   <default>4</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>int</info>
+   <level>Standard</level>
+   <menu>Multi Run Options</menu>
+  </np>
+  <mmsh>
+   <description>Mesh Input File</description>
+   <type>fileEntryIn</type>
+   <value>mesh.vtk</value>
+   <default>mesh.vtk</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>inp;msh;vtk;fem</info>
+   <level>Standard</level>
+   <menu>Multi Run Options</menu>
+  </mmsh>
+  <mcsv>
+   <description>CSV Result Output</description>
+   <type>fileEntryOut</type>
+   <value>test.csv</value>
+   <default>test.csv</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>csv;txt;dat</info>
+   <level>Standard</level>
+   <menu>Multi Run Options</menu>
+  </mcsv>
+  <mgra>
+   <description>Graphical Result Output </description>
+   <type>fileEntryOut</type>
+   <value>test.vtk</value>
+   <default>test.vtk</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>vtk</info>
+   <level>Standard</level>
+   <menu>Multi Run Options</menu>
+  </mgra>
+  <out>
+   <description>Analysis File Name</description>
+   <type>fileEntryOut</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Morphometry/Test.csv</value>
+   <default>testOut.csv</default>
+   <optional>yes</optional>
+   <active>yes</active>
+   <info>txt;dat;csv</info>
+   <level>Simple</level>
+   <menu>Single Run Output Options</menu>
+  </out>
+  <mod>
+   <description>Write Mode</description>
+   <type>combo</type>
+   <value>w</value>
+   <default>w</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>w;a</info>
+   <level>Standard</level>
+   <menu>Single Run Output Options</menu>
+  </mod>
+  <iso>
+   <description>Isosurface File Name</description>
+   <type>fileEntryOut</type>
+   <value>testIso.vtk</value>
+   <default>testIso.vtk</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>vtk;case</info>
+   <level>Expert</level>
+   <menu>Single Run Output Options</menu>
+  </iso>
+  <oth>
+   <description>Tb.Th File Name</description>
+   <type>fileEntryOut</type>
+   <value>testTbth.mhd</value>
+   <default>testTbth.mhd</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>mhd;nhdr</info>
+   <level>Expert</level>
+   <menu>Single Run Output Options</menu>
+  </oth>
+  <osp>
+   <description>Tb.Sp File Name</description>
+   <type>fileEntryOut</type>
+   <value>testTbsp.mhd</value>
+   <default>testTbsp.mhd</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>mhd;nhdr</info>
+   <level>Expert</level>
+   <menu>Single Run Output Options</menu>
+  </osp>
+  <ofa>
+   <description>Fabric File Name</description>
+   <type>fileEntryOut</type>
+   <value>testTbsp.csv</value>
+   <default>testTbsp.csv</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>csv;txt;dat</info>
+   <level>Expert</level>
+   <menu>Single Run Output Options</menu>
+  </ofa>
+  <con>
+   <description>Isosurface Convergence</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>-</info>
+   <level>Expert</level>
+   <menu>Single Run Output Options</menu>
+  </con>
+ </_03_Morphometry>
+ <_04_Mesh active="yes" script="imgToFe">
+  <modulName>
+   <description>Template Script</description>
+  </modulName>
+  <in>
+   <description>Image file name | filename</description>
+   <type>fileEntryIn</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/ROIs/Test.mhd</value>
+   <default>image.mhd</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>mhd;nhdr</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </in>
+  <out>
+   <description>FEA job output file | filename</description>
+   <type>fileEntryOut</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Abaqus/Test.inp</value>
+   <default>model.inp</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>inp;fem</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </out>
+  <smooth>
+   <description>Mesh smoothing | niter;lambda;kPB;interface;boundary;jacobian</description>
+   <type>splitEntry</type>
+   <value>5;0.6307;0.1;0;1;0.05</value>
+   <default>5;0.6307;0.1;0;1;0.05</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </smooth>
+  <matelas>
+   <description>Elastic Standard | GV;E;nu;GV;E;nu;GV;E;nu</description>
+   <type>entry</type>
+   <value>2;10000;0.3</value>
+   <default>251;1000;0.3</default>
+   <optional>yes</optional>
+   <active>yes</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Materials</menu>
+  </matelas>
+  <matpow>
+   <description>Elastic Power Law | GV;E0;nu;k</description>
+   <type>entry</type>
+   <value>1-250;10000;0.3;2</value>
+   <default>1-250;10000;0.3;2</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Materials</menu>
+  </matpow>
+  <nsetfa>
+   <description>Node Set Boundary Face | flag</description>
+   <type>radioEntry</type>
+   <value>ON</value>
+   <default>ON</default>
+   <optional>yes</optional>
+   <active>yes</active>
+   <info>-</info>
+   <level>Simple</level>
+   <menu>Sets</menu>
+  </nsetfa>
+  <disp>
+   <description>Displacement | region;dofs;mag;region;dofs;mag;region;dofs;mag</description>
+   <type>entry</type>
+   <value>ALL_NODE_B;3;0.;ALL_NODE_T;3;0.;ALL_NODE_S;2;0.;ALL_NODE_N;2;0.;ALL_NODE_W;1;0.;ALL_NODE_E;1;0.005</value>
+   <default>ALL_NODE_B;1-3;0.0;ALL_NODE_T;3;-0.1</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Boundary Conditions</menu>
+  </disp>
+  <force>
+   <description>Force | region;dof;mag;region;dof;mag;region;dof;mag</description>
+   <type>entry</type>
+   <value>ALL_NODE_N;3;100.</value>
+   <default>ALL_NODE_N;3;100.</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Simple</level>
+   <menu>Boundary Conditions</menu>
+  </force>
+  <step>
+   <description>Analysis Type | type</description>
+   <type>combo</type>
+   <value>Static</value>
+   <default>Static</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>STATIC;STATIC_NLGEOM</info>
+   <level>Expert</level>
+   <menu>Analysis Step</menu>
+  </step>
+  <spar>
+   <description>Analysis Parameters | increment;time period</description>
+   <type>entry</type>
+   <value>0.2;1.0</value>
+   <default>0.2;1.0</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>float</info>
+   <level>Expert</level>
+   <menu>Analysis Step</menu>
+  </spar>
+  <nodefrd>
+   <description>Node results FRD Output | var1;var2;var3;var4</description>
+   <type>entry</type>
+   <value>U;RF</value>
+   <default>U;RF</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Result Output</menu>
+  </nodefrd>
+  <elemfrd>
+   <description>Element results FRD Output | var1;var2;var3;var4</description>
+   <type>entry</type>
+   <value>S;E</value>
+   <default>S;E;ENER</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Result Output</menu>
+  </elemfrd>
+  <nodedat>
+   <description>Node results DAT Output | region;var1;var2;var3</description>
+   <type>entry</type>
+   <value>ALL_NODE_T;RF</value>
+   <default>ALL_NODE_T;RF</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>str</info>
+   <level>Standard</level>
+   <menu>Result Output</menu>
+  </nodedat>
+ </_04_Mesh>
+ <_05_BCs active="yes" script="cbc">
+  <modulName>
+   <description>cbc</description>
+  </modulName>
+  <in>
+   <description>Abaqus Input File Name</description>
+   <type>fileEntryInEdit</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Abaqus/Test.inp</value>
+   <default>testIn.inp</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>inp</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </in>
+  <out>
+   <description>Abaqus Output File Name</description>
+   <type>fileEntryOut</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Abaqus/Test_KUBC.inp</value>
+   <default>testOut.inp</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>bcs;inp</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </out>
+  <bcid>
+   <description>BCs Identifier</description>
+   <type>combo</type>
+   <value>CK3</value>
+   <default>CP3</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>CP2;CP3;SP2;SP3;CK3;SET</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </bcid>
+  <code>
+   <description>FEM Code Name</description>
+   <type>combo</type>
+   <value>abaqus</value>
+   <default>calculix</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>calculix;abaqus</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </code>
+  <tol>
+   <description>Relative Tolerance</description>
+   <type>entry</type>
+   <value>1.0E-05</value>
+   <default>1.0E-05</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </tol>
+ </_05_BCs>
+ <_05_abqRun_ active="no" script="abqRun">
+  <modulName>
+   <description>Abaqus Run Interface</description>
+  </modulName>
+  <inp>
+   <description>Input File Name</description>
+   <type>fileEntryIn</type>
+   <value>test.inp</value>
+   <default>test.inp</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>inp</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </inp>
+  <exe>
+   <description>Abaqus Command</description>
+   <type>entry</type>
+   <value>/programs/hks_64/Commands/abq6121</value>
+   <default>/programs/hks_64/Commands/abq6121</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>1</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </exe>
+  <job>
+   <description>Job File Name</description>
+   <type>fileEntryOut</type>
+   <value>test</value>
+   <default>test</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>dat</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </job>
+  <dir>
+   <description>Work Directory Name</description>
+   <type>dirEntry</type>
+   <value>/tmp</value>
+   <default>/tmp</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Standard</level>
+   <menu>Common</menu>
+  </dir>
+  <par>
+   <description>Further Parameters</description>
+   <type>entry</type>
+   <value>interactive;cpus=1</value>
+   <default>interactive;cpus=1</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </par>
+  <lic>
+   <description>Number of lics to keep free</description>
+   <type>entry</type>
+   <value>20</value>
+   <default>20</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </lic>
+  <term>
+   <description>Terminate Job (Do nothing else)</description>
+   <type>combo</type>
+   <value>YES</value>
+   <default>YES</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>YES;NO</info>
+   <level>Expert</level>
+   <menu>Terminate Running Job</menu>
+  </term>
+ </_05_abqRun_>
+ <_06_ReadResults active="no" script="abqSeReader">
+  <modulName>
+   <description>SeReader</description>
+  </modulName>
+  <in>
+   <description>Abaqus ODB File | filename</description>
+   <type>fileEntryIn</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Abaqus/$Sample_$ROI.odb</value>
+   <default>testIn.odb</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>odb</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </in>
+  <out>
+   <description>Output File Name | filename</description>
+   <type>fileEntryOut</type>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Abaqus/$Sample_$ROI.out</value>
+   <default>testOut.out</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>out;txt;dat</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </out>
+  <exe>
+   <description>Run Command | filename;option</description>
+   <type>entry</type>
+   <value>/programs/hks/Commands/abq;python</value>
+   <default>/programs/hks/Commands/abq;python</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </exe>
+  <size>
+   <description>Size of Volume Element | size1;size2;size3</description>
+   <type>entry</type>
+   <value>5.3;5.3;5.3</value>
+   <default>3.;3.;3.</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>3</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </size>
+  <spec>
+   <description>Variable Specifier | type</description>
+   <type>combo</type>
+   <value>STRESS</value>
+   <default>STRESS</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>STRESS;STRAIN</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </spec>
+ </_06_ReadResults>
+ <_07_abqFuReader_ active="no" script="abqFuReader">
+  <modulName>
+   <description>abqFuReader</description>
+  </modulName>
+  <odb>
+   <description>Abaqus ODB File | filename</description>
+   <type>fileEntryIn</type>
+   <value>testIn.odb</value>
+   <default>testIn.odb</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>odb</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </odb>
+  <rpt>
+   <description>Output File Name | filename</description>
+   <type>fileEntryOut</type>
+   <value>testOut.rpt</value>
+   <default>testOut.rpt</default>
+   <optional>no</optional>
+   <active>yes</active>
+   <info>txt;rpt</info>
+   <level>Simple</level>
+   <menu>Common</menu>
+  </rpt>
+  <exe>
+   <description>Abaqus Command | filename;option</description>
+   <type>entry</type>
+   <value>/programs/hks/Commands/abq;python</value>
+   <default>/programs/hks/Commands/abq;python</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </exe>
+  <step>
+   <description>Analysis Step | id1;id2;id3;id4;id5;id6;id7</description>
+   <type>entry</type>
+   <value>1;2;3;4;5;6</value>
+   <default>1;2;3;4;5;6</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </step>
+  <frame>
+   <description>Analysis Frame | id1;id2;id3;id4;id5;id6;id7</description>
+   <type>entry</type>
+   <value>1;3;4</value>
+   <default>1;3;4</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </frame>
+  <inst>
+   <description>Instance Name | name</description>
+   <type>entry</type>
+   <value>PART-1-1</value>
+   <default>PART-1-1</default>
+   <optional>yes</optional>
+   <active>no</active>
+   <info>1</info>
+   <level>Expert</level>
+   <menu>Common</menu>
+  </inst>
+ </_07_abqFuReader_>
+</MedToolXML>
