@@ -1,5 +1,5 @@
 <!DOCTYPE MedToolXML>
-<MedToolXML cpu="1" workdir="C:/Users/mathi" level="Expert" resfile="" paramfile="C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Parameters.csv" writeonly="yes" exefile="">
+<MedToolXML level="Expert" workdir="C:/Users/mathi" writeonly="yes" paramfile="C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Parameters.csv" cpu="1" exefile="" resfile="">
  <_01_ROISelection script="mic" active="yes">
   <modulName>
    <description>mic - medical image converter</description>
@@ -2277,7 +2277,7 @@
   <out>
    <description>FEA job output file | filename</description>
    <type>fileEntryOut</type>
-   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Abaqus/$Sample_$ROI.inp</value>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Abaqus/$Sample_$ROI_Mesh.inp</value>
    <default>model.inp</default>
    <optional>no</optional>
    <active>yes</active>
@@ -2414,7 +2414,7 @@
   <in>
    <description>Abaqus Input File Name</description>
    <type>fileEntryInEdit</type>
-   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Abaqus/$Sample_$ROI.inp</value>
+   <value>C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Abaqus/$Sample_$ROI_Mesh.inp</value>
    <default>testIn.inp</default>
    <optional>no</optional>
    <active>yes</active>
@@ -2447,7 +2447,7 @@
   <code>
    <description>FEM Code Name</description>
    <type>combo</type>
-   <value>calculix</value>
+   <value>abaqus</value>
    <default>calculix</default>
    <optional>no</optional>
    <active>yes</active>
