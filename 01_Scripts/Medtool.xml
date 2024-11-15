@@ -1,6 +1,6 @@
 <!DOCTYPE MedToolXML>
-<MedToolXML level="Expert" workdir="C:/Users/mathi" writeonly="yes" paramfile="C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Parameters.csv" cpu="1" exefile="" resfile="">
- <_01_ROISelection script="mic" active="yes">
+<MedToolXML cpu="1" resfile="" exefile="" workdir="C:/Users/mathi" writeonly="yes" level="Expert" paramfile="C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Parameters.csv">
+ <_01_ROISelection active="yes" script="mic">
   <modulName>
    <description>mic - medical image converter</description>
   </modulName>
@@ -744,7 +744,7 @@
   <thre0>
    <description>Threshold by value (zero BG) | threshold</description>
    <type>entry</type>
-   <value>$Threshold</value>
+   <value>7181</value>
    <default>75</default>
    <optional>yes</optional>
    <active>yes</active>
@@ -918,7 +918,7 @@
    <menu>Image Infos</menu>
   </cog>
  </_01_ROISelection>
- <_02_ROISegmentation script="mic" active="yes">
+ <_02_ROISegmentation active="yes" script="mic">
   <modulName>
    <description>mic - medical image converter</description>
   </modulName>
@@ -1222,7 +1222,7 @@
   <arith>
    <description>Compute equation | operation1;operation2;operation3;operation4</description>
    <type>entry</type>
-   <value>?==0=1;?==$Threshold=2</value>
+   <value>?==0=1;?==7181=2</value>
    <default>?&lt;0=0;/8;*7;-5;&lt;A;+3;&lt;B;>A;^2;/B</default>
    <optional>yes</optional>
    <active>yes</active>
@@ -1836,7 +1836,7 @@
    <menu>Image Infos</menu>
   </cog>
  </_02_ROISegmentation>
- <_03_Morphometry script="hma" active="yes">
+ <_03_Morphometry active="yes" script="hma">
   <modulName>
    <description>hma</description>
   </modulName>
@@ -2259,7 +2259,7 @@
    <menu>Single Run Output Options</menu>
   </con>
  </_03_Morphometry>
- <_04_Mesh script="imgToFe" active="yes">
+ <_04_Mesh active="yes" script="imgToFe">
   <modulName>
    <description>Template Script</description>
   </modulName>
@@ -2407,7 +2407,7 @@
    <menu>Result Output</menu>
   </nodedat>
  </_04_Mesh>
- <_05_BCs script="cbc" active="yes">
+ <_05_BCs active="yes" script="cbc">
   <modulName>
    <description>cbc</description>
   </modulName>
@@ -2467,7 +2467,7 @@
    <menu>Common</menu>
   </tol>
  </_05_BCs>
- <_06_ReadResults script="abqSeReader" active="no">
+ <_06_ReadResults active="no" script="abqSeReader">
   <modulName>
    <description>SeReader</description>
   </modulName>
