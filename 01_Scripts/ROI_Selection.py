@@ -379,6 +379,13 @@ def Main(Arguments):
         VoxelModel, AdditionalData = ReadISQ(ISQ, ASCII=False)
         VoxelModel = VoxelModel.astype(float)
 
+        if iISQ == 28 or iISQ == 30:
+            Shift = 50
+            VoxelModel = VoxelModel[Shift:850]
+        elif iISQ == 29:
+            Shift = 75
+            VoxelModel = VoxelModel[Shift:850]
+
         # Compute Otsu threshold to segment ROIS
         Time.Update(1/5,'Compute Otsu')
         Otsu = threshold_otsu(VoxelModel)
@@ -414,7 +421,12 @@ def Main(Arguments):
             Data.loc[Index,'$ROI'] = i+1
             Data.loc[Index,'$XPos'] = C[0]
             Data.loc[Index,'$YPos'] = C[1]
-            Data.loc[Index,'$ZPos'] = C[2]
+
+            if iISQ >= 28:
+                Data.loc[Index,'$ZPos'] = C[2] + Shift
+            else:
+                Data.loc[Index,'$ZPos'] = C[2]
+                
             Data.loc[Index,'$Dim'] = Dim
             Data.loc[Index,'$Threshold'] = round(Otsu)
 
