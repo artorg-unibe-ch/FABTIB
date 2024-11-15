@@ -50,20 +50,27 @@ u3  = {L3/1000}
 **********************************************
 *INCLUDE, INPUT=/home/ms20s284/FABTIB2/02_Results/Abaqus/{BCs}
 **
-** Boundary Conditions
-*****************************************
-*BOUNDARY, TYPE=DISPLACEMENT
-SWB, 1, 3, 0
-SEB, 3, 3, 0
-NWB, 3, 3, 0
-NWB, 1, 1, 0
-**
 ** Steps Definitions
 ***************** Tensile 1 ******************
 *STEP
 *STATIC
-*BOUNDARY, OP=NEW
+*BOUNDARY, TYPE=DISPLACEMENT
+SWB, 1, 3, 0
 SEB, 1, 1, <u1>
+SEB, 2, 2, 0
+SEB, 3, 3, 0
+NWB, 1, 3, 0
+NEB, 1, 1, <u1>
+NEB, 2, 2, 0
+NEB, 3, 3, 0
+SWT, 1, 3, 0
+SET, 1, 1, <u1>
+SET, 2, 2, 0
+SET, 3, 3, 0
+NWT, 1, 3, 0
+NET, 1, 1, <u1>
+NET, 2, 2, 0
+NET, 3, 3, 0
 ** Element Output 
 *OUTPUT, FIELD
 *ELEMENT OUTPUT
@@ -72,8 +79,23 @@ IVOL, S, E
 ***************** Tensile 2 ******************
 *STEP
 *STATIC
-*BOUNDARY, OP=NEW
+*BOUNDARY, TYPE=DISPLACEMENT
+SWB, 1, 3, 0
+SEB, 1, 3, 0
+NWB, 1, 1, 0
 NWB, 2, 2, <u2>
+NWB, 3, 3, 0
+NEB, 1, 1, 0
+NEB, 2, 2, <u2>
+NEB, 3, 3, 0
+SWT, 1, 3, 0
+SET, 1, 3, 0
+NWT, 1, 1, 0
+NWT, 2, 2, <u2>
+NWT, 3, 3, 0
+NET, 1, 1, 0
+NET, 2, 2, <u2>
+NET, 3, 3, 0
 ** Element Output 
 *OUTPUT, FIELD
 *ELEMENT OUTPUT
@@ -82,8 +104,23 @@ IVOL, S, E
 ***************** Tensile 3 ******************
 *STEP
 *STATIC
-*BOUNDARY, OP=NEW
+*BOUNDARY, TYPE=DISPLACEMENT
+SWB, 1, 3, 0
+SEB, 1, 3, 0
+NWB, 1, 3, 0
+NEB, 1, 3, 0
+SWT, 1, 1, 0
+SWT, 2, 2, 0
 SWT, 3, 3, <u3>
+SET, 1, 1, 0
+SET, 2, 2, 0
+SET, 3, 3, <u3>
+NWT, 1, 1, 0
+NWT, 2, 2, 0
+NWT, 3, 3, <u3>
+NET, 1, 1, 0
+NET, 2, 2, 0
+NET, 3, 3, <u3>
 ** Element Output 
 *OUTPUT, FIELD
 *ELEMENT OUTPUT
@@ -92,9 +129,27 @@ IVOL, S, E
 ****************** Shear 23 ******************
 *STEP
 *STATIC
-*BOUNDARY, OP=NEW
+*BOUNDARY, TYPE=DISPLACEMENT
+SWB, 1, 3, 0
+SEB, 1, 3, 0
+NWB, 1, 1, 0
+NWB, 2, 2, 0
+NWB, 3, 3, <u3>
+NEB, 1, 1, 0
+NEB, 2, 2, 0
+NEB, 3, 3, <u3>
+SWT, 1, 1, 0
 SWT, 2, 2, <u2>
-**NWB, 3, 3, <u3>
+SWT, 3, 3, 0
+SET, 1, 1, 0
+SET, 2, 2, <u2>
+SET, 3, 3, 0
+NWT, 1, 1, 0
+NWT, 2, 2, <u2>
+NWT, 3, 3, <u3>
+NET, 1, 1, 0
+NET, 2, 2, <u2>
+NET, 3, 3, <u3>
 ** Element Output 
 *OUTPUT, FIELD
 *ELEMENT OUTPUT
@@ -103,9 +158,27 @@ IVOL, S, E
 ****************** Shear 13 ******************
 *STEP
 *STATIC
-*BOUNDARY, OP=NEW
+*BOUNDARY, TYPE=DISPLACEMENT
+SWB, 1, 3, 0
+SEB, 1, 1, 0
+SEB, 2, 2, 0
+SEB, 3, 3, <u3>
+NWB, 1, 3, 0
+NEB, 1, 1, 0
+NEB, 2, 2, 0
+NEB, 3, 3, <u3>
 SWT, 1, 1, <u1>
-**SEB, 3, 3, <u3>
+SWT, 2, 2, 0
+SWT, 3, 3, 0
+SET, 1, 1, <u1>
+SET, 2, 2, 0
+SET, 3, 3, <u3>
+NWT, 1, 1, <u1>
+NWT, 2, 2, 0
+NWT, 3, 3, 0
+NET, 1, 1, <u1>
+NET, 2, 2, 0
+NET, 3, 3, <u3>
 ** Element Output 
 *OUTPUT, FIELD
 *ELEMENT OUTPUT
@@ -114,9 +187,27 @@ IVOL, S, E
 ****************** Shear 21 ******************
 *STEP
 *STATIC
-*BOUNDARY, OP=NEW
+*BOUNDARY, TYPE=DISPLACEMENT
+SWB, 1, 3, 0
+SEB, 1, 1, 0
 SEB, 2, 2, <u2>
-**NWB, 1, 1, <u1>
+SEB, 3, 3, 0
+NWB, 1, 1, <u1>
+NWB, 2, 2, 0
+NWB, 3, 3, 0
+NEB, 1, 1, <u1>
+NEB, 2, 2, <u2>
+NEB, 3, 3, 0
+SWT, 1, 3, 0
+SET, 1, 1, 0
+SET, 2, 2, <u2>
+SET, 3, 3, 0
+NWT, 1, 1, <u1>
+NWT, 2, 2, 0
+NWT, 3, 3, 0
+NET, 1, 1, <u1>
+NET, 2, 2, <u2>
+NET, 3, 3, 0
 ** Element Output 
 *OUTPUT, FIELD
 *ELEMENT OUTPUT

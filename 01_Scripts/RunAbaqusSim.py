@@ -22,14 +22,14 @@ from pathlib import Path
 def WriteBash(Sample):
 
     Shift = 10
+    Main = Sample
     Job = Sample[:Shift]
-    Main = Sample[:Shift] + '_Main.inp'
     ODBFile = Sample[:Shift] + '.odb'
     OutFile = Sample[:Shift] + '.out'
 
     Text = f"""abaqus interactive job={Job} inp="/home/ms20s284/FABTIB2/02_Results/Abaqus/{Main}" cpus=24
-abaqus python "/home/ms20s284/FABTIB2/01_Scripts/abqSeReader.py" in="/home/ms20s284/FABTIB2/02_Results/Abaqus/{ODBFile}"  out="/home/ms20s284/FABTIB2/02_Results/Abaqus/{OutFile}"  size="5.28;5.28;5.28" spec="Stress"
-rm *.com *.sta *.pes *.pmg *.prt *.par *.msg *.dat *.env *.fil *.lck *.odb
+abaqus python "/home/ms20s284/FABTIB2/01_Scripts/abqSeReader.py" in="/home/ms20s284/FABTIB2/02_Results/Abaqus/{ODBFile}"  out="/home/ms20s284/FABTIB2/02_Results/Abaqus/{OutFile}"  size="5.28;5.28;5.28" spec="Stress" 
+rm *.com *.sta *.pes *.pmg *.prt *.par *.msg *.dat *.env *.fil *.lck *.odb 
 """
 
     with open('RunAbaqus.bash','a') as File:
@@ -45,12 +45,11 @@ def Main(Arguments):
     if Arguments.AbaqusInp:
         InputISQs = [Arguments.InputISQ]
     else:
-        DataPath = Path(__file__).parents[1] / '02_Results/Morphometry'
-        CSVs = sorted([F for F in Path.iterdir(DataPath) if F.name.endswith('.csv')])
+        DataPath = Path(__file__).parents[1] / '02_Results/Abaqus/'
+        AbaqusInps = [F for F in Path.iterdir(DataPath) if F.name.endswith('Main.inp')]
 
-    for CSV in CSVs:
-        Data = pd.read_csv(CSV, delimiter=';')
-        WriteBash(CSV.name[:-4])
+    for Input in AbaqusInps:
+        WriteBash(Input.name)
 
 
 
