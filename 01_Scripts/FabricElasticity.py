@@ -537,7 +537,7 @@ def Main(Arguments):
         Samples = sorted([F.name[:-4] for F in Path.iterdir(AbaqusPath) if F.name.endswith('.out')])
 
 
-    Strain = np.array([0.001, 0.001, 0.001, 0.001, 0.001, 0.001])
+    Strain = np.array([0.001, 0.001, 0.001, 0.002, 0.002, 0.002])
     X = np.matrix(np.zeros((len(Samples)*12, 5)))
     Y = np.matrix(np.zeros((len(Samples)*12, 1)))
     for s, Sample in enumerate(Samples):
@@ -572,7 +572,7 @@ def Main(Arguments):
         eVectors = eVectors[Arg]
         m1, m2, m3 = eValues
 
-        # Step 2: Get stiffness info
+        # Step 2: Get stress results
         Abaqus = open(AbaqusPath / (Sample + '.out'), 'r').readlines()
 
         Stress = np.zeros((6,6))
@@ -585,28 +585,11 @@ def Main(Arguments):
             for j in range(6):
                 Stiffness[i,j] = Stress[i,j] / Strain[i]
 
-
         # Symetrize matrix
         Stiffness = 1/2 * (Stiffness + Stiffness.T)
 
-        # Compute compliance and get engineering parameters
-        Compliance = np.linalg.inv(Stiffness)
-        E1 = 1 / Compliance[0, 0]
-        E2 = 1 / Compliance[1, 1]
-        E3 = 1 / Compliance[2, 2]
-        Mu23 = 1 / Compliance[3, 3]
-        Mu31 = 1 / Compliance[4, 4]
-        Mu12 = 1 / Compliance[5, 5]
-        Nu12 = -Compliance[0, 1] / Compliance[0, 0]
-        Nu13 = -Compliance[0, 2] / Compliance[0, 0]
-        Nu23 = -Compliance[1, 2] / Compliance[1, 1]
-
-        # Build compliance tensor properly from engineering constants
-        Compliance = ComplianceTensor(E1, E2, E3, Mu23, Mu31, Mu12, Nu12, Nu13, Nu23)
-        Compliance = 1/2 * (Compliance + Compliance.T)
-
         # Write tensor into mandel notation
-        Mandel = Engineering2MandelNotation(Compliance)
+        Mandel = Engineering2MandelNotation(Stiffness)
 
         # Step 3: Transform tensor into fabric coordinate system
         I = np.eye(3)
@@ -623,11 +606,7 @@ def Main(Arguments):
                     Orthotropic[i, j] = Transformed[i, j]
 
         # Get tensor back to engineering notation
-        Compliance = Mandel2EngineeringNotation(Orthotropic)
-
-        # Compute stiffness
-        Compliance = 1/2 * (Compliance + Compliance.T)
-        Stiffness = np.linalg.inv(Compliance)
+        Stiffness = Mandel2EngineeringNotation(Orthotropic)
 
         # Build linear system
         Start, Stop = 12*s, 12*(s+1)
