@@ -20,10 +20,73 @@ from pathlib import Path
 from scipy.stats import t
 import matplotlib.pyplot as plt
 
-np.set_printoptions(linewidth=500,
+np.set_printoptions(linewidth=300,
                     suppress=True,
                     formatter={'float_kind':'{:3}'.format})
 #%% Functions
+
+def DyadicProduct(A,B):
+
+    if A.size == 3:
+        C = np.zeros((3,3))
+        for i in range(3):
+            for j in range(3):
+                C[i,j] = A[i]*B[j]
+
+    elif A.size == 9:
+        C = np.zeros((3,3,3,3))
+        for i in range(3):
+            for j in range(3):
+                for k in range(3):
+                    for l in range(3):
+                            C[i,j,k,l] = A[i,j] * B[k,l]
+
+    else:
+        print('Matrices sizes mismatch')
+
+    return C
+
+def SymmetricProduct(A,B):
+
+    C = np.zeros((3, 3, 3, 3))
+    for i in range(3):
+        for j in range(3):
+            for k in range(3):
+                for l in range(3):
+                    C[i,j,k,l] = (1/2)*(A[i,k]*B[j,l]+A[i,l]*B[j,k])
+
+    return C
+
+def ComplianceTensor(E1, E2, E3, Mu23, Mu31, Mu12, Nu12, Nu13, Nu23, EigenVectors=np.eye(3)):
+
+    # Define constants
+    Mu32, Mu13, Mu21 = Mu23, Mu31, Mu12
+    Nu21 = Nu12 * E2 / E1
+    Nu31 = Nu13 * E3 / E1
+    Nu32 = Nu23 * E3 / E2
+
+    # Group into list for loop computation
+    E = [E1, E2, E3]
+    Nu = np.array([[Nu13, Nu12], [Nu21, Nu23], [Nu32, Nu31]])
+    Mu = np.array([[Mu13, Mu12], [Mu21, Mu23], [Mu32, Mu31]])
+
+    # Build compliance tensor
+    ComplianceTensor = np.zeros((3, 3, 3, 3))
+    for i in range(3):
+        Mi = DyadicProduct(EigenVectors[i], EigenVectors[i])
+        Part1 = 1 / E[i] * DyadicProduct(Mi, Mi)
+        ComplianceTensor += Part1
+
+        for ii in range(3 - 1):
+            j = i - ii - 1
+            Mj = DyadicProduct(EigenVectors[j], EigenVectors[j])
+            Part2 = -Nu[i, ii] / E[i] * DyadicProduct(Mi, Mj)
+            Part3 = 1 / (2 * Mu[i, ii]) * SymmetricProduct(Mi, Mj)
+            ComplianceTensor += Part2 + Part3
+
+    ComplianceTensor = IsoMorphism3333_66(ComplianceTensor)
+
+    return ComplianceTensor
 
 def Engineering2MandelNotation(A):
 
@@ -395,9 +458,9 @@ def OLS(X, Y, Alpha=0.95):
 
     # Store parameters in data frame
     Parameters = pd.DataFrame(columns=['Lambda0','Lambda0p','Mu0','k','l'])
-    Parameters.loc['Value'] = [np.exp(B[0,0]), np.exp(B[1,0]), np.exp(B[2,0]), B[3,0], B[4,0]]
-    Parameters.loc['95% CI Low'] = [np.exp(B_CI_Low[0,0]), np.exp(B_CI_Low[0,1]), np.exp(B_CI_Low[0,2]), B_CI_Low[0,3], B_CI_Low[0,4]]
-    Parameters.loc['95% CI Top'] = [np.exp(B_CI_Top[0,0]), np.exp(B_CI_Top[0,1]), np.exp(B_CI_Top[0,2]), B_CI_Top[0,3], B_CI_Top[0,4]]
+    Parameters.loc['Value'] = [np.exp(B[0,0]) - 2*np.exp(B[2,0]), np.exp(B[1,0]), np.exp(B[2,0]), B[3,0], B[4,0]]
+    Parameters.loc['95% CI Low'] = [np.exp(B_CI_Low[0,0]) - 2*np.exp(B_CI_Top[0,2]), np.exp(B_CI_Low[0,1]), np.exp(B_CI_Low[0,2]), B_CI_Low[0,3], B_CI_Low[0,4]]
+    Parameters.loc['95% CI Top'] = [np.exp(B_CI_Top[0,0]) - 2*np.exp(B_CI_Low[0,2]), np.exp(B_CI_Top[0,1]), np.exp(B_CI_Top[0,2]), B_CI_Top[0,3], B_CI_Top[0,4]]
 
     # Compute R2 and standard error of the estimate
     RSS = np.sum([R**2 for R in Residuals])
@@ -477,7 +540,6 @@ def Main(Arguments):
     Strain = np.array([0.001, 0.001, 0.001, 0.001, 0.001, 0.001])
     X = np.matrix(np.zeros((len(Samples)*12, 5)))
     Y = np.matrix(np.zeros((len(Samples)*12, 1)))
-    Problems = []
     for s, Sample in enumerate(Samples):
 
         # Step 1: Get fabric info
@@ -521,69 +583,83 @@ def Main(Arguments):
         Stiffness = np.zeros((6,6))
         for i in range(6):
             for j in range(6):
-                Stiffness[i,j] = Stress[j,i] / Strain[j]
+                Stiffness[i,j] = Stress[i,j] / Strain[i]
 
 
         # Symetrize matrix
         Stiffness = 1/2 * (Stiffness + Stiffness.T)
 
+        # Compute compliance and get engineering parameters
+        Compliance = np.linalg.inv(Stiffness)
+        E1 = 1 / Compliance[0, 0]
+        E2 = 1 / Compliance[1, 1]
+        E3 = 1 / Compliance[2, 2]
+        Mu23 = 1 / Compliance[3, 3]
+        Mu31 = 1 / Compliance[4, 4]
+        Mu12 = 1 / Compliance[5, 5]
+        Nu12 = -Compliance[0, 1] / Compliance[0, 0]
+        Nu13 = -Compliance[0, 2] / Compliance[0, 0]
+        Nu23 = -Compliance[1, 2] / Compliance[1, 1]
+
+        # Build compliance tensor properly from engineering constants
+        Compliance = ComplianceTensor(E1, E2, E3, Mu23, Mu31, Mu12, Nu12, Nu13, Nu23)
+        Compliance = 1/2 * (Compliance + Compliance.T)
+
         # Write tensor into mandel notation
-        Mandel = Engineering2MandelNotation(Stiffness)
+        Mandel = Engineering2MandelNotation(Compliance)
 
         # Step 3: Transform tensor into fabric coordinate system
         I = np.eye(3)
         Q = np.array(eVectors)
-        TS4 = TransformTensor(IsoMorphism66_3333(Mandel), I, Q)
-        TransformedStiffness = IsoMorphism3333_66(TS4)
+        Transformed = TransformTensor(Mandel, I, Q)
 
         # Project onto orthotropy
-        OrthotropicTransformedStiffness = np.zeros(TransformedStiffness.shape)
-        for i in range(OrthotropicTransformedStiffness.shape[0]):
-            for j in range(OrthotropicTransformedStiffness.shape[1]):
+        Orthotropic = np.zeros(Transformed.shape)
+        for i in range(Orthotropic.shape[0]):
+            for j in range(Orthotropic.shape[1]):
                 if i < 3 and j < 3:
-                    OrthotropicTransformedStiffness[i, j] = TransformedStiffness[i, j]
+                    Orthotropic[i, j] = Transformed[i, j]
                 elif i == j:
-                    OrthotropicTransformedStiffness[i, j] = TransformedStiffness[i, j]
+                    Orthotropic[i, j] = Transformed[i, j]
 
-        # Get stifness back to engineering notation
-        Stiffness = Mandel2EngineeringNotation(OrthotropicTransformedStiffness)
+        # Get tensor back to engineering notation
+        Compliance = Mandel2EngineeringNotation(Orthotropic)
+
+        # Compute stiffness
+        Compliance = 1/2 * (Compliance + Compliance.T)
+        Stiffness = np.linalg.inv(Compliance)
+
+        # Build linear system
+        Start, Stop = 12*s, 12*(s+1)
+        Y[Start:Stop] = np.log([[Stiffness[0,0]],
+                                [Stiffness[0,1]],
+                                [Stiffness[0,2]],
+                                [Stiffness[1,0]],
+                                [Stiffness[1,1]],
+                                [Stiffness[1,2]],
+                                [Stiffness[2,0]],
+                                [Stiffness[2,1]],
+                                [Stiffness[2,2]],
+                                [Stiffness[1,2]],
+                                [Stiffness[2,0]],
+                                [Stiffness[0,1]]])
         
-        if (Stiffness < 0).any():
-            Problems.append(s)
-
-        else:
-            # Build linear system
-            Start, Stop = 12*s, 12*(s+1)
-            Y[Start:Stop] = np.log([[Stiffness[0,0]],
-                                    [Stiffness[0,1]],
-                                    [Stiffness[0,2]],
-                                    [Stiffness[1,0]],
-                                    [Stiffness[1,1]],
-                                    [Stiffness[1,2]],
-                                    [Stiffness[2,0]],
-                                    [Stiffness[2,1]],
-                                    [Stiffness[2,2]],
-                                    [Stiffness[1,2]],
-                                    [Stiffness[2,0]],
-                                    [Stiffness[0,1]]])
-            
-            X[Start:Stop] = np.array([[1, 0, 0, np.log(BVTV), np.log(m1 ** 2)],
-                                    [0, 1, 0, np.log(BVTV), np.log(m1 * m2)],
-                                    [0, 1, 0, np.log(BVTV), np.log(m1 * m3)],
-                                    [0, 1, 0, np.log(BVTV), np.log(m2 * m1)],
-                                    [1, 0, 0, np.log(BVTV), np.log(m2 ** 2)],
-                                    [0, 1, 0, np.log(BVTV), np.log(m2 * m3)],
-                                    [0, 1, 0, np.log(BVTV), np.log(m3 * m1)],
-                                    [0, 1, 0, np.log(BVTV), np.log(m3 * m2)],
-                                    [1, 0, 0, np.log(BVTV), np.log(m3 ** 2)],
-                                    [0, 0, 1, np.log(BVTV), np.log(m2 * m3)],
-                                    [0, 0, 1, np.log(BVTV), np.log(m3 * m1)],
-                                    [0, 0, 1, np.log(BVTV), np.log(m1 * m2)]])
-            
+        X[Start:Stop] = np.array([[1, 0, 0, np.log(BVTV), np.log(m1 ** 2)],
+                                [0, 1, 0, np.log(BVTV), np.log(m1 * m2)],
+                                [0, 1, 0, np.log(BVTV), np.log(m1 * m3)],
+                                [0, 1, 0, np.log(BVTV), np.log(m2 * m1)],
+                                [1, 0, 0, np.log(BVTV), np.log(m2 ** 2)],
+                                [0, 1, 0, np.log(BVTV), np.log(m2 * m3)],
+                                [0, 1, 0, np.log(BVTV), np.log(m3 * m1)],
+                                [0, 1, 0, np.log(BVTV), np.log(m3 * m2)],
+                                [1, 0, 0, np.log(BVTV), np.log(m3 ** 2)],
+                                [0, 0, 1, np.log(BVTV), np.log(m2 * m3)],
+                                [0, 0, 1, np.log(BVTV), np.log(m3 * m1)],
+                                [0, 0, 1, np.log(BVTV), np.log(m1 * m2)]])
+        
 
     # Solve linear system
-    F = np.array(Y > 0).reshape(-1)
-    Parameters, R2adj, NE = OLS(X[F], Y[F])
+    Parameters, R2adj, NE = OLS(X, Y)
 
 
 if __name__ == '__main__':
