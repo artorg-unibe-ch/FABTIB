@@ -12,3 +12,6 @@
 *.msh
 *.inp
 *.csv
+
+# Ignore fenics results folder
+*.bp
