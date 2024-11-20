@@ -495,6 +495,10 @@ def OLS(X, Y, Alpha=0.95):
     SMin = min([Y_Obs.min(), Y_Fit.min()]) / 5
     Colors=[(0,0,1),(0,1,0),(1,0,0)]
 
+    # Set boundaries of fabtib
+    SMax = 1e4
+    SMin = 1e-3
+
     Figure, Axes = plt.subplots(1, 1, figsize=(5.5, 4.5), dpi=DPI)
     # Axes.fill_between(np.exp(Line), CI_Line_u, CI_Line_o, color=(0.8,0.8,0.8))
     Axes.plot(Y_Obs[X[:, 0] == 1], Y_Fit[X[:, 0] == 1],

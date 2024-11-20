@@ -77,7 +77,7 @@ def add_subplot_axes(ax,rect,axisbg='w'):
     subax.yaxis.set_tick_params(labelsize=y_labelsize)
     return subax
 
-def PlotHistogram(Variable, Name):
+def PlotHistogram(Variable, Name, Path):
 
     # 04 Get data attributes
     SortedValues = np.sort(Variable).astype(float)
@@ -97,23 +97,25 @@ def PlotHistogram(Variable, Name):
     DataIQR = np.abs(Q075) - np.abs(Q025)
     KernelHalfWidth = 0.9*N**(-1/5) * min(S_X,DataIQR/NormalIQR)
     for Value in SortedValues:
-        KernelEstimator += norm.pdf(SortedValues-Value,0,KernelHalfWidth*2)
-    KernelEstimator = KernelEstimator/N
+        Norm = norm.pdf(SortedValues-Value,loc=0,scale=KernelHalfWidth*2)
+        KernelEstimator += Norm / max(Norm)
+    KernelEstimator = KernelEstimator/N*max(Histogram)
 
     ## Histogram and density distribution
     TheoreticalDistribution = norm.pdf(SortedValues,X_Bar,S_X)
     
-    Figure, Axes = plt.subplots(1, 1, figsize=(5.5, 4.5), dpi=100)
-    Axes.fill_between(SortedValues,np.zeros(len(SortedValues)), KernelEstimator,color=(0.85,0.85,0.85),label='Kernel Density')
+    Figure, Axes = plt.subplots(1, 1, figsize=(5.5, 4.5), dpi=200)
+    # Axes.fill_between(SortedValues,np.zeros(len(SortedValues)), KernelEstimator,color=(0.85,0.85,0.85),label='Kernel Density')
     Axes.bar(Center, Histogram, align='center', width=Width,edgecolor=(0,0,0),color=(1,1,1,0),label='Histogram')
-    Axes.plot(SortedValues,TheoreticalDistribution,color=(1,0,0),label='Normal Distribution')
+    Axes.plot(SortedValues, KernelEstimator,color=(1,0,0),label='Kernel Density')
+    # Axes.plot(SortedValues,TheoreticalDistribution,color=(1,0,0),label='Normal Distribution')
     Axes.annotate(r'Mean $\pm$ SD : ' + str(round(X_Bar,3)) + r' $\pm$ ' + str(round(S_X,3)), xy=(0.3, 1.035), xycoords='axes fraction')
     plt.xlabel(Name)
     plt.ylabel('Density (-)')
-    plt.legend(loc='upper center',ncol=3,bbox_to_anchor=(0.5,1.2), prop={'size':10})
-    # plt.savefig(os.path.join(ResultFolder,Folder, Group + '_DensityDistribution.png'))
-    plt.show()
-    # plt.close(Figure)
+    # plt.legend(loc='upper center',ncol=3,bbox_to_anchor=(0.5,1.2), prop={'size':10})
+    plt.savefig(Path / (Name.replace('/','') + '.png'))
+    # plt.show()
+    plt.close(Figure)
 
     return
 
@@ -148,21 +150,22 @@ def Main(Arguments):
     # Plot BV/TV and CV
     Rectangle = [0.3,0.3,0.65,0.65]
 
-    Figure, Axis = plt.subplots(1,1)
+    Figure, Axis = plt.subplots(1,1,dpi=200)
     Axis.plot(Data['BV/TV'], Data['CV'], linestyle='none', color=(1,0,0), marker='o')
     Axis.plot([min(Data['BV/TV']), max(Data['BV/TV'])], [0.263,0.263], linestyle='--', color=(0,0,0))
     Axis1 = add_subplot_axes(Axis,Rectangle)
     Axis1.plot(Data['BV/TV'], Data['CV'], linestyle='none', color=(1,0,0), marker='o')
-    Axis1.plot([min(Data['BV/TV']), max(Data['BV/TV'])], [0.263,0.263], linestyle='--', color=(0,0,0))
+    Axis1.plot([min(Data['BV/TV']), max(Data['BV/TV'])], [0.263,0.263], linestyle='--', color=(0,0,0), label='Threshold')
     Axis.set_xlim([0, 0.6])
     Axis.set_ylim([0, 1.6])
     Axis.set_xlabel('BV/TV')
     Axis.set_ylabel('CV')
+    plt.legend(loc='upper right')
     plt.show(Figure)
 
     # Plot Histograms
     for Col in Data.columns:
-        PlotHistogram(Data[Col], Col)
+        PlotHistogram(Data[Col], Col, DataPath)
 
 
 if __name__ == '__main__':

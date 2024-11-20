@@ -17,11 +17,12 @@ import ufl
 import gmsh
 import argparse
 import numpy as np
+import pyvista as pv
 from Utils import Time
 from mpi4py import MPI
 from pathlib import Path
 from petsc4py import PETSc
-from dolfinx import io, fem, mesh
+from dolfinx import io, fem, mesh, plot
 from dolfinx.fem.petsc import LinearProblem
 
 #%% Define geometric spaces - Faces
@@ -336,6 +337,53 @@ def PMUBC(E_Hom, Faces, L1, L2, L3, Mesh, V):
 
     return BCs
 
+
+# #%% Define pyvista plot
+
+# def PyVistaPlot(Displacement, Value, FileName):
+
+#     # Build mesh
+#     Topology, Cells, Geometry = plot.vtk_mesh(Displacement.function_space)
+#     FunctionGrid = pv.UnstructuredGrid(Topology, Cells, Geometry)
+
+#     # Get deformation values
+#     N = len(Displacement)
+#     Deformation = np.zeros((Geometry.shape[0], 3))
+#     Deformation[:, :N] = Displacement.x.array.reshape(Geometry.shape[0], N)
+
+#     # Set deformation on mesh
+#     FunctionGrid['Deformation'] = Deformation
+#     FunctionGrid.set_active_vectors('Deformation')
+
+#     # Warp mesh by deformation
+#     Warped = FunctionGrid.warp_by_vector('Deformation', factor=1/Value)
+#     Warped.set_active_vectors('Deformation')
+
+#     # Arguments for the colorbar
+#     Args = dict(font_family='times', 
+#                 width=0.05,
+#                 height=0.75,
+#                 vertical=True,
+#                 position_x=0.9,
+#                 position_y=0.125,
+#                 title_font_size=30,
+#                 label_font_size=20
+#                 )
+
+#     # Plot with pyvista
+#     pl = pv.Plotter(off_screen=True)
+#     pl.add_mesh(Warped, cmap='jet')#, scalar_bar_args=Args)
+#     pl.camera_position = 'xz'
+#     pl.camera.roll = 0
+#     pl.camera.elevation = 30
+#     pl.camera.azimuth = 30
+#     pl.camera.zoom(1.0)
+#     pl.add_axes(viewport=(0,0,0.25,0.25))
+#     pl.screenshot(FileName, return_img=False)
+#     # pl.show()
+
+#     return
+
 #%% Main
 
 def Main(Arguments):
@@ -344,7 +392,7 @@ def Main(Arguments):
     if Arguments.InputMesh:
         InputMeshes = [Arguments.InputMesh]
     else:
-        DataPath = Path(__file__).parents[1] / '02_Results/Mesh'
+        DataPath = Path(__file__).parent / 'Mesh'
         InputMeshes = sorted([F for F in Path.iterdir(DataPath) if F.name.endswith('.msh')])
         
     Path.mkdir(Arguments.OutputPath, exist_ok=True)
@@ -364,8 +412,8 @@ def Main(Arguments):
         Time.Process(1, MeshFile.name[:-4])
 
         # Define Material Constants
-        E      = PETSc.ScalarType(Arguments.Parameters[0])        # Young's modulus (Pa)
-        Nu     = PETSc.ScalarType(Arguments.Parameters[1])        # Poisson's ratio (-)
+        E      = PETSc.ScalarType(1e4)        # Young's modulus (Pa)
+        Nu     = PETSc.ScalarType(0.3)        # Poisson's ratio (-)
         Mu     = fem.Constant(Mesh, E/(2*(1 + Nu)))               # Shear modulus (kPa)
         Lambda = fem.Constant(Mesh, E*Nu/((1 + Nu)*(1 - 2*Nu)))   # First Lamé parameter (kPa)
         
@@ -405,7 +453,7 @@ def Main(Arguments):
         LCs = ['Tensile1', 'Tensile2', 'Tensile3', 'Shear12', 'Shear13', 'Shear23']
 
         # Corresponding homogenized strain
-        Value = 0.0001
+        Value = 0.001
         E_Homs = np.zeros((6,3,3))
         E_Homs[0,0,0] = Value
         E_Homs[1,1,1] = Value
@@ -425,15 +473,15 @@ def Main(Arguments):
         Load = ufl.dot(f, u) * ufl.ds
 
         # Solve for all loadcases
-        FileName = Arguments.OutputPath / MeshFile.name[:-4]
+        FileName = Path(__file__).parent / 'FEniCS' / MeshFile.name[:-4]
         for LoadCase in range(6):
 
             Time.Update(LoadCase/6, LCs[LoadCase])
 
             E_Hom = E_Homs[LoadCase]
-            if Arguments.BCsType == 'KUBC':
+            if BCsType == 'KUBC':
                 BCs = KUBCs(E_Hom, Faces, Geometry, Mesh, V)
-            elif Arguments.BCsType == 'PMUBC':
+            elif BCsType == 'PMUBC':
                 BCs = PMUBC(E_Hom, Faces, L1, L2, L3, Mesh, V)
 
             # Solve problem
@@ -441,17 +489,20 @@ def Main(Arguments):
             uh = Problem.solve()
             uh.name = 'Deformation'
 
-            # Compute stress
-            Te = ufl.TensorElement(ElementType, Mesh.ufl_cell(), 1)
-            T = fem.FunctionSpace(Mesh, Te)
-            Expression = fem.Expression(Sigma(uh), T.element.interpolation_points())
-            Stress = fem.Function(T)
-            Stress.interpolate(Expression)
-            Stress.name = 'Stress'
+            # Plot results
+            # PyVistaPlot(uh, Value, str(FileName) + '.png')
 
-            # Store results in vtk file
-            with io.VTXWriter(Mesh.comm, str(FileName) + '_' + LCs[LoadCase] + '.bp', [uh, Stress]) as vf:
-                vf.write(0)
+            # # Compute stress
+            # Te = ufl.TensorElement(ElementType, Mesh.ufl_cell(), 1)
+            # T = fem.FunctionSpace(Mesh, Te)
+            # Expression = fem.Expression(Sigma(uh), T.element.interpolation_points())
+            # Stress = fem.Function(T)
+            # Stress.interpolate(Expression)
+            # Stress.name = 'Stress'
+
+            # # Store results in vtk file
+            # with io.VTXWriter(Mesh.comm, str(FileName) + '_' + LCs[LoadCase] + '.bp', [uh, Stress]) as vf:
+            #     vf.write(0)
 
             # Compute homogenized stress
             S_Matrix = np.zeros((3,3))
@@ -484,7 +535,7 @@ if __name__ == '__main__':
     Parser.add_argument('--InputMesh', help='File name of ROI Mesh', type=str)
     Parser.add_argument('--Parameters', help='Elastic constants for simulation [Youngs modulus, Poisson ratio]', type=list, default=[1.0e4,0.3])
     Parser.add_argument('--BCsType', help='Type of boundary conditions. Either KUBC or PMUBC', type=str, default='KUBC')
-    Parser.add_argument('--OutputPath', help='Output path for the ROI simulation results', type=str, default=Path(__file__).parents[1] / '02_Results/FEniCS')
+    Parser.add_argument('--OutputPath', help='Output path for the ROI simulation results', type=str, default=Path(__file__).parent / 'FEniCS')
 
     # Read arguments from the command line
     Arguments = Parser.parse_args()

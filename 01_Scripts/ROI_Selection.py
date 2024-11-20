@@ -390,24 +390,6 @@ def Main(Arguments):
         Time.Update(1/5,'Compute Otsu')
         Otsu = threshold_otsu(VoxelModel)
 
-        # Scale scan values for plotting
-        Scaled = VoxelModel / Otsu
-
-        # Plot using pyvista
-        Time.Update(2/5,'Plot scan')
-        pl = pv.Plotter(off_screen=True)
-        actors = pl.add_volume(Scaled[::5,::5,::5].T,
-                    cmap='bone',
-                    show_scalar_bar=False,
-                    opacity='sigmoid_5')
-        actors.prop.interpolation_type = 'linear'
-        pl.camera_position = 'xz'
-        pl.camera.azimuth = 0
-        pl.camera.elevation = 30
-        pl.camera.roll = 0
-        pl.camera.zoom(1.2)
-        pl.screenshot(Path(__file__).parents[1] / '02_Results/Scans' / (Path(ISQ).name[:-4] + '.png'))
-
         # Select ROI at center of gravity
         Time.Update(3/5,f'Select {Arguments.NROIs} ROIs')
         ROISize = 5.3   # ROI side length in mm
@@ -429,22 +411,6 @@ def Main(Arguments):
                 
             Data.loc[Index,'$Dim'] = Dim
             Data.loc[Index,'$Threshold'] = round(Otsu)
-
-            ROI = Scaled[C[2]:C[2]+Dim,C[1]:C[1]+Dim,C[0]:C[0]+Dim].T
-            Name = Path(__file__).parents[1] / '02_Results/Scans' / (ISQ.name[:-4] + '_' + str(i+1) + '.png')
-
-            pl = pv.Plotter(off_screen=True)
-            actors = pl.add_volume(ROI,
-                        cmap='bone',
-                        show_scalar_bar=False,
-                        opacity='sigmoid_5')
-            actors.prop.interpolation_type = 'linear'
-            pl.camera_position = 'xz'
-            pl.camera.roll = 0
-            pl.camera.elevation = 30
-            pl.camera.azimuth = 30
-            pl.camera.zoom(1.0)
-            pl.screenshot(Name)
     
         # Update time
         Time.Process(0, f'Done ISQ {iISQ+1} / {len(InputISQs)}')

@@ -18,6 +18,7 @@ import numpy as np
 from numba import njit
 from Utils import Time
 from pathlib import Path
+import SimpleITK as sitk
 
 #%% Functions
 
@@ -76,7 +77,7 @@ def Main(Arguments):
         InputROIs = [Arguments.InputROI]
     else:
         DataPath = Path(__file__).parents[1] / '02_Results/ROIs'
-        InputROIs = sorted([F for F in Path.iterdir(DataPath) if F.name.endswith('.npy')])
+        InputROIs = sorted([F for F in Path.iterdir(DataPath) if F.name.endswith('.mhd')])
         
     Path.mkdir(Arguments.OutputPath, exist_ok=True)
 
@@ -86,7 +87,8 @@ def Main(Arguments):
         Time.Process(1,ROI.name[:-4])
 
         # Read scan
-        Array = np.load(ROI)
+        Array = sitk.GetArrayFromImage(sitk.ReadImage(ROI)).T
+        Array = np.array(Array - 1,int)
 
         # Perform mapping
         Time.Update(1/5,'Get Nodes Map')
@@ -121,7 +123,7 @@ def Main(Arguments):
 
         # Write mesh
         Time.Update(5/5,'Write Mesh')
-        FName = Path(Arguments.OutputPath) / (ROI.name[:-4] + '.msh')
+        FName = Path(__file__).parent / 'Mesh' / (ROI.name[:-4] + '.msh')
         gmsh.write(str(FName))
         gmsh.finalize()
 
