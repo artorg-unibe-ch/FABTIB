@@ -1,5 +1,5 @@
 <!DOCTYPE MedToolXML>
-<MedToolXML cpu="1" resfile="" exefile="" workdir="C:/Users/mathi" writeonly="yes" level="Expert" paramfile="C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Parameters.csv">
+<MedToolXML writeonly="yes" level="Expert" exefile="" workdir="C:/Users/mathi" resfile="" paramfile="C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Parameters.csv" cpu="1">
  <_01_ROISelection active="yes" script="mic">
   <modulName>
    <description>mic - medical image converter</description>
@@ -1222,7 +1222,7 @@
   <arith>
    <description>Compute equation | operation1;operation2;operation3;operation4</description>
    <type>entry</type>
-   <value>?==0=1;?==$Threshold=2</value>
+   <value>?==0=1;?==7181=2</value>
    <default>?&lt;0=0;/8;*7;-5;&lt;A;+3;&lt;B;>A;^2;/B</default>
    <optional>yes</optional>
    <active>yes</active>
