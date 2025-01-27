@@ -147,14 +147,28 @@ def Main(Arguments):
         CV = ComputeCV(BinArray)
         Data.loc[(File.name[:-6],int(File.name[-5])), 'CV'] = CV
 
+    # Read metadata file
+    MetaData = pd.read_excel(Path(__file__).parents[1] / '00_Data/SampleList.xlsx')
+    Ctrl = MetaData['Group (T2D or Ctrl)'] == 'Ctrl'
+    T2D = MetaData['Group (T2D or Ctrl)'] == 'T2D'
+    CtrlSamples = MetaData['Filename'][Ctrl].values
+    T2DSamples = MetaData['Filename'][T2D].values
+    Samples = [i[0] for i in Data.index]
+    Ctrl = [S in CtrlSamples for S in Samples]
+    T2D = [S in T2DSamples for S in Samples]
+
+
     # Plot BV/TV and CV
     Rectangle = [0.3,0.3,0.65,0.65]
 
     Figure, Axis = plt.subplots(1,1,dpi=200)
-    Axis.plot(Data['BV/TV'], Data['CV'], linestyle='none', color=(1,0,0), marker='o')
+    Axis.plot(Data['BV/TV'][Ctrl], Data['CV'][Ctrl], linestyle='none', color=(0,0,1), marker='o', label='Ctrl')
+    Axis.plot(Data['BV/TV'][T2D], Data['CV'][T2D], linestyle='none', color=(1,0,0), marker='o', label='T2D')
+    plt.legend(loc='upper left')
     Axis.plot([min(Data['BV/TV']), max(Data['BV/TV'])], [0.263,0.263], linestyle='--', color=(0,0,0))
     Axis1 = add_subplot_axes(Axis,Rectangle)
-    Axis1.plot(Data['BV/TV'], Data['CV'], linestyle='none', color=(1,0,0), marker='o')
+    Axis1.plot(Data['BV/TV'][Ctrl], Data['CV'][Ctrl], linestyle='none', color=(0,0,1), marker='o')
+    Axis1.plot(Data['BV/TV'][T2D], Data['CV'][T2D], linestyle='none', color=(1,0,0), marker='o')
     Axis1.plot([min(Data['BV/TV']), max(Data['BV/TV'])], [0.263,0.263], linestyle='--', color=(0,0,0), label='Threshold')
     Axis.set_xlim([0, 0.6])
     Axis.set_ylim([0, 1.6])

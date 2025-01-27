@@ -527,10 +527,101 @@ def OLS(X, Y, Alpha=0.95):
 
     return Parameters, R2adj, NE
 
+def OLS2(X, Y, k, l, Alpha=0.95):
+
+    # Solve linear system
+    XTXi = np.linalg.inv(X.T * X)
+    B = XTXi * X.T * Y
+
+    # Compute residuals, variance, and covariance matrix
+    Y_Obs = np.exp(Y)
+    Y_Fit = np.exp(X * B)
+    Residuals = Y - X*B
+    DOFs = len(Y) - X.shape[1]
+    Sigma = Residuals.T * Residuals / DOFs
+    Cov = Sigma[0,0] * XTXi
+
+    # Compute B confidence interval
+    t_Alpha = t.interval(Alpha, DOFs)
+    B_CI_Low = B.T + t_Alpha[0] * np.sqrt(np.diag(Cov))
+    B_CI_Top = B.T + t_Alpha[1] * np.sqrt(np.diag(Cov))
+
+    # Store parameters in data frame
+    Parameters = pd.DataFrame(columns=['Lambda0','Lambda0p','Mu0','k','l'])
+    Parameters.loc['Value'] = [np.exp(B[0,0]) - 2*np.exp(B[2,0]), np.exp(B[1,0]), np.exp(B[2,0]), k, l]
+    Parameters.loc['95% CI Low'] = [np.exp(B_CI_Low[0,0]) - 2*np.exp(B_CI_Top[0,2]), np.exp(B_CI_Low[0,1]), np.exp(B_CI_Low[0,2]), k, l]
+    Parameters.loc['95% CI Top'] = [np.exp(B_CI_Top[0,0]) - 2*np.exp(B_CI_Low[0,2]), np.exp(B_CI_Top[0,1]), np.exp(B_CI_Top[0,2]), k, l]
+
+    # Compute R2 and standard error of the estimate
+    RSS = np.sum([R**2 for R in Residuals])
+    SE = np.sqrt(RSS / DOFs)
+    TSS = np.sum([R**2 for R in (Y - Y.mean())])
+    RegSS = TSS - RSS
+    R2 = RegSS / TSS
+
+    # Compute R2adj and NE
+    R2adj = 1 - RSS/TSS * (len(Y)-1)/(len(Y)-X.shape[1]-1)
+
+    NE = []
+    for i in range(0,len(Y),12):
+        T_Obs = Y_Obs[i:i+12]
+        T_Fit = Y_Fit[i:i+12]
+        Numerator = np.sum([T**2 for T in (T_Obs-T_Fit)])
+        Denominator = np.sum([T**2 for T in T_Obs])
+        NE.append(np.sqrt(Numerator/Denominator))
+    NE = np.array(NE)
+
+
+    # Prepare data for plot
+    Line = np.linspace(min(Y.min(), (X*B).min()),
+                       max(Y.max(), (X*B).max()), len(Y))
+    # B_0 = np.sort(np.sqrt(np.diag(X * Cov * X.T)))
+    # CI_Line_u = np.exp(Line + t_Alpha[0] * B_0)
+    # CI_Line_o = np.exp(Line + t_Alpha[1] * B_0)
+
+    # Plots
+    DPI = 500
+    SMax = max([Y_Obs.max(), Y_Fit.max()]) * 5
+    SMin = min([Y_Obs.min(), Y_Fit.min()]) / 5
+    Colors=[(0,0,1),(0,1,0),(1,0,0)]
+
+    # Set boundaries of fabtib
+    SMax = 1e4
+    SMin = 1e-3
+
+    Figure, Axes = plt.subplots(1, 1, figsize=(5.5, 4.5), dpi=DPI)
+    # Axes.fill_between(np.exp(Line), CI_Line_u, CI_Line_o, color=(0.8,0.8,0.8))
+    Axes.plot(Y_Obs[X[:, 0] == 1], Y_Fit[X[:, 0] == 1],
+              color=Colors[0], linestyle='none', marker='s')
+    Axes.plot(Y_Obs[X[:, 1] == 1], Y_Fit[X[:, 1] == 1],
+              color=Colors[1], linestyle='none', marker='o')
+    Axes.plot(Y_Obs[X[:, 2] == 1], Y_Fit[X[:, 2] == 1],
+              color=Colors[2], linestyle='none', marker='^')
+    Axes.plot([], color=Colors[0], linestyle='none', marker='s', label=r'$\lambda_{ii}$')
+    Axes.plot([], color=Colors[1], linestyle='none', marker='o', label=r'$\lambda_{ij}$')
+    Axes.plot([], color=Colors[2], linestyle='none', marker='^', label=r'$\mu_{ij}$')
+    Axes.plot(np.exp(Line), np.exp(Line), color=(0, 0, 0), linestyle='--')
+    Axes.annotate(r'N ROIs   : ' + str(len(Y)//12), xy=(0.3, 0.1), xycoords='axes fraction')
+    Axes.annotate(r'N Points : ' + str(len(Y)), xy=(0.3, 0.025), xycoords='axes fraction')
+    Axes.annotate(r'$R^2_{ajd}$: ' + format(round(R2adj, 3),'.3f'), xy=(0.65, 0.1), xycoords='axes fraction')
+    Axes.annotate(r'NE : ' + format(round(NE.mean(), 2), '.2f') + '$\pm$' + format(round(NE.std(), 2), '.2f'), xy=(0.65, 0.025), xycoords='axes fraction')
+    Axes.set_xlabel('Observed $\mathrm{\mathbb{S}}$ (MPa)')
+    Axes.set_ylabel('Fitted $\mathrm{\mathbb{S}}$ (MPa)')
+    Axes.set_xlim([SMin, SMax])
+    Axes.set_ylim([SMin, SMax])
+    plt.xscale('log')
+    plt.yscale('log')
+    plt.legend(loc='upper left')
+    plt.subplots_adjust(left=0.15, bottom=0.15)
+    plt.close(Figure)
+
+    return Parameters, R2adj, NE
+
 #%% Main
 
 def Main(Arguments):
 
+    # Define paths
     MorphoPath = Path(__file__).parents[1] / '02_Results/Morphometry'
     AbaqusPath = Path(__file__).parents[1] / '02_Results/Abaqus'
 
@@ -540,10 +631,11 @@ def Main(Arguments):
     else:
         Samples = sorted([F.name[:-4] for F in Path.iterdir(AbaqusPath) if F.name.endswith('.out')])
 
+    # Read metadata file
+    Data = pd.read_excel(Path(__file__).parents[1] / '00_Data/SampleList.xlsx')
 
     Strain = np.array([0.001, 0.001, 0.001, 0.002, 0.002, 0.002])
-    X = np.matrix(np.zeros((len(Samples)*12, 5)))
-    Y = np.matrix(np.zeros((len(Samples)*12, 1)))
+    Xh, Yh, Xd, Yd = [], [], [], []
     for s, Sample in enumerate(Samples):
 
         # Step 1: Get fabric info
@@ -613,36 +705,74 @@ def Main(Arguments):
         Stiffness = Mandel2EngineeringNotation(Orthotropic)
 
         # Build linear system
-        Start, Stop = 12*s, 12*(s+1)
-        Y[Start:Stop] = np.log([[Stiffness[0,0]],
-                                [Stiffness[0,1]],
-                                [Stiffness[0,2]],
-                                [Stiffness[1,0]],
-                                [Stiffness[1,1]],
-                                [Stiffness[1,2]],
-                                [Stiffness[2,0]],
-                                [Stiffness[2,1]],
-                                [Stiffness[2,2]],
-                                [Stiffness[1,2]],
-                                [Stiffness[2,0]],
-                                [Stiffness[0,1]]])
+        Y = np.log([[Stiffness[0,0]],
+                    [Stiffness[0,1]],
+                    [Stiffness[0,2]],
+                    [Stiffness[1,0]],
+                    [Stiffness[1,1]],
+                    [Stiffness[1,2]],
+                    [Stiffness[2,0]],
+                    [Stiffness[2,1]],
+                    [Stiffness[2,2]],
+                    [Stiffness[1,2]],
+                    [Stiffness[2,0]],
+                    [Stiffness[0,1]]])
         
-        X[Start:Stop] = np.array([[1, 0, 0, np.log(BVTV), np.log(m1 ** 2)],
-                                [0, 1, 0, np.log(BVTV), np.log(m1 * m2)],
-                                [0, 1, 0, np.log(BVTV), np.log(m1 * m3)],
-                                [0, 1, 0, np.log(BVTV), np.log(m2 * m1)],
-                                [1, 0, 0, np.log(BVTV), np.log(m2 ** 2)],
-                                [0, 1, 0, np.log(BVTV), np.log(m2 * m3)],
-                                [0, 1, 0, np.log(BVTV), np.log(m3 * m1)],
-                                [0, 1, 0, np.log(BVTV), np.log(m3 * m2)],
-                                [1, 0, 0, np.log(BVTV), np.log(m3 ** 2)],
-                                [0, 0, 1, np.log(BVTV), np.log(m2 * m3)],
-                                [0, 0, 1, np.log(BVTV), np.log(m3 * m1)],
-                                [0, 0, 1, np.log(BVTV), np.log(m1 * m2)]])
-        
+        X = np.array([[1, 0, 0, np.log(BVTV), np.log(m1 ** 2)],
+                      [0, 1, 0, np.log(BVTV), np.log(m1 * m2)],
+                      [0, 1, 0, np.log(BVTV), np.log(m1 * m3)],
+                      [0, 1, 0, np.log(BVTV), np.log(m2 * m1)],
+                      [1, 0, 0, np.log(BVTV), np.log(m2 ** 2)],
+                      [0, 1, 0, np.log(BVTV), np.log(m2 * m3)],
+                      [0, 1, 0, np.log(BVTV), np.log(m3 * m1)],
+                      [0, 1, 0, np.log(BVTV), np.log(m3 * m2)],
+                      [1, 0, 0, np.log(BVTV), np.log(m3 ** 2)],
+                      [0, 0, 1, np.log(BVTV), np.log(m2 * m3)],
+                      [0, 0, 1, np.log(BVTV), np.log(m3 * m1)],
+                      [0, 0, 1, np.log(BVTV), np.log(m1 * m2)]])
 
-    # Solve linear system
+        # Store data in corresponding group
+        Group = Data[Data['Filename'] == Sample[:-2]]['Group (T2D or Ctrl)'].values[0]
+        if Group == 'Ctrl':
+            Xh.append(X)
+            Yh.append(Y)
+        elif Group == 'T2D':
+            Xd.append(X)
+            Yd.append(Y)
+
+
+    # Determine k and l
+    X = np.matrix(np.vstack([np.vstack(Xh),np.vstack(Xd)]))
+    Y = np.matrix(np.vstack([np.vstack(Yh),np.vstack(Yd)]))
+    Parametersg, R2adjg, NEg = OLS(X, Y)
+    k = Parametersg.loc['Value','k']
+    l = Parametersg.loc['Value','l']
+
+    # Solve linear systems
+    X = np.matrix(np.vstack(Xh))
+    Y = np.matrix(np.vstack(Yh))
     Parameters, R2adj, NE = OLS(X, Y)
+    Parametersh, R2adjh, NEh = OLS2(X[:,:-2], Y - X[:,3]*k - X[:,4]*l, k, l)
+
+    X = np.matrix(np.vstack(Xd))
+    Y = np.matrix(np.vstack(Yd))
+    Parameters, R2adj, NE = OLS(X, Y)
+    Parametersd, R2adjd, NEd = OLS2(X[:,:-2], Y - X[:,3]*k - X[:,4]*l, k, l)
+
+    # Plot 95% CI
+    Colors = [(0,0,0),(1,0,0),(0,0,1)]
+    Variables = [r'$\lambda_0$', r'$\lambda_0$' + '\'', r'$\mu_0$']
+    Figure, Axis = plt.subplots(1,3, figsize=(10,4), sharey=True)
+    for v, Variable in enumerate(['Lambda0', 'Lambda0p', 'Mu0']):
+        for i, P in enumerate([Parametersg, Parametersh, Parametersd]):
+            V = P.loc['Value',Variable]
+            V_Low = P.loc['Value',Variable] - P.loc['95% CI Low',Variable]
+            V_Top = P.loc['95% CI Top',Variable] - P.loc['Value',Variable]
+            Axis[v].errorbar([i], V, yerr=[[V_Low], [V_Top]], marker='o', color=Colors[i])
+            Axis[v].set_xlabel(Variables[v])
+            Axis[v].set_xticks(range(3),['Grouped','Ctrl','T2D'])
+    Axis[0].set_ylabel('Values (MPa)')
+    plt.show(Figure)
 
 
 if __name__ == '__main__':
