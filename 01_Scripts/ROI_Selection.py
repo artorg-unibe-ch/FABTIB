@@ -419,6 +419,10 @@ def Main(Arguments):
         
             # Update time
             Time.Process(0, f'Done ISQ {iISQ+1} / {len(InputISQs)}')
+
+            # Save Data
+            for c in ['$ROI','$XPos','$YPos','$ZPos','$Dim','$Threshold']:
+                Data[c] = Data[c].astype(int)
             Data.to_csv(Path(__file__).parents[1] / '02_Results' / 'Parameters.csv',
                     index=False, sep=';', lineterminator=';\n')
 

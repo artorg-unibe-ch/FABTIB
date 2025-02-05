@@ -935,110 +935,113 @@ def Main(Arguments):
 
     GroupedData = Data.groupby('$Sample')
 
+    List = [F.stem for F in Path(ResultsPath / 'Scans').iterdir()]
+
     for Sample, SampleData in GroupedData:
-        if Sample == 'C0014618':
-            break
+
+        if Sample in List:
+            pass
+        else:
 
             # Read scan
             Time.Process(1, 'Read ' + Sample)
-            # VoxelModel, AdditionalData = ReadISQ(ScanPath / (Sample + '.ISQ'), ASCII=False)
-            # VoxelModel = VoxelModel.astype(float)
+            VoxelModel, AdditionalData = ReadISQ(ScanPath / (Sample + '.ISQ'), ASCII=False)
+            VoxelModel = VoxelModel.astype(float)
 
-            # # Scale scan values for plotting
-            # Scaled = VoxelModel / Otsu
+            # Scale scan values for plotting
+            Scaled = VoxelModel / Otsu
 
             # Plot using pyvista
-            # Time.Update(2/5,'Plot scan')
-            # pl = pv.Plotter(off_screen=True)
-            # actors = pl.add_volume(Scaled[::5,::5,::5].T,
-            #             cmap='bone',
-            #             show_scalar_bar=False,
-            #             opacity='sigmoid_5')
-            # actors.prop.interpolation_type = 'linear'
-            # pl.camera_position = 'xz'
-            # pl.camera.azimuth = 0
-            # pl.camera.elevation = 30
-            # pl.camera.roll = 0
-            # pl.camera.zoom(1.2)
-            # pl.screenshot(ResultsPath / 'Scans' / (Sample + '.png'), return_img=False)
-    
+            Time.Update(2/5,'Plot scan')
+            pl = pv.Plotter(off_screen=True)
+            actors = pl.add_volume(Scaled[::5,::5,::5].T,
+                        cmap='bone',
+                        show_scalar_bar=False,
+                        opacity='sigmoid_5')
+            actors.prop.interpolation_type = 'linear'
+            pl.camera_position = 'xz'
+            pl.camera.azimuth = 0
+            pl.camera.elevation = 30
+            pl.camera.roll = 0
+            pl.camera.zoom(1.2)
+            pl.screenshot(ResultsPath / 'Scans' / (Sample + '.png'), return_img=False)
+
             Time.Update(4/5,'Plot ROIs')
-            for Index, Row in SampleData.iterrows():
-                if Index == 0:
-                    break
-                # X = Row['$XPos']
-                # Y = Row['$YPos']
-                # Z = Row['$ZPos']
-                # Dim = Row['$Dim']
+            for _, Row in SampleData.iterrows():
+                
+                X = Row['$XPos']
+                Y = Row['$YPos']
+                Z = Row['$ZPos']
+                Dim = Row['$Dim']
 
-                # ROI = Scaled[Z:Z+Dim,Y:Y+Dim,X:X+Dim].T
-                # Name = ResultsPath / 'Scans' / (Sample + '_' + str(Row['$ROI']) + '.png')
+                ROI = Scaled[Z:Z+Dim,Y:Y+Dim,X:X+Dim].T
+                Name = ResultsPath / 'Scans' / (Sample + '_' + str(Row['$ROI']) + '.png')
 
-                # pl = pv.Plotter(off_screen=True)
-                # actors = pl.add_volume(ROI,
-                #             cmap='bone',
-                #             show_scalar_bar=False,
-                #             opacity='sigmoid_5')
-                # actors.prop.interpolation_type = 'linear'
-                # pl.camera_position = 'xz'
-                # pl.camera.roll = 0
-                # pl.camera.elevation = 30
-                # pl.camera.azimuth = 30
-                # pl.camera.zoom(1.0)
-                # pl.screenshot(Name, return_img=False)
+                pl = pv.Plotter(off_screen=True)
+                actors = pl.add_volume(ROI,
+                            cmap='bone',
+                            show_scalar_bar=False,
+                            opacity='sigmoid_5')
+                actors.prop.interpolation_type = 'linear'
+                pl.camera_position = 'xz'
+                pl.camera.roll = 0
+                pl.camera.elevation = 30
+                pl.camera.azimuth = 30
+                pl.camera.zoom(1.0)
+                pl.screenshot(Name, return_img=False)
 
-                # # Read ROI segmented and cleaned ROI
-                Name = ResultsPath / 'ROIs' / (Sample + '_' + str(Row['$ROI']) + '.mhd')
-                ROI = sitk.ReadImage(str(Name))
-                ROI = sitk.GetArrayFromImage(ROI).T
+            #     # # Read ROI segmented and cleaned ROI
+            #     Name = ResultsPath / 'ROIs' / (Sample + '_' + str(Row['$ROI']) + '.mhd')
+            #     ROI = sitk.ReadImage(str(Name))
+            #     ROI = sitk.GetArrayFromImage(ROI).T
 
-                # pl = pv.Plotter(off_screen=True)
-                # actors = pl.add_volume(ROI,
-                #             cmap='bone',
-                #             show_scalar_bar=False, opacity=[0,1,1])
-                # actors.prop.interpolation_type = 'linear'
-                # pl.camera_position = 'xz'
-                # pl.camera.roll = 0
-                # pl.camera.elevation = 30
-                # pl.camera.azimuth = 30
-                # pl.camera.zoom(1.0)
-                # pl.screenshot(str(Name)[:-4] + '.png', return_img=False)
-                # # pl.show()
+            #     # pl = pv.Plotter(off_screen=True)
+            #     # actors = pl.add_volume(ROI,
+            #     #             cmap='bone',
+            #     #             show_scalar_bar=False, opacity=[0,1,1])
+            #     # actors.prop.interpolation_type = 'linear'
+            #     # pl.camera_position = 'xz'
+            #     # pl.camera.roll = 0
+            #     # pl.camera.elevation = 30
+            #     # pl.camera.azimuth = 30
+            #     # pl.camera.zoom(1.0)
+            #     # pl.screenshot(str(Name)[:-4] + '.png', return_img=False)
+            #     # # pl.show()
 
-                # Plot fabric
-                Name = ResultsPath / 'Morphometry' / (Sample + '_' + str(Row['$ROI']) + '.csv')
-                eValues, eVectors = GetFabric(Name)
-                FileName = str(Name)[:-4] + '.png'
-                PlotFabricROI(ROI, eValues, eVectors, FileName)
+            #     # Plot fabric
+            #     Name = ResultsPath / 'Morphometry' / (Sample + '_' + str(Row['$ROI']) + '.csv')
+            #     eValues, eVectors = GetFabric(Name)
+            #     FileName = str(Name)[:-4] + '.png'
+            #     PlotFabricROI(ROI, eValues, eVectors, FileName)
 
-                # Plot stiffness
-                Abaqus = open(ResultsPath / 'Abaqus' / (Sample + '_' + str(Row['$ROI']) + '.out'), 'r').readlines()
-                Strain = np.array([0.001, 0.001, 0.001, 0.002, 0.002, 0.002])
+            #     # Plot stiffness
+            #     Abaqus = open(ResultsPath / 'Abaqus' / (Sample + '_' + str(Row['$ROI']) + '.out'), 'r').readlines()
+            #     Strain = np.array([0.001, 0.001, 0.001, 0.002, 0.002, 0.002])
 
-                Stress = np.zeros((6,6))
-                for i in range(6):
-                    for j in range(6):
-                        Stress[i,j] = float(Abaqus[i+4].split()[j+1])
+            #     Stress = np.zeros((6,6))
+            #     for i in range(6):
+            #         for j in range(6):
+            #             Stress[i,j] = float(Abaqus[i+4].split()[j+1])
 
-                Stiffness = np.zeros((6,6))
-                for i in range(6):
-                    for j in range(6):
-                        Stiffness[i,j] = Stress[i,j] / Strain[i]
+            #     Stiffness = np.zeros((6,6))
+            #     for i in range(6):
+            #         for j in range(6):
+            #             Stiffness[i,j] = Stress[i,j] / Strain[i]
 
-                # Symetrize matrix
-                Stiffness = 1/2 * (Stiffness + Stiffness.T)
+            #     # Symetrize matrix
+            #     Stiffness = 1/2 * (Stiffness + Stiffness.T)
 
-                # Write tensor into mandel notation
-                Mandel = Engineering2MandelNotation(Stiffness)
+            #     # Write tensor into mandel notation
+            #     Mandel = Engineering2MandelNotation(Stiffness)
 
-                # Step 3: Transform tensor into fabric coordinate system
-                I = np.eye(3)
-                Q = np.array(eVectors)
-                S4 = IsoMorphism66_3333(Mandel)
-                TS4 = TransformTensor(S4, I, Q)
-                PlotStiffnessROI(ROI, TS4, 'Test.png')
+            #     # Step 3: Transform tensor into fabric coordinate system
+            #     I = np.eye(3)
+            #     Q = np.array(eVectors)
+            #     S4 = IsoMorphism66_3333(Mandel)
+            #     TS4 = TransformTensor(S4, I, Q)
+            #     PlotStiffnessROI(ROI, TS4, 'Test.png')
 
-                Time.Process(0,f'Done {Sample}')
+            Time.Process(0,f'Done {Sample}')
 
     return
 
@@ -1056,3 +1059,5 @@ if __name__ == '__main__':
     # Read arguments from the command line
     Arguments = Parser.parse_args()
     Main(Arguments)
+
+#%%
