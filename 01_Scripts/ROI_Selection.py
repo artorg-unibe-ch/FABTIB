@@ -374,48 +374,53 @@ def Main(Arguments):
 
     for iISQ, ISQ in enumerate(InputISQs):
 
-        # Read scan
-        Time.Process(1, 'Read ' + ISQ.name[:-4])
-        VoxelModel, AdditionalData = ReadISQ(ISQ, ASCII=False)
-        VoxelModel = VoxelModel.astype(float)
+        F = Data['$Sample'] == ISQ.stem
+        if pd.isna(Data[F]['$Dim'].values[2]):
 
-        if iISQ == 28 or iISQ == 30:
-            Shift = 50
-            VoxelModel = VoxelModel[Shift:850]
-        elif iISQ == 29:
-            Shift = 75
-            VoxelModel = VoxelModel[Shift:850]
+            # Read scan
+            Time.Process(1, 'Read ' + ISQ.name[:-4])
+            VoxelModel, AdditionalData = ReadISQ(ISQ, ASCII=False)
+            VoxelModel = VoxelModel.astype(float)
 
-        # Compute Otsu threshold to segment ROIS
-        Time.Update(1/5,'Compute Otsu')
-        Otsu = threshold_otsu(VoxelModel)
+            if ISQ.stem == 'R0017432' or ISQ.stem == 'R0017570':
+                Shift = 50
+                VoxelModel = VoxelModel[Shift:850]
+            elif ISQ.stem == 'R0017569':
+                Shift = 75
+                VoxelModel = VoxelModel[Shift:850]
 
-        # Select ROI at center of gravity
-        Time.Update(3/5,f'Select {Arguments.NROIs} ROIs')
-        ROISize = 5.3   # ROI side length in mm
-        Dim = int(round(ROISize // AdditionalData['ElementSpacing'][0]))
-        Coords = ROICoords(VoxelModel, AdditionalData, Dim, N=3)
+            # Compute Otsu threshold to segment ROIS
+            Time.Update(1/5,'Compute Otsu')
+            Otsu = threshold_otsu(VoxelModel)
+
+            # Select ROI at center of gravity
+            # Time.Update(3/5,f'Select {Arguments.NROIs} ROIs')
+            Time.Update(3/5,f'Select 3 ROIs')
+            ROISize = 5.3   # ROI side length in mm
+            Dim = int(round(ROISize // AdditionalData['ElementSpacing'][0]))
+            Coords = ROICoords(VoxelModel, AdditionalData, Dim, N=3)
+            
+            # Time.Update(4/5,f'Plot {Arguments.NROIs} ROIs')
+            Time.Update(4/5,f'Plot 3 ROIs')
+            for i, C in enumerate(Coords):
+                Index = iISQ * 3 + i
+                Data.loc[Index,'$Sample'] = ISQ.stem
+                Data.loc[Index,'$ROI'] = i+1
+                Data.loc[Index,'$XPos'] = C[0]
+                Data.loc[Index,'$YPos'] = C[1]
+
+                if iISQ >= len(InputISQs)-3:
+                    Data.loc[Index,'$ZPos'] = C[2] + Shift
+                else:
+                    Data.loc[Index,'$ZPos'] = C[2]
+                    
+                Data.loc[Index,'$Dim'] = Dim
+                Data.loc[Index,'$Threshold'] = round(Otsu)
         
-        Time.Update(4/5,f'Plot {Arguments.NROIs} ROIs')
-        for i, C in enumerate(Coords):
-            Index = iISQ * 3 + i
-            Data.loc[Index,'$Sample'] = ISQ.name[:-4]
-            Data.loc[Index,'$ROI'] = i+1
-            Data.loc[Index,'$XPos'] = C[0]
-            Data.loc[Index,'$YPos'] = C[1]
-
-            if iISQ >= 28:
-                Data.loc[Index,'$ZPos'] = C[2] + Shift
-            else:
-                Data.loc[Index,'$ZPos'] = C[2]
-                
-            Data.loc[Index,'$Dim'] = Dim
-            Data.loc[Index,'$Threshold'] = round(Otsu)
-    
-        # Update time
-        Time.Process(0, f'Done ISQ {iISQ+1} / {len(InputISQs)}')
-        Data.to_csv(Path(__file__).parents[1] / '02_Results' / 'Parameters.csv',
-                index=False, sep=';', line_terminator=';\n')
+            # Update time
+            Time.Process(0, f'Done ISQ {iISQ+1} / {len(InputISQs)}')
+            Data.to_csv(Path(__file__).parents[1] / '02_Results' / 'Parameters.csv',
+                    index=False, sep=';', lineterminator=';\n')
 
 
 if __name__ == '__main__':
@@ -432,3 +437,5 @@ if __name__ == '__main__':
     # Read arguments from the command line
     Arguments = Parser.parse_args()
     Main(Arguments)
+
+#%%

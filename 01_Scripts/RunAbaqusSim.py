@@ -49,7 +49,9 @@ def Main(Arguments):
         AbaqusInps = [F for F in Path.iterdir(DataPath) if F.name.endswith('Main.inp')]
 
     for Input in AbaqusInps:
-        WriteBash(Input.name)
+        Out = Input.parent / (Input.name[:-9] + '.out')
+        if not Out.exists():
+            WriteBash(Input.name)
 
 
 

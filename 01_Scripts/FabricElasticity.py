@@ -496,7 +496,7 @@ def OLS(X, Y, Alpha=0.95):
     Colors=[(0,0,1),(0,1,0),(1,0,0)]
 
     # Set boundaries of fabtib
-    SMax = 1e4
+    SMax = 5e4
     SMin = 1e-3
 
     Figure, Axes = plt.subplots(1, 1, figsize=(5.5, 4.5), dpi=DPI)
@@ -527,7 +527,7 @@ def OLS(X, Y, Alpha=0.95):
 
     return Parameters, R2adj, NE
 
-def OLS2(X, Y, k, l, Alpha=0.95):
+def OLS2(X, Y, L0, L0p, M0, Alpha=0.95):
 
     # Solve linear system
     XTXi = np.linalg.inv(X.T * X)
@@ -548,9 +548,9 @@ def OLS2(X, Y, k, l, Alpha=0.95):
 
     # Store parameters in data frame
     Parameters = pd.DataFrame(columns=['Lambda0','Lambda0p','Mu0','k','l'])
-    Parameters.loc['Value'] = [np.exp(B[0,0]) - 2*np.exp(B[2,0]), np.exp(B[1,0]), np.exp(B[2,0]), k, l]
-    Parameters.loc['95% CI Low'] = [np.exp(B_CI_Low[0,0]) - 2*np.exp(B_CI_Top[0,2]), np.exp(B_CI_Low[0,1]), np.exp(B_CI_Low[0,2]), k, l]
-    Parameters.loc['95% CI Top'] = [np.exp(B_CI_Top[0,0]) - 2*np.exp(B_CI_Low[0,2]), np.exp(B_CI_Top[0,1]), np.exp(B_CI_Top[0,2]), k, l]
+    Parameters.loc['Value'] = [L0, L0p, M0, B[0,0], B[1,0]]
+    Parameters.loc['95% CI Low'] = [L0, L0p, M0, B_CI_Top[0,0], B_CI_Top[0,1]]
+    Parameters.loc['95% CI Top'] = [L0, L0p, M0, B_CI_Low[0,0], B_CI_Low[0,1]]
 
     # Compute R2 and standard error of the estimate
     RSS = np.sum([R**2 for R in Residuals])
@@ -570,50 +570,6 @@ def OLS2(X, Y, k, l, Alpha=0.95):
         Denominator = np.sum([T**2 for T in T_Obs])
         NE.append(np.sqrt(Numerator/Denominator))
     NE = np.array(NE)
-
-
-    # Prepare data for plot
-    Line = np.linspace(min(Y.min(), (X*B).min()),
-                       max(Y.max(), (X*B).max()), len(Y))
-    # B_0 = np.sort(np.sqrt(np.diag(X * Cov * X.T)))
-    # CI_Line_u = np.exp(Line + t_Alpha[0] * B_0)
-    # CI_Line_o = np.exp(Line + t_Alpha[1] * B_0)
-
-    # Plots
-    DPI = 500
-    SMax = max([Y_Obs.max(), Y_Fit.max()]) * 5
-    SMin = min([Y_Obs.min(), Y_Fit.min()]) / 5
-    Colors=[(0,0,1),(0,1,0),(1,0,0)]
-
-    # Set boundaries of fabtib
-    SMax = 1e4
-    SMin = 1e-3
-
-    Figure, Axes = plt.subplots(1, 1, figsize=(5.5, 4.5), dpi=DPI)
-    # Axes.fill_between(np.exp(Line), CI_Line_u, CI_Line_o, color=(0.8,0.8,0.8))
-    Axes.plot(Y_Obs[X[:, 0] == 1], Y_Fit[X[:, 0] == 1],
-              color=Colors[0], linestyle='none', marker='s')
-    Axes.plot(Y_Obs[X[:, 1] == 1], Y_Fit[X[:, 1] == 1],
-              color=Colors[1], linestyle='none', marker='o')
-    Axes.plot(Y_Obs[X[:, 2] == 1], Y_Fit[X[:, 2] == 1],
-              color=Colors[2], linestyle='none', marker='^')
-    Axes.plot([], color=Colors[0], linestyle='none', marker='s', label=r'$\lambda_{ii}$')
-    Axes.plot([], color=Colors[1], linestyle='none', marker='o', label=r'$\lambda_{ij}$')
-    Axes.plot([], color=Colors[2], linestyle='none', marker='^', label=r'$\mu_{ij}$')
-    Axes.plot(np.exp(Line), np.exp(Line), color=(0, 0, 0), linestyle='--')
-    Axes.annotate(r'N ROIs   : ' + str(len(Y)//12), xy=(0.3, 0.1), xycoords='axes fraction')
-    Axes.annotate(r'N Points : ' + str(len(Y)), xy=(0.3, 0.025), xycoords='axes fraction')
-    Axes.annotate(r'$R^2_{ajd}$: ' + format(round(R2adj, 3),'.3f'), xy=(0.65, 0.1), xycoords='axes fraction')
-    Axes.annotate(r'NE : ' + format(round(NE.mean(), 2), '.2f') + '$\pm$' + format(round(NE.std(), 2), '.2f'), xy=(0.65, 0.025), xycoords='axes fraction')
-    Axes.set_xlabel('Observed $\mathrm{\mathbb{S}}$ (MPa)')
-    Axes.set_ylabel('Fitted $\mathrm{\mathbb{S}}$ (MPa)')
-    Axes.set_xlim([SMin, SMax])
-    Axes.set_ylim([SMin, SMax])
-    plt.xscale('log')
-    plt.yscale('log')
-    plt.legend(loc='upper left')
-    plt.subplots_adjust(left=0.15, bottom=0.15)
-    plt.close(Figure)
 
     return Parameters, R2adj, NE
 
@@ -745,33 +701,34 @@ def Main(Arguments):
     X = np.matrix(np.vstack([np.vstack(Xh),np.vstack(Xd)]))
     Y = np.matrix(np.vstack([np.vstack(Yh),np.vstack(Yd)]))
     Parametersg, R2adjg, NEg = OLS(X, Y)
-    k = Parametersg.loc['Value','k']
-    l = Parametersg.loc['Value','l']
+    L0 = Parametersg.loc['Value','Lambda0']
+    L0p = Parametersg.loc['Value','Lambda0p']
+    M0 = Parametersg.loc['Value','Mu0']
 
     # Solve linear systems
     X = np.matrix(np.vstack(Xh))
     Y = np.matrix(np.vstack(Yh))
     Parameters, R2adj, NE = OLS(X, Y)
-    Parametersh, R2adjh, NEh = OLS2(X[:,:-2], Y - X[:,3]*k - X[:,4]*l, k, l)
+    Parametersh, R2adjh, NEh = OLS2(X[:,3:], Y - X[:,0]*L0 - X[:,1]*L0p - X[:,2]*M0, L0, L0p, M0)
 
     X = np.matrix(np.vstack(Xd))
     Y = np.matrix(np.vstack(Yd))
     Parameters, R2adj, NE = OLS(X, Y)
-    Parametersd, R2adjd, NEd = OLS2(X[:,:-2], Y - X[:,3]*k - X[:,4]*l, k, l)
+    Parametersd, R2adjh, NEh = OLS2(X[:,3:], Y - X[:,0]*L0 - X[:,1]*L0p - X[:,2]*M0, L0, L0p, M0)
 
     # Plot 95% CI
     Colors = [(0,0,0),(1,0,0),(0,0,1)]
-    Variables = [r'$\lambda_0$', r'$\lambda_0$' + '\'', r'$\mu_0$']
-    Figure, Axis = plt.subplots(1,3, figsize=(10,4), sharey=True)
-    for v, Variable in enumerate(['Lambda0', 'Lambda0p', 'Mu0']):
+    Variables = ['k','l']
+    Figure, Axis = plt.subplots(1,2, figsize=(6,4), sharey=True)
+    for v, Variable in enumerate(['k', 'l']):
         for i, P in enumerate([Parametersg, Parametersh, Parametersd]):
             V = P.loc['Value',Variable]
-            V_Low = P.loc['Value',Variable] - P.loc['95% CI Low',Variable]
-            V_Top = P.loc['95% CI Top',Variable] - P.loc['Value',Variable]
+            V_Low = abs(P.loc['Value',Variable] - P.loc['95% CI Low',Variable])
+            V_Top = abs(P.loc['95% CI Top',Variable] - P.loc['Value',Variable])
             Axis[v].errorbar([i], V, yerr=[[V_Low], [V_Top]], marker='o', color=Colors[i])
             Axis[v].set_xlabel(Variables[v])
             Axis[v].set_xticks(range(3),['Grouped','Ctrl','T2D'])
-    Axis[0].set_ylabel('Values (MPa)')
+    Axis[0].set_ylabel('Values (-)')
     plt.show(Figure)
 
 
