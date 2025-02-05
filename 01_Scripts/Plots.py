@@ -364,30 +364,6 @@ def Main(Arguments):
             pl.camera.zoom(1.2)
             pl.screenshot(ResultsPath / 'Scans' / (Sample + '.png'), return_img=False)
 
-            Time.Update(4/5,'Plot ROIs')
-            for _, Row in SampleData.iterrows():
-                
-                X = Row['$XPos']
-                Y = Row['$YPos']
-                Z = Row['$ZPos']
-                Dim = Row['$Dim']
-
-                ROI = Scaled[Z:Z+Dim,Y:Y+Dim,X:X+Dim].T
-                Name = ResultsPath / 'Scans' / (Sample + '_' + str(Row['$ROI']) + '.png')
-
-                pl = pv.Plotter(off_screen=True)
-                actors = pl.add_volume(ROI,
-                            cmap='bone',
-                            show_scalar_bar=False,
-                            opacity='sigmoid_5')
-                actors.prop.interpolation_type = 'linear'
-                pl.camera_position = 'xz'
-                pl.camera.roll = 0
-                pl.camera.elevation = 30
-                pl.camera.azimuth = 30
-                pl.camera.zoom(1.0)
-                pl.screenshot(Name, return_img=False)
-
             Time.Process(0,f'Done {Sample}')
 
     return
