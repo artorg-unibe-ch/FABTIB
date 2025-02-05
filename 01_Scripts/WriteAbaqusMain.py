@@ -245,9 +245,9 @@ def Main(Arguments):
         AbaqusInps = [F for F in Path.iterdir(DataPath) if F.name.endswith('Mesh.inp')]
 
     for Input in AbaqusInps:
-        Main = Input.parent / (Input.name[:10] + '_Main.inp')
-        if Main.exists():
-            print(f'{Main.name} already exists')
+        Out = Input.parent / (Input.name[:10] + '.out')
+        if Out.exists():
+            print(f'{Out.name} already exists')
         else:
             WriteMain(Input)
 

@@ -1,6 +1,6 @@
 <!DOCTYPE MedToolXML>
-<MedToolXML cpu="1" exefile="" paramfile="C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/ParametersT2D.csv" level="Expert" workdir="C:/Users/mathi" resfile="" writeonly="yes">
- <_01_ROISelection script="mic" active="yes">
+<MedToolXML paramfile="C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/ParametersSub.csv" resfile="" workdir="C:/Users/mathi" cpu="1" writeonly="yes" exefile="" level="Expert">
+ <_01_ROISelection active="yes" script="mic">
   <modulName>
    <description>mic - medical image converter</description>
   </modulName>
@@ -918,7 +918,7 @@
    <menu>Image Infos</menu>
   </cog>
  </_01_ROISelection>
- <_02_ROISegmentation script="mic" active="yes">
+ <_02_ROISegmentation active="yes" script="mic">
   <modulName>
    <description>mic - medical image converter</description>
   </modulName>
@@ -1836,7 +1836,7 @@
    <menu>Image Infos</menu>
   </cog>
  </_02_ROISegmentation>
- <_03_Morphometry script="hma" active="yes">
+ <_03_Morphometry active="yes" script="hma">
   <modulName>
    <description>hma</description>
   </modulName>
@@ -2259,7 +2259,7 @@
    <menu>Single Run Output Options</menu>
   </con>
  </_03_Morphometry>
- <_04_Mesh script="imgToFe" active="yes">
+ <_04_Mesh active="yes" script="imgToFe">
   <modulName>
    <description>Template Script</description>
   </modulName>
@@ -2407,7 +2407,7 @@
    <menu>Result Output</menu>
   </nodedat>
  </_04_Mesh>
- <_05_BCs script="cbc" active="yes">
+ <_05_BCs active="yes" script="cbc">
   <modulName>
    <description>cbc</description>
   </modulName>
@@ -2467,7 +2467,7 @@
    <menu>Common</menu>
   </tol>
  </_05_BCs>
- <_06_ReadResults script="abqSeReader" active="no">
+ <_06_ReadResults active="no" script="abqSeReader">
   <modulName>
    <description>SeReader</description>
   </modulName>
