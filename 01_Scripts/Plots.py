@@ -330,11 +330,10 @@ def Main(Arguments):
     Data = pd.read_csv(ResultsPath / 'Parameters.csv', sep=';')
     del Data['Unnamed: 7']
 
-    GroupedData = Data.groupby('$Sample')
+    Samples = Data['$Sample'].unique()
+    List = set(F.stem for F in Path(ResultsPath / 'Scans').iterdir())
 
-    List = set(F.stem[:8] for F in Path(ResultsPath / 'Scans').iterdir())
-
-    for Sample, SampleData in GroupedData:
+    for Sample in Samples:
 
         if Sample in List:
             pass
@@ -343,11 +342,29 @@ def Main(Arguments):
             # Read scan
             Time.Process(1, 'Read ' + Sample)
             VoxelModel, AdditionalData = ReadISQ(ScanPath / (Sample + '.ISQ'), ASCII=False)
-            VoxelModel = VoxelModel.astype(float)
+            VoxelModel = VoxelModel.astype('float16')
+
+            if Sample == 'R0017432' or Sample == 'R0017570':
+                Shift = 50
+                VoxelModel = VoxelModel[Shift:850]
+            elif Sample == 'R0017569':
+                Shift = 75
+                VoxelModel = VoxelModel[Shift:850]
 
             # Scale scan values for plotting
-            Otsu = SampleData['$Threshold'].values[0]
-            Scaled = VoxelModel / Otsu
+            m = VoxelModel.mean()
+            n = VoxelModel.size
+            d2 = (VoxelModel - m) ** 2
+            var = d2.sum() / n
+            s = var ** 0.5
+            # s = VoxelModel.std()
+            Scaled = VoxelModel - m
+            Scaled = Scaled / s
+
+            # Clip values
+            Scaled[Scaled < 0] = 0
+            Scaled[Scaled > 10] = 10
+            Scaled = Scaled.astype(float)
 
             # Plot using pyvista
             Time.Update(2/5,'Plot scan')
