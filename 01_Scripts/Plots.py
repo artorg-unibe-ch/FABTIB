@@ -935,7 +935,7 @@ def Main(Arguments):
 
     GroupedData = Data.groupby('$Sample')
 
-    List = [F.stem for F in Path(ResultsPath / 'Scans').iterdir()]
+    List = set(F.stem[:8] for F in Path(ResultsPath / 'Scans').iterdir())
 
     for Sample, SampleData in GroupedData:
 
