@@ -19,7 +19,7 @@ from pathlib import Path
 
 #%% Functions
 
-def WriteBash(Sample):
+def WriteBash(Sample, n):
 
     Shift = 10
     Main = Sample
@@ -27,12 +27,12 @@ def WriteBash(Sample):
     ODBFile = Sample[:Shift] + '.odb'
     OutFile = Sample[:Shift] + '.out'
 
-    Text = f"""abaqus interactive job={Job} inp="/home/ms20s284/FABTIB2/02_Results/Abaqus/{Main}" cpus=24
-abaqus python "/home/ms20s284/FABTIB2/01_Scripts/abqSeReader.py" in="/home/ms20s284/FABTIB2/02_Results/Abaqus/{ODBFile}"  out="/home/ms20s284/FABTIB2/02_Results/Abaqus/{OutFile}"  size="5.28;5.28;5.28" spec="Stress" 
+    Text = f"""abaqus interactive job={Job} inp="/home/ms20s284/FABTIB2/02_Results/Abaqus/{Main}" cpus=16
+abaqus python "/home/ms20s284/FABTIB2/01_Scripts/abqSeReader.py" in="/home/ms20s284/FABTIB2/02_Results/Simulations_{n}/{ODBFile}"  out="/home/ms20s284/FABTIB2/02_Results/Abaqus/{OutFile}"  size="5.28;5.28;5.28" spec="Stress" 
 rm *.com *.sta *.pes *.pmg *.prt *.par *.msg *.dat *.env *.fil *.lck *.odb 
 """
 
-    with open('RunAbaqus.bash','a') as File:
+    with open(f'RunAbaqus_{n}.bash','a') as File:
         File.write(Text)
 
     return
@@ -48,10 +48,12 @@ def Main(Arguments):
         DataPath = Path(__file__).parents[1] / '02_Results/Abaqus/'
         AbaqusInps = [F for F in Path.iterdir(DataPath) if F.name.endswith('Main.inp')]
 
-    for Input in AbaqusInps:
-        Out = Input.parent / (Input.name[:-9] + '.out')
-        if not Out.exists():
-            WriteBash(Input.name)
+    # Separate for parallel runs
+    NGroups = 6
+    GroupSize = len(AbaqusInps) // NGroups
+    for N, InputList in enumerate(zip(*(iter(AbaqusInps),) * GroupSize)):
+        for Input in InputList:
+            WriteBash(Input.name, N)
 
 
 
