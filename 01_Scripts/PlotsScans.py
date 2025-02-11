@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 import pyvista as pv
 from pathlib import Path
-from skimage.filters import threshold_otsu
+import SimpleITK as sitk
 
 # %% Time class
 class Time():
@@ -321,112 +321,62 @@ def ReadISQ(File, InfoFile=False, Echo=False, ASCII=False):
 
     return VoxelModel, AdditionalData
 
-def ROICoords(VoxelModel, AddData, Dim, N):
-
-    # Compute ROI Z positions
-    Height = (AddData['DimSize'][2] - Dim) # Sample height accounting for ROI size
-    Step = Height / (N-1)                 # Z distance between ROIs
-    Zc = np.arange(N) * Step + Dim /2
-
-    # Compute center of mass in X and Y for each Z
-    Coords = []
-    X = np.arange(VoxelModel.shape[2])
-    Y = np.arange(VoxelModel.shape[1])
-    for i in range(N):
-        ZStart = int(Zc[i] - Dim/2)
-        Stop = int(Zc[i] + Dim/2)
-        CropedModel = VoxelModel[ZStart:Stop]
-
-        Xc = np.sum(CropedModel, axis=(0,1)) * X
-        Xc = sum(Xc) / np.sum(CropedModel)
-        Yc = np.sum(CropedModel, axis=(0,2)) * Y
-        Yc = sum(Yc) / np.sum(CropedModel)
-
-        XStart = int(round(Xc - Dim/2))
-        YStart = int(round(Yc - Dim/2))
-
-        Coords.append((XStart, YStart, ZStart))
-
-    return Coords
-
-
 #%% Main
 
 def Main(Arguments):
 
-    # Read Arguments
-    if Arguments.InputISQ:
-        InputISQs = [Arguments.InputISQ]
-    else:
-        DataPath = Path(__file__).parents[1] / '00_Data'
-        InputISQs = [F for F in Path.iterdir(DataPath) if F.name.endswith('.ISQ')]
+    ScanPath = Path(__file__).parents[1] / '00_Data'
+    ResultsPath = Path(__file__).parents[1] / '02_Results'
+    Data = pd.read_csv(ResultsPath / 'Parameters.csv', sep=';')
+    del Data['Unnamed: 7']
 
-    # Create output directory if necessary
-    Path.mkdir(Path(Arguments.OutputPath), exist_ok=True)
+    Samples = Data['$Sample'].unique()
+    List = set(F.stem for F in Path(ResultsPath / 'Scans').iterdir())
 
-    # Create csv file for coordinates
-    try:
-        Data = pd.read_csv(Path(__file__).parents[1] / '02_Results' / 'Parameters.csv', sep=';')
-        del Data['Unnamed: 7']
-    except:
-        Variables = ['$Sample','$ROI','$XPos','$YPos','$ZPos','$Dim','$Threshold']
-        Data = pd.DataFrame(columns=Variables)
+    # Define mean Otsu threshold
+    Otsu = int(Data['$Threshold'].mean())
 
-    Samples = Data['$Sample'].unique().astype(str)
-    for iISQ, ISQ in enumerate(InputISQs):
+    for Sample in Samples:
 
-        # F = Data['$Sample'] == ISQ.stem
-        if ISQ.stem not in Samples:
-        # if pd.isna(Data[F]['$Dim'].values[2]):
+        if Sample in List:
+            pass
+        else:
 
             # Read scan
-            Time.Process(1, 'Read ' + ISQ.name[:-4])
-            VoxelModel, AdditionalData = ReadISQ(ISQ, ASCII=False)
-            VoxelModel = VoxelModel.astype(float)
+            Time.Process(1, 'Read ' + Sample)
+            VoxelModel, AdditionalData = ReadISQ(ScanPath / (Sample + '.ISQ'), ASCII=False)
 
-            if ISQ.stem == 'R0017432' or ISQ.stem == 'R0017570':
-                Shift = 50
-                VoxelModel = VoxelModel[Shift:850]
-            elif ISQ.stem == 'R0017569':
-                Shift = 75
-                VoxelModel = VoxelModel[Shift:850]
+            # Resample for lighter computations
+            F = 5
+            Resampled = VoxelModel[::F,::F,::F].astype(float)
 
-            # Compute Otsu threshold to segment ROIS
-            Time.Update(1/5,'Compute Otsu')
-            Otsu = threshold_otsu(VoxelModel)
+            # Scale scan values for plotting
+            Scaled = Resampled - Otsu
+            Range = float(Scaled.max()) - float(Scaled.min())
+            Scaled = Scaled / Range
+            Scaled[Scaled < 0] = -1
 
-            # Select ROI at center of gravity
-            # Time.Update(3/5,f'Select {Arguments.NROIs} ROIs')
-            Time.Update(3/5,f'Select 3 ROIs')
-            ROISize = 5.3   # ROI side length in mm
-            Dim = int(round(ROISize // AdditionalData['ElementSpacing'][0]))
-            Coords = ROICoords(VoxelModel, AdditionalData, Dim, N=3)
-            
-            # Time.Update(4/5,f'Plot {Arguments.NROIs} ROIs')
-            Time.Update(4/5,f'Plot 3 ROIs')
-            for i, C in enumerate(Coords):
-                Index = iISQ * 3 + i + 180
-                Data.loc[Index,'$Sample'] = ISQ.stem
-                Data.loc[Index,'$ROI'] = int(i+1)
-                Data.loc[Index,'$XPos'] = int(C[0])
-                Data.loc[Index,'$YPos'] = int(C[1])
+            # Plot using pyvista
+            Time.Update(2/5,'Plot scan')
+            pv.start_xvfb()
+            pl = pv.Plotter(off_screen=True)
+            actors = pl.add_volume(Scaled.T,
+                        cmap='bone',
+                        show_scalar_bar=False,
+                        opacity='sigmoid_5',
+                        clim=[-1,1])
+            actors.prop.interpolation_type = 'linear'
+            pl.camera_position = 'xz'
+            pl.camera.azimuth = 0
+            pl.camera.elevation = 30
+            pl.camera.roll = 0
+            pl.camera.zoom(1.2)
+            pl.screenshot(ResultsPath / 'Scans' / (Sample + '.png'), return_img=False)
 
-                # if iISQ >= len(InputISQs)-3:
-                #     Data.loc[Index,'$ZPos'] = int(C[2] + Shift)
-                # else:
-                Data.loc[Index,'$ZPos'] = int(C[2])
-                    
-                Data.loc[Index,'$Dim'] = int(Dim)
-                Data.loc[Index,'$Threshold'] = int(round(Otsu))
-        
-            # Update time
-            Time.Process(0, f'Done ISQ {iISQ+1} / {len(InputISQs)}')
+            Time.Process(0,f'Done {Sample}')
 
-            # Save Data
-            for c in ['$ROI','$XPos','$YPos','$ZPos','$Dim','$Threshold']:
-                Data[c] = Data[c].astype(int)
-            Data.to_csv(Path(__file__).parents[1] / '02_Results' / 'Parameters.csv',
-                    index=False, sep=';', lineterminator=';\n')
+    return
+
 
 
 if __name__ == '__main__':
@@ -436,9 +386,7 @@ if __name__ == '__main__':
     # Add optional argument
     ScriptVersion = Parser.prog + ' version ' + __version__
     Parser.add_argument('-v', '--Version', help='Show script version', action='version', version=ScriptVersion)
-    Parser.add_argument('--InputISQ', help='File name of the ISQ scan', type=str)
-    Parser.add_argument('--OutputPath', help='Output path for the ROI and png image of the plot', default=Path(__file__).parents[1] / '02_Results/Scans')
-    Parser.add_argument('--NROIs', help='Number of region of interests to extract', type=int, default=3)
+    Parser.add_argument('--OutputPath', help='Output path for the plots', default=Path(__file__).parents[1] / '02_Results')
 
     # Read arguments from the command line
     Arguments = Parser.parse_args()
