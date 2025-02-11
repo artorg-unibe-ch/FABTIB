@@ -19,6 +19,7 @@ import pandas as pd
 from pathlib import Path
 from scipy.stats import t
 import matplotlib.pyplot as plt
+from scipy.optimize import linear_sum_assignment
 
 np.set_printoptions(linewidth=300,
                     suppress=True,
@@ -496,8 +497,8 @@ def OLS(X, Y, Alpha=0.95):
     Colors=[(0,0,1),(0,1,0),(1,0,0)]
 
     # Set boundaries of fabtib
-    SMax = 5e4
-    SMin = 1e-3
+    SMax = 1e4
+    SMin = 5e1
 
     Figure, Axes = plt.subplots(1, 1, figsize=(5.5, 4.5), dpi=DPI)
     # Axes.fill_between(np.exp(Line), CI_Line_u, CI_Line_o, color=(0.8,0.8,0.8))
@@ -514,9 +515,9 @@ def OLS(X, Y, Alpha=0.95):
     Axes.annotate(r'N ROIs   : ' + str(len(Y)//12), xy=(0.3, 0.1), xycoords='axes fraction')
     Axes.annotate(r'N Points : ' + str(len(Y)), xy=(0.3, 0.025), xycoords='axes fraction')
     Axes.annotate(r'$R^2_{ajd}$: ' + format(round(R2adj, 3),'.3f'), xy=(0.65, 0.1), xycoords='axes fraction')
-    Axes.annotate(r'NE : ' + format(round(NE.mean(), 2), '.2f') + '$\pm$' + format(round(NE.std(), 2), '.2f'), xy=(0.65, 0.025), xycoords='axes fraction')
-    Axes.set_xlabel('Observed $\mathrm{\mathbb{S}}$ (MPa)')
-    Axes.set_ylabel('Fitted $\mathrm{\mathbb{S}}$ (MPa)')
+    Axes.annotate(r'NE : ' + format(round(NE.mean(), 2), '.2f') + r'$\pm$' + format(round(NE.std(), 2), '.2f'), xy=(0.65, 0.025), xycoords='axes fraction')
+    Axes.set_xlabel(r'Observed $\mathrm{\mathbb{S}}$ (MPa)')
+    Axes.set_ylabel(r'Fitted $\mathrm{\mathbb{S}}$ (MPa)')
     Axes.set_xlim([SMin, SMax])
     Axes.set_ylim([SMin, SMax])
     plt.xscale('log')
@@ -590,8 +591,41 @@ def Main(Arguments):
     # Read metadata file
     Data = pd.read_excel(Path(__file__).parents[1] / '00_Data/SampleList.xlsx')
 
+    # Define the two groups
+    Ctrl = Data['Group (T2D or Ctrl)'] == 'Ctrl'
+    T2D = Data['Group (T2D or Ctrl)'] == 'T2D'
+    FH = Data['Anatomical Location'] == 'Femoral Head'
+    Ctrl = Data[Ctrl & FH]['Filename'].values
+    T2D = Data[T2D & FH]['Filename'].values
+
+    # Collect BVTV and DA
+    Morpho = pd.read_csv(Path(__file__).parents[1] / '02_Results/Morphometry.csv', index_col=[0,1])
+    Ctrl_Morpho, T2D_Morpho = [], []
+    CtrlList, T2DList = [], []
+    for s, Sample in Morpho.iterrows():
+        BVTV = Sample['BV/TV']
+        DA = Sample['DA']
+        if s[0] in Ctrl:
+            Ctrl_Morpho.append([BVTV, DA])
+            CtrlList.append([s[0], s[1]])
+        elif s[0] in T2D:
+            T2D_Morpho.append([BVTV, DA])
+            T2DList.append([s[0], s[1]])
+    Ctrl_Morpho = np.array(Ctrl_Morpho)
+    T2D_Morpho = np.array(T2D_Morpho)
+
+    # Compute samples differences
+    Differences = Ctrl_Morpho[:, np.newaxis, :] - T2D_Morpho[np.newaxis, :, :]
+    Distances = np.sqrt(np.sum(Differences**2, axis=2))
+
+    # Solve the assignment problem using the Hungarian algorithm
+    Ctrl_Idx, T2D_Idx = linear_sum_assignment(Distances)
+    Ctrl_Samples = [CtrlList[I][0] + '_' + str(CtrlList[I][1]) for I in Ctrl_Idx]
+    T2D_Samples = [T2DList[I][0] + '_' + str(T2DList[I][1]) for I in T2D_Idx]
+
+    # Collect homogenization data
     Strain = np.array([0.001, 0.001, 0.001, 0.002, 0.002, 0.002])
-    Xh, Yh, Xd, Yd = [], [], [], []
+    Xh, Yh, Xd, Yd, Xp, Yp = [], [], [], [], [], []
     for s, Sample in enumerate(Samples):
 
         # Step 1: Get fabric info
@@ -688,13 +722,16 @@ def Main(Arguments):
                       [0, 0, 1, np.log(BVTV), np.log(m1 * m2)]])
 
         # Store data in corresponding group
-        Group = Data[Data['Filename'] == Sample[:-2]]['Group (T2D or Ctrl)'].values[0]
-        if Group == 'Ctrl':
+        Loc = Data[Data['Filename'] == Sample[:-2]]['Anatomical Location'].values[0]
+        if Sample in Ctrl_Samples:
             Xh.append(X)
             Yh.append(Y)
-        elif Group == 'T2D':
+        elif Sample in T2D_Samples:
             Xd.append(X)
             Yd.append(Y)
+        elif Loc == 'Distal Femur':
+            Xp.append(X)
+            Yp.append(Y)
 
 
     # Determine k and l
@@ -709,17 +746,19 @@ def Main(Arguments):
     X = np.matrix(np.vstack(Xh))
     Y = np.matrix(np.vstack(Yh))
     Parameters, R2adj, NE = OLS(X, Y)
-    Parametersh, R2adjh, NEh = OLS2(X[:,3:], Y - X[:,0]*L0 - X[:,1]*L0p - X[:,2]*M0, L0, L0p, M0)
+    Yr = Y - X[:,0]*np.log(L0) - X[:,1]*np.log(L0p) - X[:,2]*np.log(M0)
+    Parametersh, R2adjh, NEh = OLS2(X[:,3:], Yr , L0, L0p, M0)
 
     X = np.matrix(np.vstack(Xd))
     Y = np.matrix(np.vstack(Yd))
     Parameters, R2adj, NE = OLS(X, Y)
-    Parametersd, R2adjh, NEh = OLS2(X[:,3:], Y - X[:,0]*L0 - X[:,1]*L0p - X[:,2]*M0, L0, L0p, M0)
+    Yr = Y - X[:,0]*np.log(L0) - X[:,1]*np.log(L0p) - X[:,2]*np.log(M0)
+    Parametersd, R2adjh, NEh = OLS2(X[:,3:], Yr, L0, L0p, M0)
 
     # Plot 95% CI
     Colors = [(0,0,0),(1,0,0),(0,0,1)]
     Variables = ['k','l']
-    Figure, Axis = plt.subplots(1,2, figsize=(6,4), sharey=True)
+    Figure, Axis = plt.subplots(1,2, figsize=(6,4), sharey=False)
     for v, Variable in enumerate(['k', 'l']):
         for i, P in enumerate([Parametersg, Parametersh, Parametersd]):
             V = P.loc['Value',Variable]
@@ -729,6 +768,7 @@ def Main(Arguments):
             Axis[v].set_xlabel(Variables[v])
             Axis[v].set_xticks(range(3),['Grouped','Ctrl','T2D'])
     Axis[0].set_ylabel('Values (-)')
+    plt.tight_layout()
     plt.show(Figure)
 
 
@@ -746,3 +786,5 @@ if __name__ == '__main__':
     # Read arguments from the command line
     Arguments = Parser.parse_args()
     Main(Arguments)
+
+#%%

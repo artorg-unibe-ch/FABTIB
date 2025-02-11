@@ -77,9 +77,9 @@ def add_subplot_axes(ax,rect,axisbg='w'):
     subax.yaxis.set_tick_params(labelsize=y_labelsize)
     return subax
 
-def PlotHistogram(Variable, Name, Path):
+def ComputeHistogram(Variable:np.array):
 
-    # 04 Get data attributes
+    # Get data attributes
     SortedValues = np.sort(Variable).astype(float)
     N = len(Variable)
     X_Bar = np.mean(Variable)
@@ -91,7 +91,7 @@ def PlotHistogram(Variable, Name, Path):
     Width = (Edges[1] - Edges[0])
     Center = (Edges[:-1] + Edges[1:]) / 2
 
-    # 05 Kernel density estimation (Gaussian kernel)
+    # Kernel density estimation (Gaussian kernel)
     KernelEstimator = np.zeros(N)
     NormalIQR = np.sum(np.abs(norm.ppf(np.array([0.25,0.75]), 0, 1)))
     DataIQR = np.abs(Q075) - np.abs(Q025)
@@ -101,18 +101,31 @@ def PlotHistogram(Variable, Name, Path):
         KernelEstimator += Norm / max(Norm)
     KernelEstimator = KernelEstimator/N*max(Histogram)
 
-    ## Histogram and density distribution
+    # Histogram and density distribution
     TheoreticalDistribution = norm.pdf(SortedValues,X_Bar,S_X)
-    
+
+    return SortedValues, Center, Histogram, Width, KernelEstimator, TheoreticalDistribution
+
+def PlotHistogram(Variable, Groups, Name, Path):
+
     Figure, Axes = plt.subplots(1, 1, figsize=(5.5, 4.5), dpi=200)
-    # Axes.fill_between(SortedValues,np.zeros(len(SortedValues)), KernelEstimator,color=(0.85,0.85,0.85),label='Kernel Density')
-    Axes.bar(Center, Histogram, align='center', width=Width,edgecolor=(0,0,0),color=(1,1,1,0),label='Histogram')
-    Axes.plot(SortedValues, KernelEstimator,color=(1,0,0),label='Kernel Density')
-    # Axes.plot(SortedValues,TheoreticalDistribution,color=(1,0,0),label='Normal Distribution')
-    Axes.annotate(r'Mean $\pm$ SD : ' + str(round(X_Bar,3)) + r' $\pm$ ' + str(round(S_X,3)), xy=(0.3, 1.035), xycoords='axes fraction')
+
+    Ctrl = Variable[Groups[0]]
+    SortedValues, Center, Histogram, Width, KernelEstimator, TheoreticalDistribution = ComputeHistogram(Ctrl)
+    Axes.fill_between(SortedValues,np.zeros(len(SortedValues)), KernelEstimator,color=(1,0,0,0.5))
+    Axes.plot(SortedValues, KernelEstimator,color=(1,0,0),label='Ctrl')
+    Axes.bar(Center, Histogram, align='center', width=Width,edgecolor=(1,0,0),color=(1,1,1,0))
+
+    T2D = Variable[Groups[1]]
+    SortedValues, Center, Histogram, Width, KernelEstimator, TheoreticalDistribution = ComputeHistogram(T2D)
+    Axes.fill_between(SortedValues,np.zeros(len(SortedValues)), KernelEstimator,color=(0,0,1,0.5))
+    Axes.plot(SortedValues, KernelEstimator,color=(0,0,1),label='T2D')
+    Axes.bar(Center, Histogram, align='center', width=Width,edgecolor=(0,0,1),color=(1,1,1,0))
+
     plt.xlabel(Name)
-    plt.ylabel('Density (-)')
-    # plt.legend(loc='upper center',ncol=3,bbox_to_anchor=(0.5,1.2), prop={'size':10})
+    plt.ylabel('Frequency (-)')
+    plt.yticks([])
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=2)
     plt.savefig(Path / (Name.replace('/','') + '.png'))
     # plt.show()
     plt.close(Figure)
@@ -146,31 +159,38 @@ def Main(Arguments):
         BinArray = sitk.GetArrayFromImage(ROI-1).astype(bool)
         CV = ComputeCV(BinArray)
         Data.loc[(File.name[:-6],int(File.name[-5])), 'CV'] = CV
+    Data.to_csv(Path(__file__).parents[1] / '02_Results/Morphometry.csv')
 
     # Read metadata file
     MetaData = pd.read_excel(Path(__file__).parents[1] / '00_Data/SampleList.xlsx')
     Ctrl = MetaData['Group (T2D or Ctrl)'] == 'Ctrl'
     T2D = MetaData['Group (T2D or Ctrl)'] == 'T2D'
-    CtrlSamples = MetaData['Filename'][Ctrl].values
-    T2DSamples = MetaData['Filename'][T2D].values
+    FH = MetaData['Anatomical Location'] == 'Femoral Head'
+    DF = MetaData['Anatomical Location'] == 'Distal Femur'
+    CtrlDF = MetaData['Filename'][Ctrl&DF].values
+    CtrlSamples = MetaData['Filename'][Ctrl&FH].values
+    T2DSamples = MetaData['Filename'][T2D&FH].values
     Samples = [i[0] for i in Data.index]
+    CtrlDF = [S in CtrlDF for S in Samples]
     Ctrl = [S in CtrlSamples for S in Samples]
     T2D = [S in T2DSamples for S in Samples]
 
 
     # Plot BV/TV and CV
     Figure, Axis = plt.subplots(1,1,dpi=200)
-    Axis.plot(Data['BV/TV'][Ctrl], Data['CV'][Ctrl], linestyle='none', color=(0,0,1), marker='o', label='Ctrl')
-    Axis.plot(Data['BV/TV'][T2D], Data['CV'][T2D], linestyle='none', color=(1,0,0), marker='o', label='T2D')
+    Axis.plot(Data['BV/TV'][Ctrl], Data['CV'][Ctrl], linestyle='none', color=(0,0,1), marker='o', label='Ctrl femoral head')
+    Axis.plot(Data['BV/TV'][T2D], Data['CV'][T2D], linestyle='none', color=(1,0,0), marker='o', label='T2D femoral head')
+    Axis.plot(Data['BV/TV'][CtrlDF], Data['CV'][CtrlDF], linestyle='none', color=(0,1,0), marker='o', label='Ctrl distal femur')
     Axis.plot([min(Data['BV/TV']), max(Data['BV/TV'])], [0.263,0.263], linestyle='--', color=(0,0,0))
     Axis.set_xlabel('BV/TV')
     Axis.set_ylabel('CV')
     plt.legend(loc='upper right')
+    plt.savefig(Path(__file__).parents[1] / '02_Results/CV_BVTV.png')
     plt.show(Figure)
 
     # Plot Histograms
     for Col in Data.columns:
-        PlotHistogram(Data[Col], Col, DataPath)
+        PlotHistogram(Data[Col], [Ctrl,T2D], Col, DataPath)
 
 
 if __name__ == '__main__':
