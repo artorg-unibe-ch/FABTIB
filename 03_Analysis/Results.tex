@@ -158,12 +158,31 @@
 	\section{Preliminary Results}
 
 	\begin{frame}
-		\frametitle{Morphometry}
+		\frametitle{Morphometry - Distributions}
 		Femoral head samples
 		\begin{figure}
 			\centering
 			\includegraphics[width=\linewidth, trim=100 0 100 0]{Pictures/Morphometry}			
 		\end{figure}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Morphometry - Statistics}
+		Femoral head samples
+		\begin{table}
+			\centering
+			\resizebox{\linewidth}{!}{
+			\begin{tabular}{l|cccccc}
+				Variable & Distribution & Variances & Test & p-value & Ctrl & T2D \\\hline
+				BV/TV & Not-normal & Equal & Mann-Whitney & 0.17 & 0.35 $\pm$ 0.07 & 0.38 $\pm$ 0.10 \\
+				Tb.N. & Normal & Equal & t-test & <0.01 & 1.04 $\pm$ 0.12 & 0.99 $\pm$ 0.11 \\
+				Tb.Th. & Not-normal & Not-equal & Permutation & <0.01 & 0.30 $\pm$ 0.03 & 0.33 $\pm$ 0.07 \\
+				Tb.Sp. & Not-normal & Equal & Mann-Whitney & 0.11 & 0.67 $\pm$ 0.12 & 0.69 $\pm$ 0.12 \\
+				Tb.Sp.SD & Not-normal & Not-equal & Permutation & <0.01 & 0.08 $\pm$ 0.01 & 0.09 $\pm$ 0.05 \\
+				DA & Not-normal & Equal & Mann-Whitney & 0.86 & 1.70 $\pm$ 0.23 & 1.69 $\pm$ 0.20 \\
+				CV & Not-normal & Equal & Mann-Whitney & 0.84 & 0.09 $\pm$ 0.07 & 0.09 $\pm$ 0.07 \\
+			\end{tabular}}
+		\end{table}
 	\end{frame}
 
 	\begin{frame}
@@ -183,12 +202,17 @@
 
 	\begin{frame}
 		\frametitle{Fabric-Elasticity Relationships II}
-		\begin{figure}
+		\begin{columns}
+			\column[t]{0.45\linewidth}
 			\centering
-			\includegraphics[width=0.45\linewidth]{Pictures/FabricElasticity_Ctrl}
-			\hfill
-			\includegraphics[width=0.45\linewidth]{Pictures/FabricElasticity_T2D}
-		\end{figure}
+			Control\\
+			\includegraphics[width=\linewidth]{Pictures/FabricElasticity_Ctrl}
+				
+			\column[t]{0.45\linewidth}
+			\centering
+			T2D\\
+			\includegraphics[width=\linewidth]{Pictures/FabricElasticity_T2D}
+		\end{columns}
 	\end{frame}
 
 	\begin{frame}
