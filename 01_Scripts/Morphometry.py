@@ -21,6 +21,7 @@ from pathlib import Path
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 
+
 #%% Functions
 
 def ComputeCV(BinaryArray:np.array):
@@ -174,7 +175,6 @@ def Main(Arguments):
     CtrlDF = [S in CtrlDF for S in Samples]
     Ctrl = [S in CtrlSamples for S in Samples]
     T2D = [S in T2DSamples for S in Samples]
-
 
     # Plot BV/TV and CV
     Figure, Axis = plt.subplots(1,1,dpi=200)
