@@ -574,6 +574,35 @@ def OLS2(X, Y, L0, L0p, M0, Alpha=0.95):
 
     return Parameters, R2adj, NE
 
+def OLS3(X, Y, B, Alpha=0.95):
+
+    # Compute residuals, variance, and covariance matrix
+    Y_Obs = np.exp(Y)
+    Y_Fit = np.exp(X * B)
+    Residuals = Y - X*B
+    DOFs = len(Y) - X.shape[1]
+
+    # Compute R2 and standard error of the estimate
+    RSS = np.sum([R**2 for R in Residuals])
+    SE = np.sqrt(RSS / DOFs)
+    TSS = np.sum([R**2 for R in (Y - Y.mean())])
+    RegSS = TSS - RSS
+    R2 = RegSS / TSS
+
+    # Compute R2adj and NE
+    R2adj = 1 - RSS/TSS * (len(Y)-1)/(len(Y)-X.shape[1]-1)
+
+    NE = []
+    for i in range(0,len(Y),12):
+        T_Obs = Y_Obs[i:i+12]
+        T_Fit = Y_Fit[i:i+12]
+        Numerator = np.sum([T**2 for T in (T_Obs-T_Fit)])
+        Denominator = np.sum([T**2 for T in T_Obs])
+        NE.append(np.sqrt(Numerator/Denominator))
+    NE = np.array(NE)
+
+    return R2adj, NE
+
 #%% Main
 
 def Main(Arguments):
@@ -613,6 +642,10 @@ def Main(Arguments):
             T2DList.append([s[0], s[1]])
     Ctrl_Morpho = np.array(Ctrl_Morpho)
     T2D_Morpho = np.array(T2D_Morpho)
+
+    # Filter samples
+    Ctrl_Morpho = Ctrl_Morpho[Ctrl_Morpho[:, 0] < 0.5]
+    T2D_Morpho = T2D_Morpho[T2D_Morpho[:, 0] < 0.5]
 
     # Compute samples differences
     Differences = Ctrl_Morpho[:, np.newaxis, :] - T2D_Morpho[np.newaxis, :, :]
@@ -704,9 +737,9 @@ def Main(Arguments):
                     [Stiffness[2,0]],
                     [Stiffness[2,1]],
                     [Stiffness[2,2]],
-                    [Stiffness[1,2]],
-                    [Stiffness[2,0]],
-                    [Stiffness[0,1]]])
+                    [Stiffness[3,3]],
+                    [Stiffness[4,4]],
+                    [Stiffness[5,5]]])
         
         X = np.array([[1, 0, 0, np.log(BVTV), np.log(m1 ** 2)],
                       [0, 1, 0, np.log(BVTV), np.log(m1 * m2)],
@@ -741,25 +774,31 @@ def Main(Arguments):
     L0 = Parametersg.loc['Value','Lambda0']
     L0p = Parametersg.loc['Value','Lambda0p']
     M0 = Parametersg.loc['Value','Mu0']
+    k0 = Parametersg.loc['Value','k']
+    l0 = Parametersg.loc['Value','l']
+    B = np.matrix(np.vstack([np.log(L0+2*M0),np.log(L0p),np.log(M0),k0,l0]))
 
     # Solve linear systems
     X = np.matrix(np.vstack(Xh))
     Y = np.matrix(np.vstack(Yh))
-    Parameters, R2adj, NE = OLS(X, Y)
+    # Parametersh, R2adj, NE = OLS(X, Y)
+    # R2adj, NE = OLS3(X, Y, B)
     Yr = Y - X[:,0]*np.log(L0) - X[:,1]*np.log(L0p) - X[:,2]*np.log(M0)
     Parametersh, R2adjh, NEh = OLS2(X[:,3:], Yr , L0, L0p, M0)
 
     X = np.matrix(np.vstack(Xd))
     Y = np.matrix(np.vstack(Yd))
-    Parameters, R2adj, NE = OLS(X, Y)
+    # Parametersd, R2adj, NE = OLS(X, Y)
+    # R2adj, NE = OLS3(X, Y, B)
     Yr = Y - X[:,0]*np.log(L0) - X[:,1]*np.log(L0p) - X[:,2]*np.log(M0)
-    Parametersd, R2adjh, NEh = OLS2(X[:,3:], Yr, L0, L0p, M0)
+    Parametersd, R2adjd, NEd = OLS2(X[:,3:], Yr, L0, L0p, M0)
 
     # Plot 95% CI
     Colors = [(0,0,0),(1,0,0),(0,0,1)]
     Variables = ['k','l']
-    Figure, Axis = plt.subplots(1,2, figsize=(6,4), sharey=False)
-    for v, Variable in enumerate(['k', 'l']):
+    # Variables = ['Lambda0','Lambda0p','Mu0','k','l']
+    Figure, Axis = plt.subplots(1,len(Variables), figsize=(2*len(Variables)+2,4), sharey=False)
+    for v, Variable in enumerate(Variables):
         for i, P in enumerate([Parametersg, Parametersh, Parametersd]):
             V = P.loc['Value',Variable]
             V_Low = abs(P.loc['Value',Variable] - P.loc['95% CI Low',Variable])

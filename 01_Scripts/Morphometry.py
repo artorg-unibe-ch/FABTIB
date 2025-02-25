@@ -162,6 +162,9 @@ def Main(Arguments):
         Data.loc[(File.name[:-6],int(File.name[-5])), 'CV'] = CV
     Data.to_csv(Path(__file__).parents[1] / '02_Results/Morphometry.csv')
 
+    # Filter out ROIs of cortical bone
+    Data = Data[Data['BV/TV'] < 0.5]
+
     # Read metadata file
     MetaData = pd.read_excel(Path(__file__).parents[1] / '00_Data/SampleList.xlsx')
     Ctrl = MetaData['Group (T2D or Ctrl)'] == 'Ctrl'
@@ -169,6 +172,7 @@ def Main(Arguments):
     FH = MetaData['Anatomical Location'] == 'Femoral Head'
     DF = MetaData['Anatomical Location'] == 'Distal Femur'
     CtrlDF = MetaData['Filename'][Ctrl&DF].values
+    T2DDF = MetaData['Filename'][T2D&DF].values
     CtrlSamples = MetaData['Filename'][Ctrl&FH].values
     T2DSamples = MetaData['Filename'][T2D&FH].values
     Samples = [i[0] for i in Data.index]
@@ -178,13 +182,19 @@ def Main(Arguments):
 
     # Plot BV/TV and CV
     Figure, Axis = plt.subplots(1,1,dpi=200)
-    Axis.plot(Data['BV/TV'][Ctrl], Data['CV'][Ctrl], linestyle='none', color=(0,0,1), marker='o', label='Ctrl femoral head')
-    Axis.plot(Data['BV/TV'][T2D], Data['CV'][T2D], linestyle='none', color=(1,0,0), marker='o', label='T2D femoral head')
-    Axis.plot(Data['BV/TV'][CtrlDF], Data['CV'][CtrlDF], linestyle='none', color=(0,1,0), marker='o', label='Ctrl distal femur')
-    Axis.plot([min(Data['BV/TV']), max(Data['BV/TV'])], [0.263,0.263], linestyle='--', color=(0,0,0))
+    Axis.plot(Data['BV/TV'][Ctrl], Data['CV'][Ctrl], linestyle='none', color=(0,0,1), marker='o')
+    Axis.plot(Data['BV/TV'][T2D], Data['CV'][T2D], linestyle='none', color=(1,0,0), marker='o')
+    Axis.plot(Data['BV/TV'][CtrlDF], Data['CV'][CtrlDF], linestyle='none', color=(0,0,1), marker='x')
+    Axis.plot(Data['BV/TV'][T2DDF], Data['CV'][T2DDF], linestyle='none', color=(1,0,0), marker='x')
+    Axis.plot([], linestyle='none', color=(0,0,1), marker='s', label='Ctrl')
+    Axis.plot([], linestyle='none', color=(1,0,0), marker='s', label='T2D')
+    Axis.plot([], linestyle='none', color=(0,0,0), marker='o', label='Distal Femur')
+    Axis.plot([], linestyle='none', color=(0,0,0), marker='x', label='Femoral Head')
+    Axis.plot([min(Data['BV/TV']), max(Data['BV/TV'])], [0.263,0.263], linestyle='--', color=(0,0,0), label='Threshold')
+    Axis.plot([0.5, 0.5], [min(Data['CV']), max(Data['CV'])], linestyle='--', color=(0,0,0))
     Axis.set_xlabel('BV/TV')
     Axis.set_ylabel('CV')
-    plt.legend(loc='upper right')
+    plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=5)
     plt.savefig(Path(__file__).parents[1] / '02_Results/CV_BVTV.png')
     plt.show(Figure)
 

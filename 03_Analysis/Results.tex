@@ -126,7 +126,7 @@
 \author[mathieu.simon@unibe.ch]{\tiny{\bf{Mathieu Simon}}}
 
 \medskip
-\date{January, 2025}
+\date{\today}
 
 \begin{document}
 	
@@ -155,11 +155,25 @@
 		\includegraphics[width=\linewidth]{Pictures/Abaqus}\\
 	\end{frame}
 
-	\section{Preliminary Results}
+	\section{Results}
+
+	\begin{frame}
+		\frametitle{Bone Volume Fraction and Fabric}
+		Thresholds
+		\begin{itemize}
+			\item Trabecular bone sample: BV/TV < 0.5
+			\item Homogenous mass distribution: CV < 0.263 \cite{p1}
+		\end{itemize}
+		Femoral head samples only
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.5\linewidth]{Pictures/CV_BVTV}			
+		\end{figure}
+
+	\end{frame}
 
 	\begin{frame}
 		\frametitle{Morphometry - Distributions}
-		Femoral head samples
 		\begin{figure}
 			\centering
 			\includegraphics[width=\linewidth, trim=100 0 100 0]{Pictures/Morphometry}			
@@ -168,7 +182,6 @@
 
 	\begin{frame}
 		\frametitle{Morphometry - Statistics}
-		Femoral head samples
 		\begin{table}
 			\centering
 			\resizebox{\linewidth}{!}{
@@ -178,30 +191,26 @@
 				Tb.N. & Normal & Equal & t-test & <0.01 & 1.04 $\pm$ 0.12 & 0.99 $\pm$ 0.11 \\
 				Tb.Th. & Not-normal & Not-equal & Permutation & <0.01 & 0.30 $\pm$ 0.03 & 0.33 $\pm$ 0.07 \\
 				Tb.Sp. & Not-normal & Equal & Mann-Whitney & 0.11 & 0.67 $\pm$ 0.12 & 0.69 $\pm$ 0.12 \\
-				Tb.Sp.SD & Not-normal & Not-equal & Permutation & <0.01 & 0.08 $\pm$ 0.01 & 0.09 $\pm$ 0.05 \\
+				Tb.Sp.SD & Not-normal & Not-equal & Permutation & <0.01 & 0.08 $\pm$ 0.01 & 0.09 $\pm$ 0.04 \\
 				DA & Not-normal & Equal & Mann-Whitney & 0.86 & 1.70 $\pm$ 0.23 & 1.69 $\pm$ 0.20 \\
-				CV & Not-normal & Equal & Mann-Whitney & 0.84 & 0.09 $\pm$ 0.07 & 0.09 $\pm$ 0.07 \\
+				CV & Not-normal & Equal & Mann-Whitney & 0.84 & 0.09 $\pm$ 0.07 & 0.10 $\pm$ 0.07 \\
 			\end{tabular}}
 		\end{table}
 	\end{frame}
 
 	\begin{frame}
-		\frametitle{Fabric-Elasticity Relationships}
-		Coefficient of variation (CV)
-		\begin{itemize}
-			\item Homogeneity of mass distribution within the ROI
-			\item Threshold defined in Panyasantisuk et al. \cite{p1}
-		\end{itemize}
-		Matching femoral head Ctrl with T2D for BV/TV and DA \cite{p2}
+		\frametitle{Grouped Linear Regression}
+		Matching femoral head Ctrl with T2D for BV/TV and DA \cite{p2}\\
+		$\Rightarrow$ 28 pairs of samples\\\vfill
 		\begin{figure}
 			\centering
-			\includegraphics[width=0.47\linewidth]{Pictures/CV_BVTV}
-			\includegraphics[width=0.4\linewidth]{Pictures/FabricElasticity_Grouped}
+			\includegraphics[width=0.5\linewidth]{Pictures/FabricElasticity_Grouped}
 		\end{figure}
 	\end{frame}
 
 	\begin{frame}
-		\frametitle{Fabric-Elasticity Relationships II}
+		\frametitle{Separated Linear Regressions}
+		Similar regression quality\\\vfill
 		\begin{columns}
 			\column[t]{0.45\linewidth}
 			\centering
@@ -216,10 +225,22 @@
 	\end{frame}
 
 	\begin{frame}
-		\frametitle{Fabric-Elasticity Relationships III}
+		\frametitle{Separated Linear Regressions}
+		Parameters\\
+		$\Rightarrow$ Overlapping confidence intervals\\\vfill
 		\begin{figure}
 			\centering
-			\includegraphics[width=0.75\linewidth]{Pictures/FabricElasticity_Stiffness}
+			\includegraphics[width=\linewidth]{Pictures/Parameters}
+		\end{figure}
+	\end{frame}
+
+	\begin{frame}
+		\frametitle{Exponents Comparison}
+		Fixed material constants\\
+		$\Rightarrow$ Overlapping confidence intervals\\\vfill
+		\begin{figure}
+			\centering
+			\includegraphics[width=0.65\linewidth]{Pictures/Parameters2}
 		\end{figure}
 	\end{frame}
 		

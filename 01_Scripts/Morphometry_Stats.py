@@ -32,6 +32,11 @@ def Main():
 
     # Morphometric data
     Data = pd.read_csv(Path(__file__).parents[1] / '02_Results/Morphometry.csv', index_col=[0,1])
+    Otsu = pd.read_csv(Path(__file__).parents[1] / '02_Results/Parameters.csv', sep=';')
+    for Idx, Row in Data.iterrows():
+        Sample = Otsu['$Sample'] == Idx[0]
+        ROI = Otsu['$ROI'] == Idx[1]
+        Data.loc[Idx,'Otsu'] = Otsu[Sample & ROI]['$Threshold'].values[0]
 
     # Read metadata file
     MetaData = pd.read_excel(Path(__file__).parents[1] / '00_Data/SampleList.xlsx')
