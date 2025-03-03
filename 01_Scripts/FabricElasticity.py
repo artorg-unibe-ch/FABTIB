@@ -574,6 +574,53 @@ def OLS2(X, Y, L0, L0p, M0, Alpha=0.95):
 
     return Parameters, R2adj, NE
 
+def OLS2b(X, Y, k0, l0, Alpha=0.95):
+
+    # Solve linear system
+    XTXi = np.linalg.inv(X.T * X)
+    B = XTXi * X.T * Y
+
+    # Compute residuals, variance, and covariance matrix
+    Y_Obs = np.exp(Y)
+    Y_Fit = np.exp(X * B)
+    Residuals = Y - X*B
+    DOFs = len(Y) - X.shape[1]
+    Sigma = Residuals.T * Residuals / DOFs
+    Cov = Sigma[0,0] * XTXi
+
+    # Compute B confidence interval
+    t_Alpha = t.interval(Alpha, DOFs)
+    B_CI_Low = B.T + t_Alpha[0] * np.sqrt(np.diag(Cov))
+    B_CI_Top = B.T + t_Alpha[1] * np.sqrt(np.diag(Cov))
+
+    # Store parameters in data frame
+    Parameters = pd.DataFrame(columns=['Lambda0','Lambda0p','Mu0','k','l'])
+    Parameters.loc['Value'] = [np.exp(B[0,0])-2*np.exp(B[2,0]), np.exp(B[1,0]), np.exp(B[2,0]), k0, l0]
+    Parameters.loc['95% CI Low'] = [np.exp(B_CI_Top[0,0])-2*np.exp(B_CI_Top[0,2]), np.exp(B_CI_Top[0,1]), np.exp(B_CI_Top[0,2]), k0, l0]
+    Parameters.loc['95% CI Top'] = [np.exp(B_CI_Low[0,0])-2*np.exp(B_CI_Low[0,2]), np.exp(B_CI_Low[0,1]), np.exp(B_CI_Low[0,2]), k0, l0]
+
+    # Compute R2 and standard error of the estimate
+    RSS = np.sum([R**2 for R in Residuals])
+    SE = np.sqrt(RSS / DOFs)
+    TSS = np.sum([R**2 for R in (Y - Y.mean())])
+    RegSS = TSS - RSS
+    R2 = RegSS / TSS
+
+    # Compute R2adj and NE
+    R2adj = 1 - RSS/TSS * (len(Y)-1)/(len(Y)-X.shape[1]-1)
+
+    NE = []
+    for i in range(0,len(Y),12):
+        T_Obs = Y_Obs[i:i+12]
+        T_Fit = Y_Fit[i:i+12]
+        Numerator = np.sum([T**2 for T in (T_Obs-T_Fit)])
+        Denominator = np.sum([T**2 for T in T_Obs])
+        NE.append(np.sqrt(Numerator/Denominator))
+    NE = np.array(NE)
+
+    return Parameters, R2adj, NE
+
+
 def OLS3(X, Y, B, Alpha=0.95):
 
     # Compute residuals, variance, and covariance matrix
@@ -605,17 +652,14 @@ def OLS3(X, Y, B, Alpha=0.95):
 
 #%% Main
 
-def Main(Arguments):
+def Main():
 
     # Define paths
     MorphoPath = Path(__file__).parents[1] / '02_Results/Morphometry'
     AbaqusPath = Path(__file__).parents[1] / '02_Results/Abaqus'
 
     # Read Arguments
-    if Arguments.AbaqusInp:
-        InputISQs = [Arguments.InputISQ]
-    else:
-        Samples = sorted([F.name[:-4] for F in Path.iterdir(AbaqusPath) if F.name.endswith('.out')])
+    Samples = sorted([F.name[:-4] for F in Path.iterdir(AbaqusPath) if F.name.endswith('.out')])
 
     # Read metadata file
     Data = pd.read_excel(Path(__file__).parents[1] / '00_Data/SampleList.xlsx')
@@ -783,23 +827,61 @@ def Main(Arguments):
     Y = np.matrix(np.vstack(Yh))
     # Parametersh, R2adj, NE = OLS(X, Y)
     # R2adj, NE = OLS3(X, Y, B)
-    Yr = Y - X[:,0]*np.log(L0) - X[:,1]*np.log(L0p) - X[:,2]*np.log(M0)
+    Yr = Y - X[:,0]*np.log(L0+2*M0) - X[:,1]*np.log(L0p) - X[:,2]*np.log(M0)
     Parametersh, R2adjh, NEh = OLS2(X[:,3:], Yr , L0, L0p, M0)
+    Yr = Y - X[:,3]*k0 - X[:,4]*l0
+    Parametersh, R2adjh, NEh = OLS2b(X[:,:3], Yr , k0, l0)
+
 
     X = np.matrix(np.vstack(Xd))
     Y = np.matrix(np.vstack(Yd))
     # Parametersd, R2adj, NE = OLS(X, Y)
     # R2adj, NE = OLS3(X, Y, B)
-    Yr = Y - X[:,0]*np.log(L0) - X[:,1]*np.log(L0p) - X[:,2]*np.log(M0)
-    Parametersd, R2adjd, NEd = OLS2(X[:,3:], Yr, L0, L0p, M0)
+    Yr = Y - X[:,0]*np.log(L0+2*M0) - X[:,1]*np.log(L0p) - X[:,2]*np.log(M0)
+    Parametersd, R2adjh, NEh = OLS2(X[:,3:], Yr , L0, L0p, M0)
+    Yr = Y - X[:,3]*k0 - X[:,4]*l0
+    Parametersd, R2adjh, NEh = OLS2b(X[:,:3], Yr , k0, l0)
 
     # Plot 95% CI
     Colors = [(0,0,0),(1,0,0),(0,0,1)]
     Variables = ['k','l']
+    # Variables = ['Lambda0','Lambda0p','Mu0']
     # Variables = ['Lambda0','Lambda0p','Mu0','k','l']
     Figure, Axis = plt.subplots(1,len(Variables), figsize=(2*len(Variables)+2,4), sharey=False)
     for v, Variable in enumerate(Variables):
         for i, P in enumerate([Parametersg, Parametersh, Parametersd]):
+            V = P.loc['Value',Variable]
+            V_Low = abs(P.loc['Value',Variable] - P.loc['95% CI Low',Variable])
+            V_Top = abs(P.loc['95% CI Top',Variable] - P.loc['Value',Variable])
+            Axis[v].errorbar([i], V, yerr=[[V_Low], [V_Top]], marker='o', color=Colors[i])
+            Axis[v].set_xlabel(Variables[v])
+            Axis[v].set_xticks(range(3),['Grouped','Ctrl','T2D'])
+    Axis[0].set_ylabel('Values (-)')
+    plt.tight_layout()
+    plt.show(Figure)
+
+    # Plot study with OI
+    Colors = [(0,0,0),(1,0,0),(0,0,1)]
+    Variables = ['Lambda0','Lambda0p','Mu0']
+    Grouped = pd.DataFrame(columns=['Lambda0','Lambda0p','Mu0'])
+    Grouped.loc['Value'] = [4626, 2695, 3541]
+    Grouped.loc['95% CI Low'] = [3892, 2472, 3246]
+    Grouped.loc['95% CI Top'] = [5494, 2937, 3862]
+
+    Healthy = pd.DataFrame(columns=['Lambda0','Lambda0p','Mu0'])
+    Healthy.loc['Value'] = [4318, 2685, 3512]
+    Healthy.loc['95% CI Low'] = [3844, 2533, 3306]
+    Healthy.loc['95% CI Top'] = [4851, 2845, 3731]
+
+    OI = pd.DataFrame(columns=['Lambda0','Lambda0p','Mu0'])
+    OI.loc['Value'] = [4983, 2727, 3600]
+    OI.loc['95% CI Low'] = [4345, 2547, 3355]
+    OI.loc['95% CI Top'] = [5716, 2921, 3863]
+
+
+    Figure, Axis = plt.subplots(1,len(Variables), figsize=(2*len(Variables)+2,4), sharey=False)
+    for v, Variable in enumerate(Variables):
+        for i, P in enumerate([Grouped, Healthy, OI]):
             V = P.loc['Value',Variable]
             V_Low = abs(P.loc['Value',Variable] - P.loc['95% CI Low',Variable])
             V_Top = abs(P.loc['95% CI Top',Variable] - P.loc['Value',Variable])
@@ -818,12 +900,9 @@ if __name__ == '__main__':
     # Add optional argument
     ScriptVersion = Parser.prog + ' version ' + __version__
     Parser.add_argument('-v', '--Version', help='Show script version', action='version', version=ScriptVersion)
-    Parser.add_argument('--Sample', help='Sample main file name', type=str)
-    Parser.add_argument('--OutputPath', help='Output path for the ROI and png image of the plot', default=Path(__file__).parents[1] / '02_Results/Scans')
-    Parser.add_argument('--NROIs', help='Number of region of interests to extract', type=int, default=3)
 
     # Read arguments from the command line
     Arguments = Parser.parse_args()
-    Main(Arguments)
+    Main()
 
 #%%
