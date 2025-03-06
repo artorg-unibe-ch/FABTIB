@@ -38,6 +38,8 @@
 \usepackage{multicol}
 \usepackage{pdfpages}
 \usepackage[normalem]{ulem}
+\usepackage[justification=centering]{caption}
+
 
 \newcommand{\abbreviations}[1]{%
 	\nonumnote{\textit{Abbreviations:\enspace}#1}}
@@ -320,7 +322,57 @@
 	%
 
 	\section{Results}
-	\lipsum[7-8]
+	The main results are presented in this section.
+	The morphology of the selected ROIs is first compared between the control and the diabetic group.
+	Then, the comparison is shown for the mechanics resulting from numerical simulaitons.
+	Finally, morphology-mechanical (i.e. fabric-elasticity) relations are compared between samples from control and diabetic diagnosed individuals.
+
+	\subsection{Morphology}
+	Morphological comparisons are shown in Table \ref{TabMorph}.
+	For each of the analysed trabecular parameter, the interquartile range (IQR) presents a significant overlap between the control and diabetic group.
+	This is confirmed by the p-value resulting from the Mann-Whitney test being higher than the significant level of 0.05 for all computed variables.
+
+	\begin{table}[h!]
+		\centering
+		\caption{Summary of the morphological parameters and comparison. First column shows the variable assessed, second columns is the p-value resulting from the Mann-Whitney test, and the third and fourth columns shows the median value for each group with their interquartile range}
+		\begin{tabular}{l|ccc}
+			Variable & p-value & Ctrl & T2D \\\hline
+			$\rho$ & 0.77 & 0.37 [0.30-0.40] & 0.36 [0.31-0.41] \\
+			Tb.N. & 0.06 & 1.04 [0.96-1.12] & 1.02 [0.93-1.06] \\
+			Tb.Th. &  0.41 & 0.30 [0.28-0.32] & 0.31 [0.28-0.33] \\
+			Tb.Sp. & 0.09 & 0.66 [0.59-0.74] & 0.68 [0.63-0.75] \\
+			Tb.Sp.SD & 0.50 & 0.07 [0.07-0.08] & 0.07 [0.07-0.09] \\
+			DA & 0.29 & 1.69 [1.59-1.82] & 1.66 [1.54-1.81] \\
+			CV & 0.94 & 0.07 [0.05-0.11] & 0.07 [0.05-0.14] \\
+		\end{tabular}
+		\label{TabMorph}
+	\end{table}
+
+	\subsection{Mechanics}
+	Component-wise comparison of the stiffness tensors resulting from homogenization are shown in Figure \ref{FigTensorComp}.
+	As for the morphological comparison, none of the variable compared (stiffness components) shows significant difference (p-value < 0.05) between the control and the diabetic group.
+
+	\begin{figure*}
+		\centering
+		\begin{subfigure}[b]{0.3\linewidth}
+			\includegraphics[width=\linewidth]{Lii}
+			\caption{Diagonal elements of the upper left part of the stiffness matrix}
+		\end{subfigure}\hfill
+		\begin{subfigure}[b]{0.3\linewidth}
+			\includegraphics[width=\linewidth]{Lij}
+			\caption{Off-diagonal elements of the upper left part of the stiffness matrix}
+		\end{subfigure}\hfill
+		\begin{subfigure}[b]{0.3\linewidth}
+			\includegraphics[width=\linewidth]{Mii}
+			\caption{Diagonal elements of the lower right part of the stiffness matrix}
+		\end{subfigure}
+		\caption{Comparison of the stiffness tensor components between the control and the diabetic group.
+				 N.s. stands for non-significant p-value (>0.05) resulting from Mann-Whitney test}
+		\label{FigTensorComp}
+	\end{figure*}
+
+	\subsection{Morphology-Mechanical Relationships}
+	The multiple linear regression fitting control and diabetic group pooled together to the Zysset-Curnier model lead to a $R_{adj}^{2}$ of 
 
 
 	%
