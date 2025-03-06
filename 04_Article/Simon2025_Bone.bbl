@@ -1,0 +1,73 @@
+\begin{thebibliography}{6}
+\expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\href}[2]{#2}
+\providecommand{\path}[1]{#1}
+\providecommand{\DOIprefix}{doi:}
+\providecommand{\ArXivprefix}{arXiv:}
+\providecommand{\URLprefix}{URL: }
+\providecommand{\Pubmedprefix}{pmid:}
+\providecommand{\doi}[1]{\href{http://dx.doi.org/#1}{\path{#1}}}
+\providecommand{\Pubmed}[1]{\href{pmid:#1}{\path{#1}}}
+\providecommand{\bibinfo}[2]{#2}
+\ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
+%Type = Article
+\bibitem[{Cowin and Doty(2007)}]{Cowin2007}
+\bibinfo{author}{Cowin, S.C.}, \bibinfo{author}{Doty, S.B.},
+  \bibinfo{year}{2007}.
+\newblock \bibinfo{title}{Tissue mechanics}.
+\newblock \bibinfo{journal}{Tissue Mechanics} ,
+  \bibinfo{pages}{1--682}\DOIprefix\doi{10.1007/978-0-387-49985-7/COVER}.
+%Type = Inproceedings
+\bibitem[{Moreno et~al.(2014)Moreno, Borga and Smedby}]{Moreno2014}
+\bibinfo{author}{Moreno, R.}, \bibinfo{author}{Borga, M.},
+  \bibinfo{author}{Smedby, {\"O}.}, \bibinfo{year}{2014}.
+\newblock \bibinfo{title}{Techniques for computing fabric tensors: A review},
+  in: \bibinfo{booktitle}{Visualization and Processing of Tensors and Higher
+  Order Descriptors for Multi-Valued Data}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:20293504}.
+%Type = Article
+\bibitem[{Otsu(1979)}]{Otsu1979}
+\bibinfo{author}{Otsu, N.}, \bibinfo{year}{1979}.
+\newblock \bibinfo{title}{A threshold selection method from gray-level
+  histograms}.
+\newblock \bibinfo{journal}{IEEE Trans. Syst. Man Cybern.} \bibinfo{volume}{9},
+  \bibinfo{pages}{62--66}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:15326934}.
+%Type = Article
+\bibitem[{Panyasantisuk et~al.(2015)Panyasantisuk, Pahr, Gross and
+  Zysset}]{Panyasantisuk2015}
+\bibinfo{author}{Panyasantisuk, J.}, \bibinfo{author}{Pahr, D.H.},
+  \bibinfo{author}{Gross, T.G.}, \bibinfo{author}{Zysset, P.K.},
+  \bibinfo{year}{2015}.
+\newblock \bibinfo{title}{Comparison of mixed and kinematic uniform boundary
+  conditions in homogenized elasticity of femoral trabecular bone using
+  microfinite element analyses.}
+\newblock \bibinfo{journal}{Journal of biomechanical engineering}
+  \bibinfo{volume}{137 1}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:5143457}.
+%Type = Article
+\bibitem[{Simon et~al.(2022)Simon, Indermaur, Schenk, Hosseinitabatabaei,
+  Willie and Zysset}]{Simon2022}
+\bibinfo{author}{Simon, M.}, \bibinfo{author}{Indermaur, M.},
+  \bibinfo{author}{Schenk, D.}, \bibinfo{author}{Hosseinitabatabaei, S.},
+  \bibinfo{author}{Willie, B.M.}, \bibinfo{author}{Zysset, P.},
+  \bibinfo{year}{2022}.
+\newblock \bibinfo{title}{Fabric-elasticity relationships of tibial trabecular
+  bone are similar in osteogenesis imperfecta and healthy individuals}.
+\newblock \bibinfo{journal}{Bone} \bibinfo{volume}{155},
+  \bibinfo{pages}{116282}.
+\newblock \URLprefix
+  \url{https://www.sciencedirect.com/science/article/pii/S8756328221004488},
+  \DOIprefix\doi{https://doi.org/10.1016/j.bone.2021.116282}.
+%Type = Article
+\bibitem[{Zysset and Curnier(1995)}]{Zysset1995}
+\bibinfo{author}{Zysset, P.K.}, \bibinfo{author}{Curnier, A.},
+  \bibinfo{year}{1995}.
+\newblock \bibinfo{title}{An alternative model for anisotropic elasticity based
+  on fabric tensors}.
+\newblock \bibinfo{journal}{Mechanics of Materials} \bibinfo{volume}{21},
+  \bibinfo{pages}{243--250}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:122068192}.
+
+\end{thebibliography}

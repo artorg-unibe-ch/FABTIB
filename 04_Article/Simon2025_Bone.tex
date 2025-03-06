@@ -1,0 +1,420 @@
+%% 
+%% Copyright 2019-2020 Elsevier Ltd
+%% 
+%% This file is part of the 'CAS Bundle'.
+%% --------------------------------------
+%% 
+%% It may be distributed under the conditions of the LaTeX Project Public
+%% License, either version 1.2 of this license or (at your option) any
+%% later version.  The latest version of this license is in
+%%    http://www.latex-project.org/lppl.txt
+%% and version 1.2 or later is part of all distributions of LaTeX
+%% version 1999/12/01 or later.
+%% 
+%% The list of all files belonging to the 'CAS Bundle' is
+%% given in the file `manifest.txt'.
+%% 
+%% Template article for cas-dc documentclass for 
+%% double column output.
+
+% \documentclass[a4paper,fleqn]{cas-dc}
+\documentclass[a4paper,fleqn]{DC_ArtStyle}
+% \documentclass[]{interact}
+
+% \usepackage[authoryear,longnamesfirst]{natbib}
+% \usepackage[authoryear]{natbib}
+\usepackage[numbers]{natbib}
+\usepackage{lipsum}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{siunitx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{rotating}
+\usepackage{float}
+\usepackage{multicol}
+\usepackage{pdfpages}
+\usepackage[normalem]{ulem}
+
+\newcommand{\abbreviations}[1]{%
+	\nonumnote{\textit{Abbreviations:\enspace}#1}}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+	\let\WriteBookmarks\relax
+	\def\floatpagepagefraction{1}
+	\def\textpagefraction{.001}
+	\shorttitle{Fabric-elasticity Relationships of Femoral Head Trabecular Bone are Similar in Type 2 Diabetes and Healthy Individuals}
+	\shortauthors{Simon et~al.}
+	
+	\title[mode = title]{Fabric-elasticity Relationships of Femoral Head Trabecular Bone are Similar in Type 2 Diabetes and Healthy Individuals}
+	
+	% Autors
+	\author[1]{Mathieu Simon}
+	\ead{mathieu.simon@artorg.unibe.ch}
+
+    \author[2]{Sasidhar Uppuganti}
+    
+    \author[2]{Jeffry S Nyman}
+
+	\author[1]{Philippe Zysset}
+	
+	% Adresses
+	\address[1]{ARTORG Centre for Biomedical Engineering Research, University of Bern, Bern, Switzerland}
+	
+	\address[2]{Department of Orthopaedic Surgery, Vanderbilt University Medical Center, Nashville, TN 37232, USA}
+
+
+	% Abbreviations
+	\abbreviations{%
+		ROI, region of interest;
+		\textmu CT, micro-computed tomography
+		Type 2 diabetes, T2D
+		}
+	
+	% Footnotes
+	
+	%
+	%
+	%
+	% ABSTRACT
+	%
+	%
+	%
+	
+	\begin{abstract}
+		Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+		Utpurus elit, vestibulum ut, placerat ac, adipiscing vitae, felis.
+		Curabitur dictum gravida mauris.
+		Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna.
+		Donec vehicula augue eu neque.
+		Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+		Mauris ut leo. Cras viverra metus rhoncus sem.
+		Nulla et lectus vestibulum urna fringilla ultrices.
+		Phasellus eu tellus sit amet tortor gravida placerat.
+		Integer sapien est, iaculis in, pretium quis, viverra ac, nunc.
+		Praesent eget sem vel leo ultrices bibendum.
+		Aenean faucibus. Morbi dolor nulla, malesuada eu, pulvinar at, mollis ac, nulla.
+		Curabitur auctor semper nulla.
+		Donec varius orci eget risus.
+		Duis nibh mi, congue eu, accumsan eleifend, sagittis quis, diam.
+		Duis eget orci sit amet orci dignissim rutrum.\\
+
+		\noindent Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+		Utpurus elit, vestibulum ut, placerat ac, adipiscing vitae, felis.
+		Curabitur dictum gravida mauris.
+		Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna.
+		Donec vehicula augue eu neque.
+		Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+		Mauris ut leo. Cras viverra metus rhoncus sem.
+		Nulla et lectus vestibulum urna fringilla ultrices.
+		Phasellus eu tellus sit amet tortor gravida placerat.
+		Integer sapien est, iaculis in, pretium quis, viverra ac, nunc.
+		Praesent eget sem vel leo ultrices bibendum.
+		Aenean faucibus. Morbi dolor nulla, malesuada eu, pulvinar at, mollis ac, nulla.
+		Curabitur auctor semper nulla.
+		Donec varius orci eget risus.
+		Duis nibh mi, congue eu, accumsan eleifend, sagittis quis, diam.
+		Duis eget orci sit amet orci dignissim rutrum.\\
+
+		\noindent Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+		Utpurus elit, vestibulum ut, placerat ac, adipiscing vitae, felis.
+		Curabitur dictum gravida mauris.
+		Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna.
+		Donec vehicula augue eu neque.
+		Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+		Mauris ut leo. Cras viverra metus rhoncus sem.
+		Nulla et lectus vestibulum urna fringilla ultrices.
+		Phasellus eu tellus sit amet tortor gravida placerat.
+		Integer sapien est, iaculis in, pretium quis, viverra ac, nunc.
+		Praesent eget sem vel leo ultrices bibendum.
+		Aenean faucibus. Morbi dolor nulla, malesuada eu, pulvinar at, mollis ac, nulla.
+		Curabitur auctor semper nulla.
+		Donec varius orci eget risus.
+		Duis nibh mi, congue eu, accumsan eleifend, sagittis quis, diam.
+		Duis eget orci sit amet orci dignissim rutrum.\\
+
+    \end{abstract}
+	
+	\begin{keywords}
+		Bone \sep%
+		Diabetes \sep%
+	\end{keywords}
+	
+
+	\begin{NoHyper}
+		\maketitle
+	\end{NoHyper}
+	
+	%
+	%
+	%
+	% INTRO
+	%
+	%
+	%
+	
+	\section{Introduction}
+	Osteoporotic fractures\\
+	Type 2 diabetes (T2D)\\
+	Higher DXA value, not clinically recognised despite hier fracture risk\\
+	HR-pQCT\\
+	Homogenized FE\\
+	Homogenized QCT-based FEA used in clinical studies approved by FDA
+	HR-pQCT-based hFE relies on fabric-elasticity relationships
+	It was shown that these fabric-elasticity relationships hold even in case of osteogenesis imperfecta (OI)
+	Thus the present study aims to compare trabecular bone microstructure of healthy and T2D bone samples and to test the hypothesis of similar fabric-elasticity relationships.
+	Similar fabric-elasticity relationships will allow to further extend the application of HR-pQCT-based hFE of healthy bone to T2D bone at least in the linear elastic regime.
+
+	%
+	%
+	%
+	% METHODS
+	%
+	%
+	%
+	
+	\section{Material and Methods}
+	This technical note can be seen as an extension of the previously published work on OI bones \cite{Simon2022}.
+	Thus, most of the methods are similar and will be summarized here.
+	
+	\subsection{Participants, Samples, and Imaging}
+	The control (Ctrl) and diabetic (T2D) groups consisted of 28 donors each.
+	The control group was composed of 14 males and 14 females aged between 51 and 97 years old at death with a mean age of 73 $\pm$ 13 (mean $\pm$ standard deviation).
+	The diabetic group also counted 14 males and 14 females aged between 54 and 97 years old at death with a mean age of 75 $\pm$ 13.
+	A cylindrical sample of about 10 mm in diameter and 15 mm in height was collected from the femoral head (left or right) of each donor.
+	After harvesting, samples were flushed with distilled water to remove excess marrow and embedded in polymethylmethacrylate (PMMA).
+	The embedded samples were imaged by micro-computed tomography (\textmu CT50, Scanco Medical AG) at an isotropic voxel size of 14.8 \textmu m with standardized scanning settings (voltage of 60 kVp, 900 \textmu A, 100 ms integration time).
+
+	\subsection{Region of Interest}
+	In each scanned sample, three cubic region of interest (ROI) of about 5.3 mm were selected.
+	For this, the image was divided in three stacks of 5.3 mm (top, center, and bottom) and a ROI was selected at the center of mass of the stack.
+	A 3-dimensional rendering of a typical sample and its three cubic ROIs is showns in Figure \ref{FigSample}.
+
+	\begin{figure}
+		\includegraphics[width=\linewidth]{Sample}
+		\caption{3-dimensional rendering of a typical trabecular core sample}
+		\label{FigSample}
+	\end{figure}
+
+	\subsection{Morphological Analysis}
+	Image analysis was performed using medtool (v4.8; Dr. Pahr Ingenieurs e.U., Pfaffstätten, Austria)
+	The pipeline was defined as: segmentation, cleaning, morphometry.
+	The segmentation was performed using a single threshold based on the average Otsu threshold \cite{Otsu1979} of all the scans.
+	The cleaning step consisted in removing isolated islands resulting from the single threshold segmentation.
+	Then, standard trabecular morphometric parameters were computed.
+	Namely, the bone volume fraction ($\rho$), trabecular thickness (Tb.Th.), trabecular spacing (Tb.Sp.), and trabecular number (Tb.N.).
+	Additionally, the fabric tensor $\mathbf{M}$ was computed using the mean intercept length (MIL) method \cite{Moreno2014}.
+	The degree of anisotropy (DA) of the ROI was computed by dividing the fabric tensor's highest eigenvalue by the lowest.
+	A last morphological parameter, the coefficient of variation (CV), assessing the homogeneity of mass distribution within the ROI was computed as defined by \citeauthor{Panyasantisuk2015} \cite{Panyasantisuk2015}.
+	
+	\subsection{Numerical Analysis}
+	After morphological analysis, each ROI underwent numerical homogenization.
+	For this, \textmu FE analyses were performed using ABAQUS 2023.
+	The model was build using a direct voxel conversion approach to to a fully integrated linear brick elements (C3D8).
+	Each element was assigned a Young's modulus of 10 GPa and a Poisson's ratio of 0.3.
+	The homogenization scheme was composed of three uni-axial tests and three simple shear tests using kinematic uniform boundary conditions (KUBCs) \cite{Panyasantisuk2015}.
+	Then, the ROI's homogenized stiffness tensor $\mathbb{S}$ was computed from these six independent loadcases.
+	This step is illustrated in Figure \ref{FigHomogenization}.
+	Finally, the resulting stiffness tensor was transformed into the fabric coordinate system and projected onto orthotropy, leading to 12 non-zero components.
+
+	\begin{figure}
+		\includegraphics[width=\linewidth]{Abaqus}
+		\caption{Schematic representation of the homogenization process leading the the ROI's stiffness tensor.
+				 Note that the deformation is amplified by multiple orders of magnitude in the illustration.}
+		\label{FigHomogenization}
+	\end{figure}
+
+	\subsection{Group Comparison}
+	The first comparison between the control and diabetic group was regarding their morphology.
+	For this, Mann-Whitney test was performed on samples having a bone volume fraction lower that 0.5.
+	Indeed, a bone volume fraction higher than 0.5 doesn't match the definition of trabecular bone.
+	A p-value lower than 0.05 was considered meaning a significant difference between the groups.
+	\\[0.5em]
+	The second comparison was regarding the components of the stiffness tensor after transformation into the fabric coordinate system and projection onto orthotropy.
+	Mann-Whitney test was again used and a p-value lower than 0.05 was again considered significant.
+	This comparison was performed on sample with a bone volume fraction lower than 0.5 and a CV lower than 0.263.
+	Indeed, this CV threshold was determined by \citeauthor{Panyasantisuk2015} \cite{Panyasantisuk2015} as a limit for the homogeneity assumption.
+	A higher CV involve heterogeneous mass distribution which violate the representative volume element (RVE) homogeneity assumption \cite{Cowin2007}.
+	\\[0.5em]
+	The third comparison of the two groups was performed by fitting the orthotropic stiffness tensor to the Zysset-Curnier model \cite{Zysset1995} and comparing the resulting parameters and their 95\% confidence interval (95\% CI).
+	Briefly, this model expresses the stiffness tensor $\mathbb{S}$ based on the bone volume fraction $\rho$, fabric tensor eigenvalues $m_1 < m_2 < m_3$, three stiffness constants $\lambda_0$, $\lambda_0'$, and $\mu_0$ and two exponents $k$ and $l$.
+	The fitting procedure consisted of a multiple linear regression which was performed on the logarithmic space as shown in Equation \ref{EqFit}.
+	However, as $k$ and $l$ are exponents, it is necessary to impose values for further fabric-elasticity relationships comparison.
+	These imposed values can either be on the exponents (as dones in previous work \cite{Simon2022}) or on the stiffness constants.
+	In the present technical note, it was chosen to impose values for $\lambda_0$, $\lambda_0'$, and $\mu_0$ and compare the resulting $k$ and $l$.
+	The imposed values were determined by performing the fit on the control and diabetic group pooled together.
+	The fit quality was assesed using the adjusted Pearson correlation coefficient squared ($R_{adj}^{2}$) and relative norm error of fourth-order tensors (NE).
+	This relative norm error allows to quantify the accuracy of the fit.
+	Thus, the multiple linear regression was performed in three different steps.
+	\begin{enumerate}
+		\item Multiple linear regression with control and diabetic pooled together
+		\item Multiple linear regression with control group or diabetic group only allowing fit quality comparison
+		\item Multiple linear regression with control group or diabetic group only and imposing $\lambda_0$, $\lambda_0'$, and $\mu_0$ from step 1, allowing exponents ($k$ and $l$) comparison
+	\end{enumerate}
+
+	\begin{equation}
+		\ln
+		\begin{pmatrix}
+		S_{11} \\
+		S_{12} \\
+		S_{13} \\
+		S_{21} \\
+		S_{22} \\
+		S_{23} \\
+		S_{31} \\
+		S_{32} \\
+		S_{33} \\
+		S_{44} \\
+		S_{55} \\
+		S_{66} \\
+		\end{pmatrix} = \begin{pmatrix}
+		1 & 0 & 0 & \ln(\rho) & \ln(m_1^2) \\
+		0 & 1 & 0 & \ln(\rho) & \ln(m_1 m_2) \\
+		0 & 1 & 0 & \ln(\rho) & \ln(m_1 m_3) \\
+		0 & 1 & 0 & \ln(\rho) & \ln(m_2 m_1) \\
+		1 & 0 & 0 & \ln(\rho) & \ln(m_2^2) \\
+		0 & 1 & 0 & \ln(\rho) & \ln(m_2 m_3) \\
+		0 & 1 & 0 & \ln(\rho) & \ln(m_3 m_1) \\
+		0 & 1 & 0 & \ln(\rho) & \ln(m_3 m_2) \\
+		1 & 0 & 0 & \ln(\rho) & \ln(m_3^2) \\
+		0 & 0 & 1 & \ln(\rho) & \ln(m_2 m_3) \\
+		0 & 0 & 1 & \ln(\rho) & \ln(m_3 m_1) \\
+		0 & 0 & 1 & \ln(\rho) & \ln(m_1 m_2) \\
+		\end{pmatrix} \begin{pmatrix}
+		\ln(\lambda^{*}) \\
+		\ln(\lambda_0') \\
+		\ln(\mu_0) \\
+		k \\
+		l \\
+		\end{pmatrix} + \begin{pmatrix}
+		\epsilon_{1} \\
+		\epsilon_{2} \\
+		\epsilon_{3} \\
+		\epsilon_{4} \\
+		\epsilon_{5} \\
+		\epsilon_{6} \\
+		\epsilon_{7} \\
+		\epsilon_{8} \\
+		\epsilon_{9} \\
+		\epsilon_{10} \\
+		\epsilon_{11} \\
+		\epsilon_{12} \\
+		\end{pmatrix}
+		\label{EqFit}
+	\end{equation}
+		
+	Where $S_{xx}$ are the components of the stiffness tensor and $\lambda^{*} = \lambda_0 + 2\mu_0$, and $\epsilon_i$ the residuals.
+
+
+	%
+	%
+	%
+	% RESULTS
+	%
+	%
+	%
+
+	\section{Results}
+	\lipsum[7-8]
+
+
+	%
+	%
+	%
+	% DISCUSSION
+	%
+	%
+	%
+	
+	\section{Discussion and Conclusion}
+	\lipsum[8-10]
+
+	%
+	%
+	%
+	% ACKNOWLEGMENTS
+	%
+	%
+	%
+	
+	\section*{Declaration of competing interest}
+	We wish to confirm that there are no known conflicts of interest associated with this publication and there has been no significant financial support for this work that could have influenced its outcome.
+
+	\section*{Acknowledgments}
+	
+	\section*{Funding}
+	This work was funded by
+	% This work was funded by the Swiss National Science Foundation (SNSF), grant number 200365.
+
+	\section*{Data availability statement}
+	The data that support the findings of this study are available on request. The data are not publicly available due to privacy/ethical restrictions. The scripts used for the analyses performed in the present study are available on Github: \url{https://github.com/artorg-unibe-ch/FEXHIP-Histology}
+	
+	\section*{Research ethics}
+	We further confirm that any aspect of the work covered in this manuscript that has involved human patients has been conducted with the ethical approval of all relevant bodies and that such approvals are acknowledged within the manuscript.
+	
+	\section*{CRediT author statement}
+	\textbf{Mathieu Simon:} Data Curation, Formal analysis, Investigation, Methodology, Software, Visualization, Writing - original draft.
+	\textbf{Sasidhar Uppuganti:} Data Curation, Resources, Writing - review and editing.
+	\textbf{Jeffry S Nyman:} Conceptualization, Funding acquisition, Project administration, Resources, Validation, Writing - review and editing.
+	\textbf{Philippe Zysset:} Conceptualization, Funding acquisition, Methodology, Project administration, Resources, Supervision, Validation, Writing - review and editing.
+	%
+	%
+	%
+	% Bibliography
+	%
+	%
+	%
+
+	% \clearpage
+	% Loading bibliography database
+	\nocite{*}
+	\bibliographystyle{BibStyle}
+	\bibliography{Bibliography}
+
+	% \bibliographystyle{elsarticle-num} 
+
+	% \begin{thebibliography}{65}
+	% \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
+	% \providecommand{\url}[1]{\texttt{#1}}
+	% \providecommand{\href}[2]{#2}
+	% \providecommand{\path}[1]{#1}
+	% \providecommand{\DOIprefix}{doi:}
+	% \providecommand{\ArXivprefix}{arXiv:}
+	% \providecommand{\URLprefix}{URL: }
+	% \providecommand{\Pubmedprefix}{pmid:}
+	% \providecommand{\doi}[1]{\href{http://dx.doi.org/#1}{\path{#1}}}
+	% \providecommand{\Pubmed}[1]{\href{pmid:#1}{\path{#1}}}
+	% \providecommand{\bibinfo}[2]{#2}
+	% \ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
+	% %Type = Article
+	% \bibitem[{Bala and Seeman(2015)}]{Bala2015}
+	% \bibinfo{author}{Bala, Y.}, \bibinfo{author}{Seeman, E.}, \bibinfo{year}{2015}.
+	% \newblock \bibinfo{title}{Bone's material constituents and their contribution
+	% 	to bone strength in health, disease, and treatment}.
+	% \newblock \bibinfo{journal}{Calcified Tissue International 2015 97:3}
+	% 	\bibinfo{volume}{97}, \bibinfo{pages}{308--326}.
+	% \newblock \URLprefix
+	% 	\url{https://link.springer.com/article/10.1007/s00223-015-9971-y},
+	% 	\DOIprefix\doi{10.1007/S00223-015-9971-Y}.
+	
+	% \end{thebibliography}
+
+	%
+	%
+	%
+	% Appendix
+	%
+	%
+	%
+
+	\clearpage
+	\appendix
+	
+	
+	
+\end{document}
