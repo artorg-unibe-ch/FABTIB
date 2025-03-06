@@ -323,7 +323,7 @@ def ReadISQ(File, InfoFile=False, Echo=False, ASCII=False):
 
 #%% Main
 
-def Main(Arguments):
+def Main():
 
     ScanPath = Path(__file__).parents[1] / '00_Data'
     ResultsPath = Path(__file__).parents[1] / '02_Results'
@@ -336,44 +336,40 @@ def Main(Arguments):
     # Define mean Otsu threshold
     Otsu = int(Data['$Threshold'].mean())
 
-    for Sample in Samples:
+    for Sample in [Samples[7]]:
 
-        if Sample in List:
-            pass
-        else:
+        # Read scan
+        Time.Process(1, 'Read ' + Sample)
+        VoxelModel, AdditionalData = ReadISQ(ScanPath / (Sample + '.ISQ'), ASCII=False)
 
-            # Read scan
-            Time.Process(1, 'Read ' + Sample)
-            VoxelModel, AdditionalData = ReadISQ(ScanPath / (Sample + '.ISQ'), ASCII=False)
+        # Resample for lighter computations
+        F = 2
+        Resampled = VoxelModel[::F,::F,::F].astype(float)
 
-            # Resample for lighter computations
-            F = 5
-            Resampled = VoxelModel[::F,::F,::F].astype(float)
+        # Scale scan values for plotting
+        Scaled = Resampled - Otsu
+        Range = float(Scaled.max()) - float(Scaled.min())
+        Scaled = Scaled / Range
+        Scaled[Scaled < 0] = -1
 
-            # Scale scan values for plotting
-            Scaled = Resampled - Otsu
-            Range = float(Scaled.max()) - float(Scaled.min())
-            Scaled = Scaled / Range
-            Scaled[Scaled < 0] = -1
+        # Plot using pyvista
+        Time.Update(2/5,'Plot scan')
+        pv.start_xvfb()
+        pl = pv.Plotter(off_screen=True)
+        actors = pl.add_volume(Scaled.T,
+                    cmap='bone',
+                    show_scalar_bar=False,
+                    opacity='sigmoid_5',
+                    clim=[-1,1])
+        actors.prop.interpolation_type = 'linear'
+        pl.camera_position = 'xz'
+        pl.camera.azimuth = 0
+        pl.camera.elevation = 30
+        pl.camera.roll = 0
+        pl.camera.zoom(1.2)
+        pl.screenshot(ResultsPath / 'Scans' / (Sample + '.png'), return_img=False)
 
-            # Plot using pyvista
-            Time.Update(2/5,'Plot scan')
-            pv.start_xvfb()
-            pl = pv.Plotter(off_screen=True)
-            actors = pl.add_volume(Scaled.T,
-                        cmap='bone',
-                        show_scalar_bar=False,
-                        opacity='sigmoid_5',
-                        clim=[-1,1])
-            actors.prop.interpolation_type = 'linear'
-            pl.camera_position = 'xz'
-            pl.camera.azimuth = 0
-            pl.camera.elevation = 30
-            pl.camera.roll = 0
-            pl.camera.zoom(1.2)
-            pl.screenshot(ResultsPath / 'Scans' / (Sample + '.png'), return_img=False)
-
-            Time.Process(0,f'Done {Sample}')
+        Time.Process(0,f'Done {Sample}')
 
     return
 
@@ -386,10 +382,9 @@ if __name__ == '__main__':
     # Add optional argument
     ScriptVersion = Parser.prog + ' version ' + __version__
     Parser.add_argument('-v', '--Version', help='Show script version', action='version', version=ScriptVersion)
-    Parser.add_argument('--OutputPath', help='Output path for the plots', default=Path(__file__).parents[1] / '02_Results')
 
     # Read arguments from the command line
     Arguments = Parser.parse_args()
-    Main(Arguments)
+    Main()
 
 #%%

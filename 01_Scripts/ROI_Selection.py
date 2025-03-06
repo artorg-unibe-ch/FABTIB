@@ -352,14 +352,10 @@ def ROICoords(VoxelModel, AddData, Dim, N):
 
 #%% Main
 
-def Main(Arguments):
+def Main():
 
-    # Read Arguments
-    if Arguments.InputISQ:
-        InputISQs = [Arguments.InputISQ]
-    else:
-        DataPath = Path(__file__).parents[1] / '00_Data'
-        InputISQs = [F for F in Path.iterdir(DataPath) if F.name.endswith('.ISQ')]
+    DataPath = Path(__file__).parents[1] / '00_Data'
+    InputISQs = [F for F in Path.iterdir(DataPath) if F.name.endswith('.ISQ')]
 
     # Create output directory if necessary
     Path.mkdir(Path(Arguments.OutputPath), exist_ok=True)
@@ -436,12 +432,9 @@ if __name__ == '__main__':
     # Add optional argument
     ScriptVersion = Parser.prog + ' version ' + __version__
     Parser.add_argument('-v', '--Version', help='Show script version', action='version', version=ScriptVersion)
-    Parser.add_argument('--InputISQ', help='File name of the ISQ scan', type=str)
-    Parser.add_argument('--OutputPath', help='Output path for the ROI and png image of the plot', default=Path(__file__).parents[1] / '02_Results/Scans')
-    Parser.add_argument('--NROIs', help='Number of region of interests to extract', type=int, default=3)
 
     # Read arguments from the command line
     Arguments = Parser.parse_args()
-    Main(Arguments)
+    Main()
 
 #%%

@@ -21,7 +21,6 @@ from pathlib import Path
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 
-
 #%% Functions
 
 def ComputeCV(BinaryArray:np.array):
@@ -56,28 +55,6 @@ def ComputeCV(BinaryArray:np.array):
     
     return CV
 
-def add_subplot_axes(ax,rect,axisbg='w'):
-    fig = plt.gcf()
-    box = ax.get_position()
-    width = box.width
-    height = box.height
-    inax_position  = ax.transAxes.transform(rect[0:2])
-    transFigure = fig.transFigure.inverted()
-    infig_position = transFigure.transform(inax_position)    
-    x = infig_position[0]
-    y = infig_position[1]
-    width *= rect[2]
-    height *= rect[3]  # <= Typo was here
-    #subax = fig.add_axes([x,y,width,height],facecolor=facecolor)  # matplotlib 2.0+
-    subax = fig.add_axes([x,y,width,height])
-    x_labelsize = subax.get_xticklabels()[0].get_size()
-    y_labelsize = subax.get_yticklabels()[0].get_size()
-    x_labelsize *= rect[2]**0.5
-    y_labelsize *= rect[3]**0.5
-    subax.xaxis.set_tick_params(labelsize=x_labelsize)
-    subax.yaxis.set_tick_params(labelsize=y_labelsize)
-    return subax
-
 def ComputeHistogram(Variable:np.array):
 
     # Get data attributes
@@ -100,7 +77,13 @@ def ComputeHistogram(Variable:np.array):
     for Value in SortedValues:
         Norm = norm.pdf(SortedValues-Value,loc=0,scale=KernelHalfWidth*2)
         KernelEstimator += Norm / max(Norm)
-    KernelEstimator = KernelEstimator/N*max(Histogram)
+    # KernelEstimator = KernelEstimator/N*max(Histogram)
+
+    # Scale values to sum up to 1
+    Histogram = Histogram / np.sum(Histogram * Width)
+    Deltas = SortedValues[1:] - SortedValues[:-1]
+    KernelMax = np.max([KernelEstimator[1:], KernelEstimator[:-1]], axis=0)
+    KernelEstimator = KernelEstimator / np.sum(KernelMax * Deltas)
 
     # Histogram and density distribution
     TheoreticalDistribution = norm.pdf(SortedValues,X_Bar,S_X)
@@ -135,11 +118,10 @@ def PlotHistogram(Variable, Groups, Name, Path):
 
 #%% Main
 
-def Main(Arguments):
+def Main():
 
     # Read Arguments
-    if not Arguments.DataPath:
-        DataPath = Path(__file__).parents[1] / '02_Results/Morphometry/'
+    DataPath = Path(__file__).parents[1] / '02_Results/Morphometry/'
     DataFiles = [F for F in Path.iterdir(DataPath) if F.name.endswith('.csv')]
 
     Cols = ['BV/TV', 'Tb.N.', 'Tb.Th.', 'Tb.Sp.', 'Tb.Sp.SD', 'DA', 'CV']
@@ -161,46 +143,35 @@ def Main(Arguments):
         CV = ComputeCV(BinArray)
         Data.loc[(File.name[:-6],int(File.name[-5])), 'CV'] = CV
     Data.to_csv(Path(__file__).parents[1] / '02_Results/Morphometry.csv')
-
-    # Filter out ROIs of cortical bone
-    Data = Data[Data['BV/TV'] < 0.5]
+    Data = pd.read_csv(Path(__file__).parents[1] / '02_Results/Morphometry.csv', index_col=[0,1])
 
     # Read metadata file
-    MetaData = pd.read_excel(Path(__file__).parents[1] / '00_Data/SampleList.xlsx')
-    Ctrl = MetaData['Group (T2D or Ctrl)'] == 'Ctrl'
-    T2D = MetaData['Group (T2D or Ctrl)'] == 'T2D'
-    FH = MetaData['Anatomical Location'] == 'Femoral Head'
-    DF = MetaData['Anatomical Location'] == 'Distal Femur'
-    CtrlDF = MetaData['Filename'][Ctrl&DF].values
-    T2DDF = MetaData['Filename'][T2D&DF].values
-    CtrlSamples = MetaData['Filename'][Ctrl&FH].values
-    T2DSamples = MetaData['Filename'][T2D&FH].values
-    Samples = [i[0] for i in Data.index]
-    CtrlDF = [S in CtrlDF for S in Samples]
-    Ctrl = [S in CtrlSamples for S in Samples]
-    T2D = [S in T2DSamples for S in Samples]
+    MetaData = pd.read_csv(Path(__file__).parents[1] / '00_Data/SampleList.csv')
+    Ctrl = MetaData['Group'].values == 'Ctrl'
+    T2D = MetaData['Group'].values == 'T2D'
+    Ctrl = np.repeat(MetaData['Group'].values == 'Ctrl',3)
+    T2D = np.repeat(MetaData['Group'].values == 'T2D',3)
 
     # Plot BV/TV and CV
     Figure, Axis = plt.subplots(1,1,dpi=200)
-    Axis.plot(Data['BV/TV'][Ctrl], Data['CV'][Ctrl], linestyle='none', color=(0,0,1), marker='o')
-    Axis.plot(Data['BV/TV'][T2D], Data['CV'][T2D], linestyle='none', color=(1,0,0), marker='o')
-    Axis.plot(Data['BV/TV'][CtrlDF], Data['CV'][CtrlDF], linestyle='none', color=(0,0,1), marker='x')
-    Axis.plot(Data['BV/TV'][T2DDF], Data['CV'][T2DDF], linestyle='none', color=(1,0,0), marker='x')
-    Axis.plot([], linestyle='none', color=(0,0,1), marker='s', label='Ctrl')
-    Axis.plot([], linestyle='none', color=(1,0,0), marker='s', label='T2D')
-    Axis.plot([], linestyle='none', color=(0,0,0), marker='o', label='Distal Femur')
-    Axis.plot([], linestyle='none', color=(0,0,0), marker='x', label='Femoral Head')
-    Axis.plot([min(Data['BV/TV']), max(Data['BV/TV'])], [0.263,0.263], linestyle='--', color=(0,0,0), label='Threshold')
-    Axis.plot([0.5, 0.5], [min(Data['CV']), max(Data['CV'])], linestyle='--', color=(0,0,0))
+    Axis.plot(Data['BV/TV'][Ctrl], Data['CV'][Ctrl], linestyle='none',
+              color=(1,0,0), marker='o', label='Ctrl')
+    Axis.plot(Data['BV/TV'][T2D], Data['CV'][T2D], linestyle='none',
+              color=(0,0,1), marker='o', label='T2D')
+    Axis.plot([min(Data['BV/TV']), max(Data['BV/TV'])], [0.263,0.263], linestyle='--', color=(0,0,0))
+    Axis.plot([0.5, 0.5], [min(Data['CV']), max(Data['CV'])], linestyle='--', color=(0,0,0), label='Threshold')
     Axis.set_xlabel('BV/TV')
     Axis.set_ylabel('CV')
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=5)
     plt.savefig(Path(__file__).parents[1] / '02_Results/CV_BVTV.png')
     plt.show(Figure)
 
+    # Filter out ROIs of cortical bone
+    F = Data['BV/TV'] < 0.5
+
     # Plot Histograms
     for Col in Data.columns:
-        PlotHistogram(Data[Col], [Ctrl,T2D], Col, DataPath)
+        PlotHistogram(Data[Col], [Ctrl&F,T2D&F], Col, DataPath)
 
 
 if __name__ == '__main__':
@@ -213,4 +184,4 @@ if __name__ == '__main__':
 
     # Read arguments from the command line
     Arguments = Parser.parse_args()
-    Main(Arguments)
+    Main()

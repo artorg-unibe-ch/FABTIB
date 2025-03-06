@@ -472,7 +472,7 @@ def Main():
     Sample = ''
 
     Time.Process(1, 'Plot ROIs')
-    for Idx, SampleData in Data.iterrows():
+    for Idx, SampleData in Data[156:159].iterrows():
 
         if SampleData['$Sample'] != Sample[:-2]:
             # Read full scan
@@ -487,15 +487,15 @@ def Main():
         ROI = VoxelModel.T[X:X+Dim, Y:Y+Dim, Z:Z+Dim].T
         PlotROI(ROI, Otsu, ROIPath / (Sample + '.png'))
 
-        # Read scan
-        ROI = sitk.ReadImage(ROIPath / (Sample + '.mhd'))
-        ROI = np.array(sitk.GetArrayFromImage(ROI).T - 1,int)
+        # # Read scan
+        # ROI = sitk.ReadImage(ROIPath / (Sample + '.mhd'))
+        # ROI = np.array(sitk.GetArrayFromImage(ROI).T - 1,int)
 
-        # Get fabric
-        eValues, eVectors, BVTV = ReadFabric(FabPath / (Sample + '.csv'))
+        # # Get fabric
+        # eValues, eVectors, BVTV = ReadFabric(FabPath / (Sample + '.csv'))
 
-        # Plot ROI
-        PlotFabricROI(ROI, eValues, eVectors, ROIPath / (Sample + '.png'))
+        # # Plot ROI
+        # PlotFabricROI(ROI, eValues, eVectors, ROIPath / (Sample + '.png'))
        
         Time.Update((Idx+1)/len(Data))
     Time.Process(0)

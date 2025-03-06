@@ -528,53 +528,35 @@ def OLS(X, Y, Alpha=0.95):
 
     return Parameters, R2adj, NE
 
-def OLS2(X, Y, L0, L0p, M0, Alpha=0.95):
+def SolveSeparate(Parameters, Xh,Yh,Xd,Yd):
 
-    # Solve linear system
-    XTXi = np.linalg.inv(X.T * X)
-    B = XTXi * X.T * Y
+    # Solve linear systems
+    X = np.matrix(np.vstack(Xh))
+    Y = np.matrix(np.vstack(Yh))
+    Parametersh, R2adj, NE = OLS(X, Y)
 
-    # Compute residuals, variance, and covariance matrix
-    Y_Obs = np.exp(Y)
-    Y_Fit = np.exp(X * B)
-    Residuals = Y - X*B
-    DOFs = len(Y) - X.shape[1]
-    Sigma = Residuals.T * Residuals / DOFs
-    Cov = Sigma[0,0] * XTXi
+    X = np.matrix(np.vstack(Xd))
+    Y = np.matrix(np.vstack(Yd))
+    Parametersd, R2adj, NE = OLS(X, Y)
 
-    # Compute B confidence interval
-    t_Alpha = t.interval(Alpha, DOFs)
-    B_CI_Low = B.T + t_Alpha[0] * np.sqrt(np.diag(Cov))
-    B_CI_Top = B.T + t_Alpha[1] * np.sqrt(np.diag(Cov))
+    # Plot 95% CI
+    Colors = [(0,0,0),(1,0,0),(0,0,1)]
+    Variables = ['Lambda0','Lambda0p','Mu0','k','l']
+    Figure, Axis = plt.subplots(1,len(Variables), figsize=(2*len(Variables)+2,4), sharey=False)
+    for v, Variable in enumerate(Variables):
+        for i, P in enumerate([Parameters, Parametersh, Parametersd]):
+            V = P.loc['Value',Variable]
+            V_Low = abs(P.loc['Value',Variable] - P.loc['95% CI Low',Variable])
+            V_Top = abs(P.loc['95% CI Top',Variable] - P.loc['Value',Variable])
+            Axis[v].errorbar([i], V, yerr=[[V_Low], [V_Top]], marker='o', color=Colors[i])
+            Axis[v].set_xlabel(Variables[v])
+            Axis[v].set_xticks(range(3),['Grouped','Ctrl','T2D'])
+    Axis[0].set_ylabel('Values (-)')
+    plt.tight_layout()
+    plt.show(Figure)
+    return
 
-    # Store parameters in data frame
-    Parameters = pd.DataFrame(columns=['Lambda0','Lambda0p','Mu0','k','l'])
-    Parameters.loc['Value'] = [L0, L0p, M0, B[0,0], B[1,0]]
-    Parameters.loc['95% CI Low'] = [L0, L0p, M0, B_CI_Top[0,0], B_CI_Top[0,1]]
-    Parameters.loc['95% CI Top'] = [L0, L0p, M0, B_CI_Low[0,0], B_CI_Low[0,1]]
-
-    # Compute R2 and standard error of the estimate
-    RSS = np.sum([R**2 for R in Residuals])
-    SE = np.sqrt(RSS / DOFs)
-    TSS = np.sum([R**2 for R in (Y - Y.mean())])
-    RegSS = TSS - RSS
-    R2 = RegSS / TSS
-
-    # Compute R2adj and NE
-    R2adj = 1 - RSS/TSS * (len(Y)-1)/(len(Y)-X.shape[1]-1)
-
-    NE = []
-    for i in range(0,len(Y),12):
-        T_Obs = Y_Obs[i:i+12]
-        T_Fit = Y_Fit[i:i+12]
-        Numerator = np.sum([T**2 for T in (T_Obs-T_Fit)])
-        Denominator = np.sum([T**2 for T in T_Obs])
-        NE.append(np.sqrt(Numerator/Denominator))
-    NE = np.array(NE)
-
-    return Parameters, R2adj, NE
-
-def OLS2b(X, Y, k0, l0, Alpha=0.95):
+def OLS_Exponents(X, Y, k0, l0, Alpha=0.95):
 
     # Solve linear system
     XTXi = np.linalg.inv(X.T * X)
@@ -620,14 +602,62 @@ def OLS2b(X, Y, k0, l0, Alpha=0.95):
 
     return Parameters, R2adj, NE
 
+def Solve_Exponents(Parameters, Xh, Yh, Xd, Yd):
 
-def OLS3(X, Y, B, Alpha=0.95):
+    k0 = Parameters.loc['Value','k']
+    l0 = Parameters.loc['Value','l']
+
+    X = np.matrix(np.vstack(Xh))
+    Y = np.matrix(np.vstack(Yh))
+    Yr = Y - X[:,3]*k0 - X[:,4]*l0
+    Parametersh, R2adjh, NEh = OLS_Exponents(X[:,:3], Yr , k0, l0)
+
+    X = np.matrix(np.vstack(Xd))
+    Y = np.matrix(np.vstack(Yd))
+    Yr = Y - X[:,3]*k0 - X[:,4]*l0
+    Parametersd, R2adjh, NEh = OLS_Exponents(X[:,:3], Yr , k0, l0)
+
+    # Plot 95% CI
+    Colors = [(0,0,0),(1,0,0),(0,0,1)]
+    Variables = ['Lambda0','Lambda0p','Mu0']
+    Figure, Axis = plt.subplots(1,len(Variables), figsize=(2*len(Variables)+2,4), sharey=False)
+    for v, Variable in enumerate(Variables):
+        for i, P in enumerate([Parameters, Parametersh, Parametersd]):
+            V = P.loc['Value',Variable]
+            V_Low = abs(P.loc['Value',Variable] - P.loc['95% CI Low',Variable])
+            V_Top = abs(P.loc['95% CI Top',Variable] - P.loc['Value',Variable])
+            Axis[v].errorbar([i], V, yerr=[[V_Low], [V_Top]], marker='o', color=Colors[i])
+            Axis[v].set_xlabel(Variables[v])
+            Axis[v].set_xticks(range(3),['Grouped','Ctrl','T2D'])
+    Axis[0].set_ylabel('Values (-)')
+    plt.tight_layout()
+    plt.show(Figure)
+    return
+
+def OLS_Stiffness(X, Y, L0, L0p, M0, Alpha=0.95):
+
+    # Solve linear system
+    XTXi = np.linalg.inv(X.T * X)
+    B = XTXi * X.T * Y
 
     # Compute residuals, variance, and covariance matrix
     Y_Obs = np.exp(Y)
     Y_Fit = np.exp(X * B)
     Residuals = Y - X*B
     DOFs = len(Y) - X.shape[1]
+    Sigma = Residuals.T * Residuals / DOFs
+    Cov = Sigma[0,0] * XTXi
+
+    # Compute B confidence interval
+    t_Alpha = t.interval(Alpha, DOFs)
+    B_CI_Low = B.T + t_Alpha[0] * np.sqrt(np.diag(Cov))
+    B_CI_Top = B.T + t_Alpha[1] * np.sqrt(np.diag(Cov))
+
+    # Store parameters in data frame
+    Parameters = pd.DataFrame(columns=['Lambda0','Lambda0p','Mu0','k','l'])
+    Parameters.loc['Value'] = [L0, L0p, M0, B[0,0], B[1,0]]
+    Parameters.loc['95% CI Low'] = [L0, L0p, M0, B_CI_Top[0,0], B_CI_Top[0,1]]
+    Parameters.loc['95% CI Top'] = [L0, L0p, M0, B_CI_Low[0,0], B_CI_Low[0,1]]
 
     # Compute R2 and standard error of the estimate
     RSS = np.sum([R**2 for R in Residuals])
@@ -648,7 +678,40 @@ def OLS3(X, Y, B, Alpha=0.95):
         NE.append(np.sqrt(Numerator/Denominator))
     NE = np.array(NE)
 
-    return R2adj, NE
+    return Parameters, R2adj, NE
+
+def Solve_Stiffness(Parameters, Xh, Yh, Xd, Yd):
+
+    L0 = Parameters.loc['Value','Lambda0']
+    L0p = Parameters.loc['Value','Lambda0p']
+    M0 = Parameters.loc['Value','Mu0']
+
+    X = np.matrix(np.vstack(Xh))
+    Y = np.matrix(np.vstack(Yh))
+    Yr = Y - X[:,0]*np.log(L0+2*M0) - X[:,1]*np.log(L0p) - X[:,2]*np.log(M0)
+    Parametersh, R2adjh, NEh = OLS_Stiffness(X[:,3:], Yr , L0, L0p, M0)
+    
+    X = np.matrix(np.vstack(Xd))
+    Y = np.matrix(np.vstack(Yd))
+    Yr = Y - X[:,0]*np.log(L0+2*M0) - X[:,1]*np.log(L0p) - X[:,2]*np.log(M0)
+    Parametersd, R2adjh, NEh = OLS_Stiffness(X[:,3:], Yr , L0, L0p, M0)
+
+    # Plot 95% CI
+    Colors = [(0,0,0),(1,0,0),(0,0,1)]
+    Variables = ['k','l']
+    Figure, Axis = plt.subplots(1,len(Variables), figsize=(2*len(Variables)+2,4), sharey=False)
+    for v, Variable in enumerate(Variables):
+        for i, P in enumerate([Parameters, Parametersh, Parametersd]):
+            V = P.loc['Value',Variable]
+            V_Low = abs(P.loc['Value',Variable] - P.loc['95% CI Low',Variable])
+            V_Top = abs(P.loc['95% CI Top',Variable] - P.loc['Value',Variable])
+            Axis[v].errorbar([i], V, yerr=[[V_Low], [V_Top]], marker='o', color=Colors[i])
+            Axis[v].set_xlabel(Variables[v])
+            Axis[v].set_xticks(range(3),['Grouped','Ctrl','T2D'])
+    Axis[0].set_ylabel('Values (-)')
+    plt.tight_layout()
+    plt.show(Figure)
+    return
 
 #%% Main
 
@@ -662,14 +725,13 @@ def Main():
     Samples = sorted([F.name[:-4] for F in Path.iterdir(AbaqusPath) if F.name.endswith('.out')])
 
     # Read metadata file
-    Data = pd.read_excel(Path(__file__).parents[1] / '00_Data/SampleList.xlsx')
+    Data = pd.read_csv(Path(__file__).parents[1] / '00_Data/SampleList.csv')
 
     # Define the two groups
-    Ctrl = Data['Group (T2D or Ctrl)'] == 'Ctrl'
-    T2D = Data['Group (T2D or Ctrl)'] == 'T2D'
-    FH = Data['Anatomical Location'] == 'Femoral Head'
-    Ctrl = Data[Ctrl & FH]['Filename'].values
-    T2D = Data[T2D & FH]['Filename'].values
+    Ctrl = Data['Group'] == 'Ctrl'
+    T2D = Data['Group'] == 'T2D'
+    Ctrl = Data[Ctrl]['Sample'].values
+    T2D = Data[T2D]['Sample'].values
 
     # Collect BVTV and DA
     Morpho = pd.read_csv(Path(__file__).parents[1] / '02_Results/Morphometry.csv', index_col=[0,1])
@@ -678,11 +740,12 @@ def Main():
     for s, Sample in Morpho.iterrows():
         BVTV = Sample['BV/TV']
         DA = Sample['DA']
+        CV = Sample['CV']
         if s[0] in Ctrl:
-            Ctrl_Morpho.append([BVTV, DA])
+            Ctrl_Morpho.append([BVTV, DA, CV])
             CtrlList.append([s[0], s[1]])
         elif s[0] in T2D:
-            T2D_Morpho.append([BVTV, DA])
+            T2D_Morpho.append([BVTV, DA, CV])
             T2DList.append([s[0], s[1]])
     Ctrl_Morpho = np.array(Ctrl_Morpho)
     T2D_Morpho = np.array(T2D_Morpho)
@@ -690,7 +753,11 @@ def Main():
     # Filter samples
     Ctrl_Morpho = Ctrl_Morpho[Ctrl_Morpho[:, 0] < 0.5]
     T2D_Morpho = T2D_Morpho[T2D_Morpho[:, 0] < 0.5]
-
+    Ctrl_Morpho = Ctrl_Morpho[Ctrl_Morpho[:, 2] < 0.263]
+    T2D_Morpho = T2D_Morpho[T2D_Morpho[:, 2] < 0.263]
+    Ctrl_Morpho = Ctrl_Morpho[:,:2]
+    T2D_Morpho = T2D_Morpho[:,:2]
+    
     # Compute samples differences
     Differences = Ctrl_Morpho[:, np.newaxis, :] - T2D_Morpho[np.newaxis, :, :]
     Distances = np.sqrt(np.sum(Differences**2, axis=2))
@@ -702,7 +769,7 @@ def Main():
 
     # Collect homogenization data
     Strain = np.array([0.001, 0.001, 0.001, 0.002, 0.002, 0.002])
-    Xh, Yh, Xd, Yd, Xp, Yp = [], [], [], [], [], []
+    Xh, Yh, Xd, Yd = [], [], [], []
     for s, Sample in enumerate(Samples):
 
         # Step 1: Get fabric info
@@ -799,66 +866,29 @@ def Main():
                       [0, 0, 1, np.log(BVTV), np.log(m1 * m2)]])
 
         # Store data in corresponding group
-        Loc = Data[Data['Filename'] == Sample[:-2]]['Anatomical Location'].values[0]
         if Sample in Ctrl_Samples:
             Xh.append(X)
             Yh.append(Y)
         elif Sample in T2D_Samples:
             Xd.append(X)
             Yd.append(Y)
-        elif Loc == 'Distal Femur':
-            Xp.append(X)
-            Yp.append(Y)
+
 
 
     # Determine k and l
     X = np.matrix(np.vstack([np.vstack(Xh),np.vstack(Xd)]))
     Y = np.matrix(np.vstack([np.vstack(Yh),np.vstack(Yd)]))
-    Parametersg, R2adjg, NEg = OLS(X, Y)
-    L0 = Parametersg.loc['Value','Lambda0']
-    L0p = Parametersg.loc['Value','Lambda0p']
-    M0 = Parametersg.loc['Value','Mu0']
-    k0 = Parametersg.loc['Value','k']
-    l0 = Parametersg.loc['Value','l']
-    B = np.matrix(np.vstack([np.log(L0+2*M0),np.log(L0p),np.log(M0),k0,l0]))
+    Parameters, R2adjg, NEg = OLS(X, Y)
 
-    # Solve linear systems
-    X = np.matrix(np.vstack(Xh))
-    Y = np.matrix(np.vstack(Yh))
-    # Parametersh, R2adj, NE = OLS(X, Y)
-    # R2adj, NE = OLS3(X, Y, B)
-    Yr = Y - X[:,0]*np.log(L0+2*M0) - X[:,1]*np.log(L0p) - X[:,2]*np.log(M0)
-    Parametersh, R2adjh, NEh = OLS2(X[:,3:], Yr , L0, L0p, M0)
-    Yr = Y - X[:,3]*k0 - X[:,4]*l0
-    Parametersh, R2adjh, NEh = OLS2b(X[:,:3], Yr , k0, l0)
+    # Solve separated linear systems
+    SolveSeparate(Parameters, Xh, Yh, Xd, Yd)
 
+    # Impose exponent values as in previous work
+    Solve_Exponents(Parameters, Xh, Yh, Xd, Yd)
 
-    X = np.matrix(np.vstack(Xd))
-    Y = np.matrix(np.vstack(Yd))
-    # Parametersd, R2adj, NE = OLS(X, Y)
-    # R2adj, NE = OLS3(X, Y, B)
-    Yr = Y - X[:,0]*np.log(L0+2*M0) - X[:,1]*np.log(L0p) - X[:,2]*np.log(M0)
-    Parametersd, R2adjh, NEh = OLS2(X[:,3:], Yr , L0, L0p, M0)
-    Yr = Y - X[:,3]*k0 - X[:,4]*l0
-    Parametersd, R2adjh, NEh = OLS2b(X[:,:3], Yr , k0, l0)
+    # Impose stiffness values to compare exponents
+    Solve_Stiffness(Parameters, Xh, Yh, Xd, Yd)
 
-    # Plot 95% CI
-    Colors = [(0,0,0),(1,0,0),(0,0,1)]
-    Variables = ['k','l']
-    # Variables = ['Lambda0','Lambda0p','Mu0']
-    # Variables = ['Lambda0','Lambda0p','Mu0','k','l']
-    Figure, Axis = plt.subplots(1,len(Variables), figsize=(2*len(Variables)+2,4), sharey=False)
-    for v, Variable in enumerate(Variables):
-        for i, P in enumerate([Parametersg, Parametersh, Parametersd]):
-            V = P.loc['Value',Variable]
-            V_Low = abs(P.loc['Value',Variable] - P.loc['95% CI Low',Variable])
-            V_Top = abs(P.loc['95% CI Top',Variable] - P.loc['Value',Variable])
-            Axis[v].errorbar([i], V, yerr=[[V_Low], [V_Top]], marker='o', color=Colors[i])
-            Axis[v].set_xlabel(Variables[v])
-            Axis[v].set_xticks(range(3),['Grouped','Ctrl','T2D'])
-    Axis[0].set_ylabel('Values (-)')
-    plt.tight_layout()
-    plt.show(Figure)
 
     # Plot study with OI
     Colors = [(0,0,0),(1,0,0),(0,0,1)]
@@ -887,7 +917,7 @@ def Main():
             V_Top = abs(P.loc['95% CI Top',Variable] - P.loc['Value',Variable])
             Axis[v].errorbar([i], V, yerr=[[V_Low], [V_Top]], marker='o', color=Colors[i])
             Axis[v].set_xlabel(Variables[v])
-            Axis[v].set_xticks(range(3),['Grouped','Ctrl','T2D'])
+            Axis[v].set_xticks(range(3),['Grouped','Ctrl','OI'])
     Axis[0].set_ylabel('Values (-)')
     plt.tight_layout()
     plt.show(Figure)
