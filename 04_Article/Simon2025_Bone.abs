@@ -1,7 +1,6 @@
-Type 2 diabetes (T2D) is a chronic disease leading to an elevated glucose level in the blood and increased fracture risk.
-		High-resolution peripheral quantitative computed tomography (HR-pQCT) is an attractive tool to investigate bone morphology in vivo.
-		Additionally, bone strength can be estimated using micro finite element (\textmu FE) analysis or homogenised finite element (hFE) analysis.
-		While \textmu FE is computationally expensive, hFE provides an accurate estimation of bone mechanical properties within reasonable efforts.
+Type 2 diabetes (T2D) is a chronic disease leading to an elevated glucose level in the blood and increased fracture risk and high-resolution peripheral quantitative computed tomography (HR-pQCT) is an attractive tool to investigate bone state in vivo.
+		Additionally to bone morphology, bone strength can be estimated using micro finite element (\textmu FE) analysis or homogenised finite element (hFE) analysis.
+		While \textmu FE is computationally expensive, hFE provides an accurate estimation of bone mechanical properties within reasonable computational efforts.
 		However, the hFE scheme is based on relationships between the local fabric (anisotropy) and elasticity.
 		These relationships have been shown to hold for healthy controls as well as in the case of osteogenesis imperfecta.
 		Nevertheless, whether these relationships are also valid for T2D-diagnosed patients remains unclear.
@@ -14,7 +13,7 @@ Type 2 diabetes (T2D) is a chronic disease leading to an elevated glucose level 
 		Standard morphometric parameters were computed from the segmented ROIs using medtool (v4.8; Dr. Pahr Ingenieurs e.U., Pfaffstätten, Austria).
 		Additionally, their fabric tensor was computed using mean intercept length, and their apparent stiffness tensors were computed using numerical homogenisation.
 		The ROIs morphometry was compared between T2D and control for ROIs having a bone volume fraction ($\rho$) lower than 0.5, following standard trabecular bone definition.
-		The ROIs stiffnesses were also compared between T2D and control for ROIs presenting a $\rho$ > 0.5 and a reasonably homogeneous mass distribution.
+		The ROIs stiffnesses were also compared between T2D and control for ROIs presenting a $\rho$ < 0.5 and a reasonably homogeneous mass distribution.
 		These homogeneous ROIs of trabecular bone were then matched between T2D and control for $\rho$ and degree of anisotropy.
 		The matched dataset allowed the comparison of fabric-elasticity relationships between T2D and control samples.
 		\\[0.5em]

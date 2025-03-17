@@ -1,4 +1,4 @@
-\begin{thebibliography}{29}
+\begin{thebibliography}{34}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\href}[2]{#2}
@@ -69,12 +69,37 @@
   \bibinfo{volume}{22}.
 \newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:24212206}.
 %Type = Article
+\bibitem[{Burghardt et~al.(2010)Burghardt, Issever, Schwartz, Davis, Masharani,
+  Majumdar and Link}]{Burghardt2010}
+\bibinfo{author}{Burghardt, A.J.}, \bibinfo{author}{Issever, A.S.},
+  \bibinfo{author}{Schwartz, A.V.}, \bibinfo{author}{Davis, K.A.},
+  \bibinfo{author}{Masharani, U.}, \bibinfo{author}{Majumdar, S.},
+  \bibinfo{author}{Link, T.M.}, \bibinfo{year}{2010}.
+\newblock \bibinfo{title}{High-resolution peripheral quantitative computed
+  tomographic imaging of cortical and trabecular bone microarchitecture in
+  patients with type 2 diabetes mellitus.}
+\newblock \bibinfo{journal}{The Journal of clinical endocrinology and
+  metabolism} \bibinfo{volume}{95 11}, \bibinfo{pages}{5045--55}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:207081023}.
+%Type = Article
 \bibitem[{Cowin and Doty(2007)}]{Cowin2007}
 \bibinfo{author}{Cowin, S.C.}, \bibinfo{author}{Doty, S.B.},
   \bibinfo{year}{2007}.
 \newblock \bibinfo{title}{Tissue mechanics}.
 \newblock \bibinfo{journal}{Tissue Mechanics} ,
   \bibinfo{pages}{1--682}\DOIprefix\doi{10.1007/978-0-387-49985-7/COVER}.
+%Type = Article
+\bibitem[{Farr et~al.(2014)Farr, Drake, Amin, Melton, McCready and
+  Khosla}]{Farr2014}
+\bibinfo{author}{Farr, J.N.}, \bibinfo{author}{Drake, M.T.},
+  \bibinfo{author}{Amin, S.}, \bibinfo{author}{Melton, L.J.},
+  \bibinfo{author}{McCready, L.K.}, \bibinfo{author}{Khosla, S.},
+  \bibinfo{year}{2014}.
+\newblock \bibinfo{title}{In vivo assessment of bone quality in postmenopausal
+  women with type 2 diabetes}.
+\newblock \bibinfo{journal}{Journal of Bone and Mineral Research}
+  \bibinfo{volume}{29}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:20799778}.
 %Type = Article
 \bibitem[{Gross et~al.(2012)Gross, Pahr and Zysset}]{Gross2012}
 \bibinfo{author}{Gross, T.G.}, \bibinfo{author}{Pahr, D.H.},
@@ -100,6 +125,23 @@
 \newblock \bibinfo{journal}{Bone} \bibinfo{volume}{97},
   \bibinfo{pages}{65--75}.
 \newblock \DOIprefix\doi{10.1016/j.bone.2017.01.003}.
+%Type = Article
+\bibitem[{van Hulten et~al.(2024)van Hulten, Sarodnik, Driessen, Viggers,
+  Rasmussen, Geusens, Schaper, Schram, de~Galan, Koster, Bours, Vestergaard,
+  Stehouwer and van~den Bergh}]{vanHulten2024}
+\bibinfo{author}{van Hulten, V.}, \bibinfo{author}{Sarodnik, C.},
+  \bibinfo{author}{Driessen, J.H.M.}, \bibinfo{author}{Viggers, R.},
+  \bibinfo{author}{Rasmussen, N.H.}, \bibinfo{author}{Geusens, P.P.M.M.},
+  \bibinfo{author}{Schaper, N.S.}, \bibinfo{author}{Schram, M.T.},
+  \bibinfo{author}{de~Galan, B.E.}, \bibinfo{author}{Koster, A.},
+  \bibinfo{author}{Bours, S.P.G.}, \bibinfo{author}{Vestergaard, P.},
+  \bibinfo{author}{Stehouwer, C.D.A.}, \bibinfo{author}{van~den Bergh, J.P.},
+  \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{Bone microarchitecture and strength assessed by
+  hrpqct in individuals with type 2 diabetes and prediabetes: the maastricht
+  study}.
+\newblock \bibinfo{journal}{JBMR Plus} \bibinfo{volume}{8}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:270946000}.
 %Type = Article
 \bibitem[{Johnell and Kanis(2005)}]{Johnell2005}
 \bibinfo{author}{Johnell, O.}, \bibinfo{author}{Kanis, J.A.},
@@ -195,6 +237,18 @@
   \bibinfo{pages}{62--66}.
 \newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:15326934}.
 %Type = Article
+\bibitem[{Paccou et~al.(2015)Paccou, Ward, Jameson, Dennison, Cooper and
+  Edwards}]{Paccou2015}
+\bibinfo{author}{Paccou, J.}, \bibinfo{author}{Ward, K.A.},
+  \bibinfo{author}{Jameson, K.A.}, \bibinfo{author}{Dennison, E.M.},
+  \bibinfo{author}{Cooper, C.}, \bibinfo{author}{Edwards, M.H.},
+  \bibinfo{year}{2015}.
+\newblock \bibinfo{title}{Bone microarchitecture in men and women with
+  diabetes: The importance of cortical porosity}.
+\newblock \bibinfo{journal}{Calcified Tissue International}
+  \bibinfo{volume}{98}, \bibinfo{pages}{465 -- 473}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:12849482}.
+%Type = Article
 \bibitem[{Pahr and Zysset(2009)}]{Pahr2009}
 \bibinfo{author}{Pahr, D.H.}, \bibinfo{author}{Zysset, P.K.},
   \bibinfo{year}{2009}.
@@ -263,6 +317,18 @@
 \newblock \bibinfo{journal}{The Journal of clinical endocrinology and
   metabolism} \bibinfo{volume}{86 1}, \bibinfo{pages}{32--8}.
 \newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:11315536}.
+%Type = Article
+\bibitem[{Shu et~al.(2012)Shu, Yin, Stein, Cremers, Dworakowski, Ives and
+  Rubin}]{Shu2012}
+\bibinfo{author}{Shu, A.D.}, \bibinfo{author}{Yin, M.T.},
+  \bibinfo{author}{Stein, E.A.}, \bibinfo{author}{Cremers, S.},
+  \bibinfo{author}{Dworakowski, E.}, \bibinfo{author}{Ives, R.},
+  \bibinfo{author}{Rubin, M.R.}, \bibinfo{year}{2012}.
+\newblock \bibinfo{title}{Bone structure and turnover in type 2 diabetes
+  mellitus}.
+\newblock \bibinfo{journal}{Osteoporosis International} \bibinfo{volume}{23},
+  \bibinfo{pages}{635--641}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:10015965}.
 %Type = Article
 \bibitem[{Simon et~al.(2022)Simon, Indermaur, Schenk, Hosseinitabatabaei,
   Willie and Zysset}]{Simon2022}
