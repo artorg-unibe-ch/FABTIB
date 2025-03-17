@@ -438,7 +438,7 @@ def Mandel2EngineeringNotation(A):
 
     return B
 
-def OLS(X, Y, Alpha=0.95):
+def OLS(X, Y, Alpha=0.95, Colors=[(0,0,1),(0,1,0),(1,0,0)]):
 
     # Solve linear system
     XTXi = np.linalg.inv(X.T * X)
@@ -494,7 +494,6 @@ def OLS(X, Y, Alpha=0.95):
     DPI = 500
     SMax = max([Y_Obs.max(), Y_Fit.max()]) * 5
     SMin = min([Y_Obs.min(), Y_Fit.min()]) / 5
-    Colors=[(0,0,1),(0,1,0),(1,0,0)]
 
     # Set boundaries of fabtib
     SMax = 1e4
@@ -528,19 +527,19 @@ def OLS(X, Y, Alpha=0.95):
 
     return Parameters, R2adj, NE
 
-def SolveSeparate(Parameters, Xh,Yh,Xd,Yd):
+def SolveSeparate(Parameters,Xh,Yh,Xd,Yd):
 
     # Solve linear systems
     X = np.matrix(np.vstack(Xh))
     Y = np.matrix(np.vstack(Yh))
-    Parametersh, R2adj, NE = OLS(X, Y)
+    Parametersh, R2adj, NE = OLS(X, Y, Colors=[(0,0,1),(0,0.6,1),(0,1,1)])
 
     X = np.matrix(np.vstack(Xd))
     Y = np.matrix(np.vstack(Yd))
-    Parametersd, R2adj, NE = OLS(X, Y)
+    Parametersd, R2adj, NE = OLS(X, Y, Colors=[(1,0,0),(1,0,1),(0.6,0,1)])
 
     # Plot 95% CI
-    Colors = [(0,0,0),(1,0,0),(0,0,1)]
+    Colors = [(0,0,0),(0,0,1),(1,0,0)]
     Variables = ['Lambda0','Lambda0p','Mu0','k','l']
     Figure, Axis = plt.subplots(1,len(Variables), figsize=(2*len(Variables)+2,4), sharey=False)
     for v, Variable in enumerate(Variables):
@@ -618,7 +617,7 @@ def Solve_Exponents(Parameters, Xh, Yh, Xd, Yd):
     Parametersd, R2adjh, NEh = OLS_Exponents(X[:,:3], Yr , k0, l0)
 
     # Plot 95% CI
-    Colors = [(0,0,0),(1,0,0),(0,0,1)]
+    Colors = [(0,0,0),(0,0,1),(1,0,0)]
     Variables = ['Lambda0','Lambda0p','Mu0']
     Figure, Axis = plt.subplots(1,len(Variables), figsize=(2*len(Variables)+2,4), sharey=False)
     for v, Variable in enumerate(Variables):
@@ -697,7 +696,7 @@ def Solve_Stiffness(Parameters, Xh, Yh, Xd, Yd):
     Parametersd, R2adjh, NEh = OLS_Stiffness(X[:,3:], Yr , L0, L0p, M0)
 
     # Plot 95% CI
-    Colors = [(0,0,0),(1,0,0),(0,0,1)]
+    Colors = [(0,0,0),(0,0,1),(1,0,0)]
     Variables = ['k','l']
     Figure, Axis = plt.subplots(1,len(Variables), figsize=(2*len(Variables)+2,4), sharey=False)
     for v, Variable in enumerate(Variables):
@@ -891,7 +890,7 @@ def Main():
 
 
     # Plot study with OI
-    Colors = [(0,0,0),(1,0,0),(0,0,1)]
+    Colors = [(0,0,0),(0,0,1),(1,0,0)]
     Variables = ['Lambda0','Lambda0p','Mu0']
     Grouped = pd.DataFrame(columns=['Lambda0','Lambda0p','Mu0'])
     Grouped.loc['Value'] = [4626, 2695, 3541]

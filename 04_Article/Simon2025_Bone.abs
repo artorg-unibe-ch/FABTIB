@@ -1,52 +1,32 @@
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
-		Utpurus elit, vestibulum ut, placerat ac, adipiscing vitae, felis.
-		Curabitur dictum gravida mauris.
-		Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna.
-		Donec vehicula augue eu neque.
-		Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-		Mauris ut leo. Cras viverra metus rhoncus sem.
-		Nulla et lectus vestibulum urna fringilla ultrices.
-		Phasellus eu tellus sit amet tortor gravida placerat.
-		Integer sapien est, iaculis in, pretium quis, viverra ac, nunc.
-		Praesent eget sem vel leo ultrices bibendum.
-		Aenean faucibus. Morbi dolor nulla, malesuada eu, pulvinar at, mollis ac, nulla.
-		Curabitur auctor semper nulla.
-		Donec varius orci eget risus.
-		Duis nibh mi, congue eu, accumsan eleifend, sagittis quis, diam.
-		Duis eget orci sit amet orci dignissim rutrum.\\
-
-		\noindent Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
-		Utpurus elit, vestibulum ut, placerat ac, adipiscing vitae, felis.
-		Curabitur dictum gravida mauris.
-		Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna.
-		Donec vehicula augue eu neque.
-		Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-		Mauris ut leo. Cras viverra metus rhoncus sem.
-		Nulla et lectus vestibulum urna fringilla ultrices.
-		Phasellus eu tellus sit amet tortor gravida placerat.
-		Integer sapien est, iaculis in, pretium quis, viverra ac, nunc.
-		Praesent eget sem vel leo ultrices bibendum.
-		Aenean faucibus. Morbi dolor nulla, malesuada eu, pulvinar at, mollis ac, nulla.
-		Curabitur auctor semper nulla.
-		Donec varius orci eget risus.
-		Duis nibh mi, congue eu, accumsan eleifend, sagittis quis, diam.
-		Duis eget orci sit amet orci dignissim rutrum.\\
-
-		\noindent Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
-		Utpurus elit, vestibulum ut, placerat ac, adipiscing vitae, felis.
-		Curabitur dictum gravida mauris.
-		Nam arcu libero, nonummy eget, consectetuer id, vulputate a, magna.
-		Donec vehicula augue eu neque.
-		Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
-		Mauris ut leo. Cras viverra metus rhoncus sem.
-		Nulla et lectus vestibulum urna fringilla ultrices.
-		Phasellus eu tellus sit amet tortor gravida placerat.
-		Integer sapien est, iaculis in, pretium quis, viverra ac, nunc.
-		Praesent eget sem vel leo ultrices bibendum.
-		Aenean faucibus. Morbi dolor nulla, malesuada eu, pulvinar at, mollis ac, nulla.
-		Curabitur auctor semper nulla.
-		Donec varius orci eget risus.
-		Duis nibh mi, congue eu, accumsan eleifend, sagittis quis, diam.
-		Duis eget orci sit amet orci dignissim rutrum.\\
+Type 2 diabetes (T2D) is a chronic disease leading to an elevated glucose level in the blood and increased fracture risk.
+		High-resolution peripheral quantitative computed tomography (HR-pQCT) is an attractive tool to investigate bone morphology in vivo.
+		Additionally, bone strength can be estimated using micro finite element (\textmu FE) analysis or homogenised finite element (hFE) analysis.
+		While \textmu FE is computationally expensive, hFE provides an accurate estimation of bone mechanical properties within reasonable efforts.
+		However, the hFE scheme is based on relationships between the local fabric (anisotropy) and elasticity.
+		These relationships have been shown to hold for healthy controls as well as in the case of osteogenesis imperfecta.
+		Nevertheless, whether these relationships are also valid for T2D-diagnosed patients remains unclear.
+		Therefore, the present work aims to compare fabric-elasticity relationships between T2D and healthy controls.
+		\\[0.5em]
+		\noindent The present study collected 56 femoral head trabecular core samples from 28 T2D and 28 control individuals.
+		These samples were embedded and scanned in a micro-CT system at an isotropic 14.8 \textmu m voxel size.
+		Three cubic regions of interest (ROIs) were selected in each scan.
+		The resolution of these ROIs was downscaled by a factor of 4, mimicking clinical HR-pQCT resolution, and the ROIs were subsequently segmented.
+		Standard morphometric parameters were computed from the segmented ROIs using medtool (v4.8; Dr. Pahr Ingenieurs e.U., Pfaffstätten, Austria).
+		Additionally, their fabric tensor was computed using mean intercept length, and their apparent stiffness tensors were computed using numerical homogenisation.
+		The ROIs morphometry was compared between T2D and control for ROIs having a bone volume fraction ($\rho$) lower than 0.5, following standard trabecular bone definition.
+		The ROIs stiffnesses were also compared between T2D and control for ROIs presenting a $\rho$ > 0.5 and a reasonably homogeneous mass distribution.
+		These homogeneous ROIs of trabecular bone were then matched between T2D and control for $\rho$ and degree of anisotropy.
+		The matched dataset allowed the comparison of fabric-elasticity relationships between T2D and control samples.
+		\\[0.5em]
+		\noindent In summary, no significant difference was observed between T2D and control samples.
+		The trabecular morphology ($\rho$, Tb.N., Tb.Th., Tb.Sp., Tb.Sp.SD) was similar between the two groups.
+		The degree of anisotropy (DA) and coefficient of variation (CV) assessing mass distribution within the ROI were also remarkably similar.
+		These similarities were also observed for the components of the apparent stiffness tensors resulting from homogenisation.
+		Finally, fabric-elasticity relationships were shown to hold for both the control and the T2D groups.
+		A comparison of the resulting exponents related to $\rho$ and DA has highlighted weakly different trends but no significant difference between T2D and control samples.
+		\\[0.5em]
+		\noindent In conclusion, T2D trabecular bone architecture shows significant similarities with healthy controls.
+		Additionally, fabric-elasticity relationships, i.e. morphology-mechanical relationships, in T2D conditions are also similar to healthy.
+		Accordingly, HR-pQCT-based hFE analysis could also be used for estimating the bone mechanical properties of T2D patients and for their fracture risk assessment.
 
     

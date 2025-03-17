@@ -96,15 +96,15 @@ def PlotHistogram(Variable, Groups, Name, Path):
 
     Ctrl = Variable[Groups[0]]
     SortedValues, Center, Histogram, Width, KernelEstimator, TheoreticalDistribution = ComputeHistogram(Ctrl)
-    Axes.fill_between(SortedValues,np.zeros(len(SortedValues)), KernelEstimator,color=(1,0,0,0.5))
-    Axes.plot(SortedValues, KernelEstimator,color=(1,0,0),label='Ctrl')
-    Axes.bar(Center, Histogram, align='center', width=Width,edgecolor=(1,0,0),color=(1,1,1,0))
+    Axes.fill_between(SortedValues,np.zeros(len(SortedValues)), KernelEstimator,color=(0,0,1,0.5))
+    Axes.plot(SortedValues, KernelEstimator,color=(0,0,1),label='Ctrl')
+    Axes.bar(Center, Histogram, align='center', width=Width,edgecolor=(0,0,1),color=(1,1,1,0))
 
     T2D = Variable[Groups[1]]
     SortedValues, Center, Histogram, Width, KernelEstimator, TheoreticalDistribution = ComputeHistogram(T2D)
-    Axes.fill_between(SortedValues,np.zeros(len(SortedValues)), KernelEstimator,color=(0,0,1,0.5))
-    Axes.plot(SortedValues, KernelEstimator,color=(0,0,1),label='T2D')
-    Axes.bar(Center, Histogram, align='center', width=Width,edgecolor=(0,0,1),color=(1,1,1,0))
+    Axes.fill_between(SortedValues,np.zeros(len(SortedValues)), KernelEstimator,color=(1,0,0,0.5))
+    Axes.plot(SortedValues, KernelEstimator,color=(1,0,0),label='T2D')
+    Axes.bar(Center, Histogram, align='center', width=Width,edgecolor=(1,0,0),color=(1,1,1,0))
 
     plt.xlabel(Name)
     plt.ylabel('Frequency (-)')
@@ -155,12 +155,12 @@ def Main():
     # Plot BV/TV and CV
     Figure, Axis = plt.subplots(1,1,dpi=200)
     Axis.plot(Data['BV/TV'][Ctrl], Data['CV'][Ctrl], linestyle='none',
-              color=(1,0,0), marker='o', label='Ctrl')
+              color=(0,0,1), marker='o', label='Ctrl')
     Axis.plot(Data['BV/TV'][T2D], Data['CV'][T2D], linestyle='none',
-              color=(0,0,1), marker='o', label='T2D')
+              color=(1,0,0), marker='o', label='T2D')
     Axis.plot([min(Data['BV/TV']), max(Data['BV/TV'])], [0.263,0.263], linestyle='--', color=(0,0,0))
     Axis.plot([0.5, 0.5], [min(Data['CV']), max(Data['CV'])], linestyle='--', color=(0,0,0), label='Threshold')
-    Axis.set_xlabel('BV/TV')
+    Axis.set_xlabel(r'$\rho$')
     Axis.set_ylabel('CV')
     plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), ncol=5)
     plt.savefig(Path(__file__).parents[1] / '02_Results/CV_BVTV.png')

@@ -403,24 +403,24 @@ def BoxPlot(ConstantsCtrl, ConstantsT2D, Idx, Labels, FigName):
 
         # Plot data
         Axis.plot(CtrlPos - 0.2 + i, Ctrl, linestyle='none',
-                marker='o',fillstyle='none', color=(1,0,0), ms=5)
+                marker='o',fillstyle='none', color=(0,0,1), ms=5)
         Axis.plot(T2DPos + 0.2 + i, T2D, linestyle='none',
-                  marker='o',fillstyle='none', color=(0,0,1), ms=5)
+                  marker='o',fillstyle='none', color=(1,0,0), ms=5)
 
         Axis.boxplot(Ctrl, vert=True, widths=0.3,
                     showmeans=False,meanline=False,
                     showfliers=False, positions=[i - 0.2],
-                    capprops=dict(color=(1,0,0)),
-                    boxprops=dict(color=(1,0,0)),
-                    whiskerprops=dict(color=(1,0,0),linestyle='--'),
-                    medianprops=dict(color=(1,0,0)))
-        Axis.boxplot(T2D, vert=True, widths=0.3,
-                    showmeans=False,meanline=False,
-                    showfliers=False, positions=[i + 0.2],
                     capprops=dict(color=(0,0,1)),
                     boxprops=dict(color=(0,0,1)),
                     whiskerprops=dict(color=(0,0,1),linestyle='--'),
                     medianprops=dict(color=(0,0,1)))
+        Axis.boxplot(T2D, vert=True, widths=0.3,
+                    showmeans=False,meanline=False,
+                    showfliers=False, positions=[i + 0.2],
+                    capprops=dict(color=(1,0,0)),
+                    boxprops=dict(color=(1,0,0)),
+                    whiskerprops=dict(color=(1,0,0),linestyle='--'),
+                    medianprops=dict(color=(1,0,0)))
         
         # Perform Mann-Whitney test for difference
         TestRes = mannwhitneyu(Ctrl, T2D)
@@ -451,8 +451,8 @@ def BoxPlot(ConstantsCtrl, ConstantsT2D, Idx, Labels, FigName):
     Axis.set_ylim(0, Max*1.2)
 
     # Add legend
-    Axis.plot([], linestyle='none', marker='o',fillstyle='none', color=(1,0,0), label='Ctrl')
-    Axis.plot([], linestyle='none', marker='o',fillstyle='none', color=(0,0,1), label='T2D')
+    Axis.plot([], linestyle='none', marker='o',fillstyle='none', color=(0,0,1), label='Ctrl')
+    Axis.plot([], linestyle='none', marker='o',fillstyle='none', color=(1,0,0), label='T2D')
     plt.legend(loc='upper center', ncol=2, bbox_to_anchor=(0.5, 1.125))
     plt.subplots_adjust(left=0.25, right=0.75)
     plt.savefig(FigName, bbox_inches='tight', pad_inches=0.02, dpi=196)
@@ -635,13 +635,13 @@ def Main():
     ConstantsT2D = np.array(ConstantsT2D)
 
     # Boxplot stiffnesses
-    Labels = [r'$S_{11}$',r'$S_{22}$',r'$S_{33}$']
+    Labels = [r'$\lambda_{11}$',r'$\lambda_{22}$',r'$\lambda_{33}$']
     FigName = Path(__file__).parents[1] / '02_Results/Lii.png'
     BoxPlot(ConstantsCtrl, ConstantsT2D, np.arange(0,3), Labels, FigName)
-    Labels = [r'$S_{12}$',r'$S_{13}$',r'$S_{23}$']
+    Labels = [r'$\lambda_{12}$',r'$\lambda_{13}$',r'$\lambda_{23}$']
     FigName = Path(__file__).parents[1] / '02_Results/Lij.png'
     BoxPlot(ConstantsCtrl, ConstantsT2D, np.arange(3,6), Labels, FigName)
-    Labels = [r'$S_{44}$',r'$S_{55}$',r'$S_{66}$']
+    Labels = [r'$\mu_{23}$',r'$\mu_{31}$',r'$\mu_{12}$']
     FigName = Path(__file__).parents[1] / '02_Results/Mii.png'
     BoxPlot(ConstantsCtrl, ConstantsT2D, np.arange(6,9), Labels, FigName)
 

@@ -1,4 +1,4 @@
-\begin{thebibliography}{6}
+\begin{thebibliography}{29}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\href}[2]{#2}
@@ -12,20 +12,180 @@
 \providecommand{\bibinfo}[2]{#2}
 \ifx\xfnm\relax \def\xfnm[#1]{\unskip,\space#1}\fi
 %Type = Article
+\bibitem[{Adami(2009)}]{Adami2009}
+\bibinfo{author}{Adami, S.}, \bibinfo{year}{2009}.
+\newblock \bibinfo{title}{Bone health in diabetes: considerations for clinical
+  management}.
+\newblock \bibinfo{journal}{Current Medical Research and Opinion}
+  \bibinfo{volume}{25}, \bibinfo{pages}{1057 -- 1072}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:73008658}.
+%Type = Article
+\bibitem[{Ahmed et~al.(2005)Ahmed, Joakimsen, Berntsen, F{\o}nneb{\o} and
+  Schirmer}]{Ahmed2005}
+\bibinfo{author}{Ahmed, L.A.}, \bibinfo{author}{Joakimsen, R.M.},
+  \bibinfo{author}{Berntsen, G.}, \bibinfo{author}{F{\o}nneb{\o}, V.M.},
+  \bibinfo{author}{Schirmer, H.}, \bibinfo{year}{2005}.
+\newblock \bibinfo{title}{Diabetes mellitus and the risk of non-vertebral
+  fractures: the troms{\o} study}.
+\newblock \bibinfo{journal}{Osteoporosis International} \bibinfo{volume}{17},
+  \bibinfo{pages}{495--500}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:37441371}.
+%Type = Article
+\bibitem[{Arias-Moreno et~al.(2019)Arias-Moreno, Hosseini, Bevers, Ito, Zysset
+  and van Rietbergen}]{AriasMoreno2019}
+\bibinfo{author}{Arias-Moreno, A.J.}, \bibinfo{author}{Hosseini, H.S.},
+  \bibinfo{author}{Bevers, M.}, \bibinfo{author}{Ito, K.},
+  \bibinfo{author}{Zysset, P.}, \bibinfo{author}{van Rietbergen, B.},
+  \bibinfo{year}{2019}.
+\newblock \bibinfo{title}{Validation of distal radius failure load predictions
+  by homogenized- and micro-finite element analyses based on second-generation
+  high-resolution peripheral quantitative ct images}.
+\newblock \bibinfo{journal}{Osteoporosis International} \bibinfo{volume}{30},
+  \bibinfo{pages}{1433--1443}.
+\newblock \DOIprefix\doi{10.1007/s00198-019-04935-6}.
+%Type = Article
+\bibitem[{Boutroy et~al.(2008)Boutroy, Rietbergen, Sornay-Rendu, Munoz,
+  Bouxsein and Delmas}]{Boutroy2008}
+\bibinfo{author}{Boutroy, S.}, \bibinfo{author}{Rietbergen, B.V.},
+  \bibinfo{author}{Sornay-Rendu, E.}, \bibinfo{author}{Munoz, F.},
+  \bibinfo{author}{Bouxsein, M.L.}, \bibinfo{author}{Delmas, P.D.},
+  \bibinfo{year}{2008}.
+\newblock \bibinfo{title}{Finite element analysis based on in vivo hr-pqct
+  images of the distal radius is associated with wrist fracture in
+  postmenopausal women}.
+\newblock \bibinfo{journal}{Journal of Bone and Mineral Research}
+  \bibinfo{volume}{23}, \bibinfo{pages}{392--399}.
+\newblock \DOIprefix\doi{10.1359/jbmr.071108}.
+%Type = Article
+\bibitem[{Burge et~al.(2007)Burge, Dawson-Hughes, Solomon, Wong, King and
+  Tosteson}]{Burge2007}
+\bibinfo{author}{Burge, R.T.}, \bibinfo{author}{Dawson-Hughes, B.},
+  \bibinfo{author}{Solomon, D.H.}, \bibinfo{author}{Wong, J.B.},
+  \bibinfo{author}{King, A.B.}, \bibinfo{author}{Tosteson, A.N.},
+  \bibinfo{year}{2007}.
+\newblock \bibinfo{title}{Incidence and economic burden of osteoporosis-related
+  fractures in the united states, 2005–2025}.
+\newblock \bibinfo{journal}{Journal of Bone and Mineral Research}
+  \bibinfo{volume}{22}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:24212206}.
+%Type = Article
 \bibitem[{Cowin and Doty(2007)}]{Cowin2007}
 \bibinfo{author}{Cowin, S.C.}, \bibinfo{author}{Doty, S.B.},
   \bibinfo{year}{2007}.
 \newblock \bibinfo{title}{Tissue mechanics}.
 \newblock \bibinfo{journal}{Tissue Mechanics} ,
   \bibinfo{pages}{1--682}\DOIprefix\doi{10.1007/978-0-387-49985-7/COVER}.
-%Type = Inproceedings
+%Type = Article
+\bibitem[{Gross et~al.(2012)Gross, Pahr and Zysset}]{Gross2012}
+\bibinfo{author}{Gross, T.G.}, \bibinfo{author}{Pahr, D.H.},
+  \bibinfo{author}{Zysset, P.K.}, \bibinfo{year}{2012}.
+\newblock \bibinfo{title}{Morphology-elasticity relationships using decreasing
+  fabric information of human trabecular bone from three major anatomical
+  locations}.
+\newblock \bibinfo{journal}{Biomechanics and Modeling in Mechanobiology}
+  \bibinfo{volume}{12}, \bibinfo{pages}{793 -- 800}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:42132866}.
+%Type = Article
+\bibitem[{Hosseini et~al.(2017)Hosseini, Dünki, Fabech, Stauber, Vilayphiou,
+  Pahr, Pretterklieber, Wandel, van Rietbergen and Zysset}]{Hosseini2017}
+\bibinfo{author}{Hosseini, H.S.}, \bibinfo{author}{Dünki, A.},
+  \bibinfo{author}{Fabech, J.}, \bibinfo{author}{Stauber, M.},
+  \bibinfo{author}{Vilayphiou, N.}, \bibinfo{author}{Pahr, D.},
+  \bibinfo{author}{Pretterklieber, M.}, \bibinfo{author}{Wandel, J.},
+  \bibinfo{author}{van Rietbergen, B.}, \bibinfo{author}{Zysset, P.K.},
+  \bibinfo{year}{2017}.
+\newblock \bibinfo{title}{Fast estimation of colles’ fracture load of the
+  distal section of the radius by homogenized finite element analysis based on
+  hr-pqct}.
+\newblock \bibinfo{journal}{Bone} \bibinfo{volume}{97},
+  \bibinfo{pages}{65--75}.
+\newblock \DOIprefix\doi{10.1016/j.bone.2017.01.003}.
+%Type = Article
+\bibitem[{Johnell and Kanis(2005)}]{Johnell2005}
+\bibinfo{author}{Johnell, O.}, \bibinfo{author}{Kanis, J.A.},
+  \bibinfo{year}{2005}.
+\newblock \bibinfo{title}{Epidemiology of osteoporotic fractures}.
+\newblock \bibinfo{journal}{Osteoporosis International} \bibinfo{volume}{16},
+  \bibinfo{pages}{S3--S7}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:37463898}.
+%Type = Article
+\bibitem[{Kanis et~al.(2021)Kanis, Norton, Harvey, Jacobson, Johansson,
+  Lorentzon, McCloskey, Willers and Borgstr{\"o}m}]{Kanis2021}
+\bibinfo{author}{Kanis, J.A.}, \bibinfo{author}{Norton, N.},
+  \bibinfo{author}{Harvey, N.C.}, \bibinfo{author}{Jacobson, T.},
+  \bibinfo{author}{Johansson, H.}, \bibinfo{author}{Lorentzon, M.},
+  \bibinfo{author}{McCloskey, E.V.}, \bibinfo{author}{Willers, C.},
+  \bibinfo{author}{Borgstr{\"o}m, F.}, \bibinfo{year}{2021}.
+\newblock \bibinfo{title}{Scope 2021: a new scorecard for osteoporosis in
+  europe}.
+\newblock \bibinfo{journal}{Archives of Osteoporosis} \bibinfo{volume}{16}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:235306997}.
+%Type = Article
+\bibitem[{Kanis et~al.(2001)Kanis, Od{\'e}n, Johnell, J{\"o}nsson, de~Laet and
+  Dawson}]{Kanis2001}
+\bibinfo{author}{Kanis, J.A.}, \bibinfo{author}{Od{\'e}n, A.},
+  \bibinfo{author}{Johnell, O.}, \bibinfo{author}{J{\"o}nsson, B.},
+  \bibinfo{author}{de~Laet, C.}, \bibinfo{author}{Dawson, A.},
+  \bibinfo{year}{2001}.
+\newblock \bibinfo{title}{The burden of osteoporotic fractures: A method for
+  setting intervention thresholds}.
+\newblock \bibinfo{journal}{Osteoporosis International} \bibinfo{volume}{12},
+  \bibinfo{pages}{417--427}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:9117836}.
+%Type = Book
+\bibitem[{Lecka-Czernik and Fowlkes(2015)}]{Lecka2015}
+\bibinfo{author}{Lecka-Czernik, B.}, \bibinfo{author}{Fowlkes, J.L.},
+  \bibinfo{year}{2015}.
+\newblock \bibinfo{title}{Diabetic Bone Disease}.
+\newblock \bibinfo{edition}{1} ed., \bibinfo{publisher}{Springer Cham}.
+\newblock \DOIprefix\doi{10.1007/978-3-319-16402-1}.
+%Type = Article
+\bibitem[{Lespessailles et~al.(2017)Lespessailles, Cortet, Legrand, Guggenbuhl
+  and Roux}]{Lespessailles2017}
+\bibinfo{author}{Lespessailles, E.}, \bibinfo{author}{Cortet, B.},
+  \bibinfo{author}{Legrand, E.}, \bibinfo{author}{Guggenbuhl, P.},
+  \bibinfo{author}{Roux, C.}, \bibinfo{year}{2017}.
+\newblock \bibinfo{title}{Low-trauma fractures without osteoporosis}.
+\newblock \bibinfo{journal}{Osteoporosis International} \bibinfo{volume}{28},
+  \bibinfo{pages}{1771--1778}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:41361394}.
+%Type = Article
+\bibitem[{Ma et~al.(2012)Ma, Oei, Jiang, Estrada, Chen, Wang, Yu, Zillikens,
+  Gao and Rivadeneira}]{Ma2012}
+\bibinfo{author}{Ma, L.}, \bibinfo{author}{Oei, L.}, \bibinfo{author}{Jiang,
+  L.}, \bibinfo{author}{Estrada, K.}, \bibinfo{author}{Chen, H.},
+  \bibinfo{author}{Wang, Z.}, \bibinfo{author}{Yu, Q.},
+  \bibinfo{author}{Zillikens, M.C.}, \bibinfo{author}{Gao, X.},
+  \bibinfo{author}{Rivadeneira, F.}, \bibinfo{year}{2012}.
+\newblock \bibinfo{title}{Association between bone mineral density and type 2
+  diabetes mellitus: a meta-analysis of observational studies}.
+\newblock \bibinfo{journal}{European Journal of Epidemiology}
+  \bibinfo{volume}{27}, \bibinfo{pages}{319 -- 332}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:1507972}.
+%Type = Article
 \bibitem[{Moreno et~al.(2014)Moreno, Borga and Smedby}]{Moreno2014}
 \bibinfo{author}{Moreno, R.}, \bibinfo{author}{Borga, M.},
   \bibinfo{author}{Smedby, {\"O}.}, \bibinfo{year}{2014}.
-\newblock \bibinfo{title}{Techniques for computing fabric tensors: A review},
-  in: \bibinfo{booktitle}{Visualization and Processing of Tensors and Higher
-  Order Descriptors for Multi-Valued Data}.
-\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:20293504}.
+\newblock \bibinfo{title}{Techniques for computing fabric tensors: A review}
+  \URLprefix \url{https://api.semanticscholar.org/CorpusID:20293504}.
+%Type = Article
+\bibitem[{Nuti et~al.(2018)Nuti, Brandi, Checchia, Munno, Dominguez, Falaschi,
+  Fiore, Iolascon, Maggi, Michieli, Migliaccio, Minisola, Rossini, Sessa,
+  Tarantino, Toselli and Isaia}]{Nuti2018}
+\bibinfo{author}{Nuti, R.}, \bibinfo{author}{Brandi, M.L.},
+  \bibinfo{author}{Checchia, G.A.}, \bibinfo{author}{Munno, O.D.},
+  \bibinfo{author}{Dominguez, L.}, \bibinfo{author}{Falaschi, P.},
+  \bibinfo{author}{Fiore, C.E.}, \bibinfo{author}{Iolascon, G.},
+  \bibinfo{author}{Maggi, S.}, \bibinfo{author}{Michieli, R.},
+  \bibinfo{author}{Migliaccio, S.}, \bibinfo{author}{Minisola, S.},
+  \bibinfo{author}{Rossini, M.}, \bibinfo{author}{Sessa, G.},
+  \bibinfo{author}{Tarantino, U.}, \bibinfo{author}{Toselli, A.},
+  \bibinfo{author}{Isaia, G.C.}, \bibinfo{year}{2018}.
+\newblock \bibinfo{title}{Guidelines for the management of osteoporosis and
+  fragility fractures}.
+\newblock \bibinfo{journal}{Internal and Emergency Medicine}
+  \bibinfo{volume}{14}, \bibinfo{pages}{85 -- 102}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:49433729}.
 %Type = Article
 \bibitem[{Otsu(1979)}]{Otsu1979}
 \bibinfo{author}{Otsu, N.}, \bibinfo{year}{1979}.
@@ -34,6 +194,15 @@
 \newblock \bibinfo{journal}{IEEE Trans. Syst. Man Cybern.} \bibinfo{volume}{9},
   \bibinfo{pages}{62--66}.
 \newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:15326934}.
+%Type = Article
+\bibitem[{Pahr and Zysset(2009)}]{Pahr2009}
+\bibinfo{author}{Pahr, D.H.}, \bibinfo{author}{Zysset, P.K.},
+  \bibinfo{year}{2009}.
+\newblock \bibinfo{title}{A comparison of enhanced continuum fe with micro fe
+  models of human vertebral bodies}.
+\newblock \bibinfo{journal}{Journal of Biomechanics} \bibinfo{volume}{42},
+  \bibinfo{pages}{455--462}.
+\newblock \DOIprefix\doi{10.1016/j.jbiomech.2008.11.028}.
 %Type = Article
 \bibitem[{Panyasantisuk et~al.(2015)Panyasantisuk, Pahr, Gross and
   Zysset}]{Panyasantisuk2015}
@@ -46,6 +215,54 @@
 \newblock \bibinfo{journal}{Journal of biomechanical engineering}
   \bibinfo{volume}{137 1}.
 \newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:5143457}.
+%Type = Article
+\bibitem[{Rogli{\'c}(2016)}]{Rogli2016}
+\bibinfo{author}{Rogli{\'c}, G.}, \bibinfo{year}{2016}.
+\newblock \bibinfo{title}{Who global report on diabetes: A summary}.
+\newblock \bibinfo{journal}{International Journal of Noncommunicable Diseases}
+  \bibinfo{volume}{1}, \bibinfo{pages}{3--8}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:79220088}.
+%Type = Article
+\bibitem[{Samelson et~al.(2018)Samelson, Demissie, Cupples, Zhang, Xu, Liu,
+  Boyd, McLean, Broe, Kiel and Bouxsein}]{Samelson2018}
+\bibinfo{author}{Samelson, E.J.}, \bibinfo{author}{Demissie, S.},
+  \bibinfo{author}{Cupples, L.A.}, \bibinfo{author}{Zhang, X.},
+  \bibinfo{author}{Xu, H.}, \bibinfo{author}{Liu, C.}, \bibinfo{author}{Boyd,
+  S.K.}, \bibinfo{author}{McLean, R.R.}, \bibinfo{author}{Broe, K.E.},
+  \bibinfo{author}{Kiel, D.P.}, \bibinfo{author}{Bouxsein, M.L.},
+  \bibinfo{year}{2018}.
+\newblock \bibinfo{title}{Diabetes and deficits in cortical bone density,
+  microarchitecture, and bone size: Framingham hr‐pqct study}.
+\newblock \bibinfo{journal}{Journal of Bone and Mineral Research}
+  \bibinfo{volume}{33}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:46840888}.
+%Type = Article
+\bibitem[{Schenk et~al.(2022)Schenk, Indermaur, Simon, Voumard, Varga,
+  Pretterklieber, Lippuner and Zysset}]{Schenk2022}
+\bibinfo{author}{Schenk, D.}, \bibinfo{author}{Indermaur, M.},
+  \bibinfo{author}{Simon, M.}, \bibinfo{author}{Voumard, B.},
+  \bibinfo{author}{Varga, P.}, \bibinfo{author}{Pretterklieber, M.},
+  \bibinfo{author}{Lippuner, K.}, \bibinfo{author}{Zysset, P.},
+  \bibinfo{year}{2022}.
+\newblock \bibinfo{title}{Unified validation of a refined second-generation
+  hr-pqct based homogenized finite element method to predict strength of the
+  distal segments in radius and tibia}.
+\newblock \bibinfo{journal}{Journal of the Mechanical Behavior of Biomedical
+  Materials} \bibinfo{volume}{131}.
+\newblock \DOIprefix\doi{10.1016/J.JMBBM.2022.105235}.
+%Type = Article
+\bibitem[{Schwartz et~al.(2001)Schwartz, Sellmeyer, Ensrud, Cauley, Tabor,
+  Schreiner, Jamal, Black and Cummings}]{Schwartz2001}
+\bibinfo{author}{Schwartz, A.V.}, \bibinfo{author}{Sellmeyer, D.E.},
+  \bibinfo{author}{Ensrud, K.E.}, \bibinfo{author}{Cauley, J.A.},
+  \bibinfo{author}{Tabor, H.K.}, \bibinfo{author}{Schreiner, P.J.},
+  \bibinfo{author}{Jamal, S.A.}, \bibinfo{author}{Black, D.M.},
+  \bibinfo{author}{Cummings, S.R.}, \bibinfo{year}{2001}.
+\newblock \bibinfo{title}{Older women with diabetes have an increased risk of
+  fracture: a prospective study.}
+\newblock \bibinfo{journal}{The Journal of clinical endocrinology and
+  metabolism} \bibinfo{volume}{86 1}, \bibinfo{pages}{32--8}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:11315536}.
 %Type = Article
 \bibitem[{Simon et~al.(2022)Simon, Indermaur, Schenk, Hosseinitabatabaei,
   Willie and Zysset}]{Simon2022}
@@ -61,6 +278,44 @@
   \url{https://www.sciencedirect.com/science/article/pii/S8756328221004488},
   \DOIprefix\doi{https://doi.org/10.1016/j.bone.2021.116282}.
 %Type = Article
+\bibitem[{Simon et~al.(2024)Simon, Indermaur, Schenk, Voumard, Zderic,
+  Mischler, Pretterklieber and Zysset}]{Simon2024}
+\bibinfo{author}{Simon, M.}, \bibinfo{author}{Indermaur, M.},
+  \bibinfo{author}{Schenk, D.}, \bibinfo{author}{Voumard, B.},
+  \bibinfo{author}{Zderic, I.}, \bibinfo{author}{Mischler, D.},
+  \bibinfo{author}{Pretterklieber, M.}, \bibinfo{author}{Zysset, P.},
+  \bibinfo{year}{2024}.
+\newblock \bibinfo{title}{Homogenized finite element analysis of distal tibia
+  sections: Achievements and limitations}.
+\newblock \bibinfo{journal}{Bone Reports} \bibinfo{volume}{21},
+  \bibinfo{pages}{101752}.
+\newblock \DOIprefix\doi{10.1016/J.BONR.2024.101752}.
+%Type = Article
+\bibitem[{Varga et~al.(2011)Varga, Dall'Ara, Pahr, Pretterklieber and
+  Zysset}]{Varga2011}
+\bibinfo{author}{Varga, P.}, \bibinfo{author}{Dall'Ara, E.},
+  \bibinfo{author}{Pahr, D.H.}, \bibinfo{author}{Pretterklieber, M.},
+  \bibinfo{author}{Zysset, P.K.}, \bibinfo{year}{2011}.
+\newblock \bibinfo{title}{Validation of an hr-pqct-based homogenized finite
+  element approach using mechanical testing of ultra-distal radius sections}.
+\newblock \bibinfo{journal}{Biomechanics and Modeling in Mechanobiology}
+  \bibinfo{volume}{10}, \bibinfo{pages}{431--444}.
+\newblock \DOIprefix\doi{10.1007/s10237-010-0245-3}.
+%Type = Article
+\bibitem[{Whittier et~al.(2020)Whittier, Boyd, Burghardt, Paccou, Ghasem-Zadeh,
+  Chapurlat and Engelke}]{Whittier2020}
+\bibinfo{author}{Whittier, D.E.}, \bibinfo{author}{Boyd, S.K.},
+  \bibinfo{author}{Burghardt, A.J.}, \bibinfo{author}{Paccou, .J.},
+  \bibinfo{author}{Ghasem-Zadeh, .A.}, \bibinfo{author}{Chapurlat, .R.},
+  \bibinfo{author}{Engelke, .K.}, \bibinfo{year}{2020}.
+\newblock \bibinfo{title}{Guidelines for the assessment of bone density and
+  microarchitecture in vivo using high-resolution peripheral quantitative
+  computed tomography}.
+\newblock \bibinfo{journal}{Osteoporosis International} \bibinfo{volume}{31},
+  \bibinfo{pages}{1607--1627}.
+\newblock \URLprefix \url{https://doi.org/10.1007/s00198-020-05438-5},
+  \DOIprefix\doi{10.1007/s00198-020-05438-5/Published}.
+%Type = Article
 \bibitem[{Zysset and Curnier(1995)}]{Zysset1995}
 \bibinfo{author}{Zysset, P.K.}, \bibinfo{author}{Curnier, A.},
   \bibinfo{year}{1995}.
@@ -69,5 +324,15 @@
 \newblock \bibinfo{journal}{Mechanics of Materials} \bibinfo{volume}{21},
   \bibinfo{pages}{243--250}.
 \newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:122068192}.
+%Type = Article
+\bibitem[{Zysset et~al.(1998)Zysset, Goulet and Hollister}]{Zysset1998}
+\bibinfo{author}{Zysset, P.K.}, \bibinfo{author}{Goulet, R.W.},
+  \bibinfo{author}{Hollister, S.J.}, \bibinfo{year}{1998}.
+\newblock \bibinfo{title}{A global relationship between trabecular bone
+  morphology and homogenized elastic properties}.
+\newblock \bibinfo{journal}{Journal of Biomechanical Engineering}
+  \bibinfo{volume}{120}, \bibinfo{pages}{640--646}.
+\newblock \URLprefix \url{https://dx.doi.org/10.1115/1.2834756},
+  \DOIprefix\doi{10.1115/1.2834756}.
 
 \end{thebibliography}
