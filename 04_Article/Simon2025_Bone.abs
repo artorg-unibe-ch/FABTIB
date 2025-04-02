@@ -1,6 +1,8 @@
-Type 2 diabetes (T2D) is a chronic disease leading to an elevated glucose level in the blood and increased fracture risk and high-resolution peripheral quantitative computed tomography (HR-pQCT) is an attractive tool to investigate bone state in vivo.
-		Additionally to bone morphology, bone strength can be estimated using micro finite element (\textmu FE) analysis or homogenised finite element (hFE) analysis.
-		While \textmu FE is computationally expensive, hFE provides an accurate estimation of bone mechanical properties within reasonable computational efforts.
+Type 2 diabetes (T2D) is a chronic disease leading to an elevated glucose level in the blood and increased fracture risk.
+		Because T2D individuals tend to have normal to higher areal bone mineral density (aBMD) than healthy individuals, their fracture risk is often underestimated.
+		As an alternative, high-resolution peripheral quantitative computed tomography (HR-pQCT) is an attractive tool to investigate bone morphology in vivo and estimate fracture risk.
+		Based on HR-pQCT scans, bone strength can be estimated using micro finite element (\textmu FE) analysis or homogenised finite element (hFE) analysis.
+		While \textmu FE is computationally expensive, hFE provides an accurate estimation of bone mechanical properties within reasonable efforts.
 		However, the hFE scheme is based on relationships between the local fabric (anisotropy) and elasticity.
 		These relationships have been shown to hold for healthy controls as well as in the case of osteogenesis imperfecta.
 		Nevertheless, whether these relationships are also valid for T2D-diagnosed patients remains unclear.
@@ -11,17 +13,13 @@ Type 2 diabetes (T2D) is a chronic disease leading to an elevated glucose level 
 		Three cubic regions of interest (ROIs) were selected in each scan.
 		The resolution of these ROIs was downscaled by a factor of 4, mimicking clinical HR-pQCT resolution, and the ROIs were subsequently segmented.
 		Standard morphometric parameters were computed from the segmented ROIs using medtool (v4.8; Dr. Pahr Ingenieurs e.U., Pfaffstätten, Austria).
-		Additionally, their fabric tensor was computed using mean intercept length, and their apparent stiffness tensors were computed using numerical homogenisation.
-		The ROIs morphometry was compared between T2D and control for ROIs having a bone volume fraction ($\rho$) lower than 0.5, following standard trabecular bone definition.
-		The ROIs stiffnesses were also compared between T2D and control for ROIs presenting a $\rho$ < 0.5 and a reasonably homogeneous mass distribution.
-		These homogeneous ROIs of trabecular bone were then matched between T2D and control for $\rho$ and degree of anisotropy.
+		Additionally, their fabric tensor and their apparent stiffness tensors were computed.
+		The ROIs were compared between T2D and control regarding their morphometric and mechanical properties.
+		Finally, ROIs were matched between T2D and control for $\rho$ and degree of anisotropy.
 		The matched dataset allowed the comparison of fabric-elasticity relationships between T2D and control samples.
 		\\[0.5em]
-		\noindent In summary, no significant difference was observed between T2D and control samples.
-		The trabecular morphology ($\rho$, Tb.N., Tb.Th., Tb.Sp., Tb.Sp.SD) was similar between the two groups.
-		The degree of anisotropy (DA) and coefficient of variation (CV) assessing mass distribution within the ROI were also remarkably similar.
-		These similarities were also observed for the components of the apparent stiffness tensors resulting from homogenisation.
-		Finally, fabric-elasticity relationships were shown to hold for both the control and the T2D groups.
+		\noindent In summary, no significant difference was observed between T2D and control samples, both regarding their morphology and their mechanical properties.
+		Specifically, fabric-elasticity relationships were shown to hold for both the control and the T2D groups.
 		A comparison of the resulting exponents related to $\rho$ and DA has highlighted weakly different trends but no significant difference between T2D and control samples.
 		\\[0.5em]
 		\noindent In conclusion, T2D trabecular bone architecture shows significant similarities with healthy controls.

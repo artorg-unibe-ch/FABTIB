@@ -98,9 +98,11 @@
 	%
 	
 	\begin{abstract}
-		Type 2 diabetes (T2D) is a chronic disease leading to an elevated glucose level in the blood and increased fracture risk and high-resolution peripheral quantitative computed tomography (HR-pQCT) is an attractive tool to investigate bone state in vivo.
-		Additionally to bone morphology, bone strength can be estimated using micro finite element (\textmu FE) analysis or homogenised finite element (hFE) analysis.
-		While \textmu FE is computationally expensive, hFE provides an accurate estimation of bone mechanical properties within reasonable computational efforts.
+		Type 2 diabetes (T2D) is a chronic disease leading to an elevated glucose level in the blood and increased fracture risk.
+		Because T2D individuals tend to have normal to higher areal bone mineral density (aBMD) than healthy individuals, their fracture risk is often underestimated.
+		As an alternative, high-resolution peripheral quantitative computed tomography (HR-pQCT) is an attractive tool to investigate bone morphology in vivo and estimate fracture risk.
+		Based on HR-pQCT scans, bone strength can be estimated using micro finite element (\textmu FE) analysis or homogenised finite element (hFE) analysis.
+		While \textmu FE is computationally expensive, hFE provides an accurate estimation of bone mechanical properties within reasonable efforts.
 		However, the hFE scheme is based on relationships between the local fabric (anisotropy) and elasticity.
 		These relationships have been shown to hold for healthy controls as well as in the case of osteogenesis imperfecta.
 		Nevertheless, whether these relationships are also valid for T2D-diagnosed patients remains unclear.
@@ -111,17 +113,13 @@
 		Three cubic regions of interest (ROIs) were selected in each scan.
 		The resolution of these ROIs was downscaled by a factor of 4, mimicking clinical HR-pQCT resolution, and the ROIs were subsequently segmented.
 		Standard morphometric parameters were computed from the segmented ROIs using medtool (v4.8; Dr. Pahr Ingenieurs e.U., Pfaffstätten, Austria).
-		Additionally, their fabric tensor was computed using mean intercept length, and their apparent stiffness tensors were computed using numerical homogenisation.
-		The ROIs morphometry was compared between T2D and control for ROIs having a bone volume fraction ($\rho$) lower than 0.5, following standard trabecular bone definition.
-		The ROIs stiffnesses were also compared between T2D and control for ROIs presenting a $\rho$ < 0.5 and a reasonably homogeneous mass distribution.
-		These homogeneous ROIs of trabecular bone were then matched between T2D and control for $\rho$ and degree of anisotropy.
+		Additionally, their fabric tensor and their apparent stiffness tensors were computed.
+		The ROIs were compared between T2D and control regarding their morphometric and mechanical properties.
+		Finally, ROIs were matched between T2D and control for $\rho$ and degree of anisotropy.
 		The matched dataset allowed the comparison of fabric-elasticity relationships between T2D and control samples.
 		\\[0.5em]
-		\noindent In summary, no significant difference was observed between T2D and control samples.
-		The trabecular morphology ($\rho$, Tb.N., Tb.Th., Tb.Sp., Tb.Sp.SD) was similar between the two groups.
-		The degree of anisotropy (DA) and coefficient of variation (CV) assessing mass distribution within the ROI were also remarkably similar.
-		These similarities were also observed for the components of the apparent stiffness tensors resulting from homogenisation.
-		Finally, fabric-elasticity relationships were shown to hold for both the control and the T2D groups.
+		\noindent In summary, no significant difference was observed between T2D and control samples, both regarding their morphology and their mechanical properties.
+		Specifically, fabric-elasticity relationships were shown to hold for both the control and the T2D groups.
 		A comparison of the resulting exponents related to $\rho$ and DA has highlighted weakly different trends but no significant difference between T2D and control samples.
 		\\[0.5em]
 		\noindent In conclusion, T2D trabecular bone architecture shows significant similarities with healthy controls.
@@ -152,7 +150,7 @@
 	%
 	
 	\section{Introduction}
-	Fragility fractures are, by definition, bones that break under a load which shouldn't have caused a fracture in normal conditions \cite{Kanis2001}.
+	Fragility fractures are, by definition, bones that break under a load which shouldn't have caused a fracture in healthy conditions \cite{Kanis2001}.
 	Such fractures are a worldwide burden, causing high morbidity, mortality, and high costs for the health care system \cite{Burge2007, Kanis2021}.
 	The lifetime risk of fragility fracture is relatively high, lying between 40-50\% for women and 13-22\% for men \cite{Johnell2005}.
 	This fracture risk is even higher in adults diagnosed with type 2 diabetes (T2D) \cite{Schwartz2001, Ahmed2005}.
@@ -160,12 +158,12 @@
 	T2D is a chronic disease where cells become insulin resistant, and, over time, insulin production decreases, leading to an elevated glucose level in the blood \cite{Rogli2016}.
 	T2D conditions also lead to chronic inflammation, increasing osteoclast expansion and activity \cite{Lespessailles2017}.
 	Additionally, the decreased insulin concentration also impairs osteoblast activity and, therefore, bone formation \cite{Adami2009}.
-	Thus, T2D can lead to decreased bone mass and probably also reduced quality.
+	Thus, T2D can lead to decreased bone mass and potentially also reduced quality.
 	\\[0.5em]
 	Currently, fracture risk is usually assessed based on areal bone mineral density (aBMD) from dual-energy X-ray absorptiometry (DXA) measurement performed either at the lumbar spine or the femoral neck \cite{Nuti2018}.
 	However, T2D patients tend to have normal to higher aBMD than healthy individuals \cite{Ma2012}.
 	This trend might arise from the fact that T2D patients tend to present a higher body mass index, thus, triggering an osteogenic response.
-	Therefore, T2D-associated skeletal fragility is not recognised by clinicians \cite{Samelson2018}.
+	Therefore, T2D-associated skeletal fragility is underestimated in clinics \cite{Samelson2018}.
 	\\[0.5em]
 	An alternative to DXA is high-resolution peripheral quantitative computed tomography (HR-pQCT).
 	Indeed, as opposed to DXA, which provides areal size-dependent measurement, HR-pQCT provides 3-dimensional size-independent quantitative measurement \cite{Whittier2020}.
@@ -175,8 +173,8 @@
 	While \textmu FE convert each voxel to a hexahedral element, thus leading to high computational costs, hFE makes use of local bone volume fraction ($\rho$) and anisotropy (fabric) to assess bone properties within a reasonable computational effort \cite{Pahr2009}.
 	Evidences have shown high correlations between hFE prediction and experimental tests on fresh frozen samples \cite{Varga2011, Hosseini2017, AriasMoreno2019, Schenk2022, Simon2024}.
 	Thus, HR-pQCT-based hFE presents a legitimate alternative to DXA for fracture risk estimations.
-	However, hFE relies on fabric-elasticity relationships developed for functionally adapted bone \cite{Zysset1998}.
-	It was shown that these fabric-elasticity relationships hold even in the case of osteogenesis imperfecta (OI) \cite{Simon2022}.
+	However, hFE relies on bone quality at the structural level, i.e. fabric-elsticity relationships developed for functionally adapted bone \cite{Zysset1998}.
+	It was shown that these fabric-elasticity relationships are valid for the trabecular bone in the radius, the vertebra, and the femur \cite{Gross2012,Panyasantisuk2015} and hold even in the case of osteogenesis imperfecta (OI) \cite{Simon2022}.
 	Thus, the present study aims to compare the trabecular bone microstructure of healthy and T2D bone samples and test the hypothesis of similar fabric-elasticity relationships.
 	Similar fabric-elasticity relationships will allow to further extend the application of HR-pQCT-based hFE of healthy bone to T2D bone at least in the linear elastic regime.
 
@@ -189,19 +187,21 @@
 	%
 	
 	\section{Material and Methods}
-	This technical note can be seen as an extension of the previously published work on OI bones \cite{Simon2022}.
+	This technical note can be seen as an extension of previously published work on healthy and OI bones \cite{Simon2022}.
 	Thus, most of the methods are similar and will be summarized here.
 	
 	\subsection{Participants, Samples, and Imaging}
 	The control (Ctrl) and diabetic (T2D) groups consisted of 28 donors each.
 	The control group was composed of 14 males and 14 females aged between 51 and 97 years old at death with a mean age of 73 $\pm$ 13 (mean $\pm$ standard deviation).
 	The diabetic group also counted 14 males and 14 females aged between 54 and 97 years old at death, with a mean age of 75 $\pm$ 13.
+	\textcolor{red}{Here we would like to have a despcription of the diabetic conditions like type, glucose level, duration, and treatment.
+	The idea is to describe the clinical info that we have about the two cohorts and cite the ones that we don't have in the limitations}
 	A cylindrical sample of about 10 mm in diameter and 15 mm in height was collected from each donor's femoral head (left or right).
 	After harvesting, samples were flushed with distilled water to remove excess marrow and embedded in polymethylmethacrylate (PMMA).
 	The embedded samples were imaged by micro-computed tomography (\textmu CT50, Scanco Medical AG) at an isotropic voxel size of 14.8 \textmu m with standardized scanning settings (voltage of 60 kVp, 900 \textmu A, 100 ms integration time).
    
 	\subsection{Region of Interest}
-	In each scanned sample, three cubic regions of interest (ROIs) of about 5.3 mm were selected.
+	In each scanned sample, three cubic regions of interest (ROIs) of 5.3 mm were selected.
 	For this, the image was divided into three stacks of 5.3 mm (top, centre, and bottom), and a ROI was selected at the centre of mass of the stack.
 	A 3-dimensional rendering of a typical sample and its three cubic ROIs is shown in Figure \ref{FigSample}.
    
@@ -230,14 +230,14 @@
 	The homogenization scheme was composed of three uni-axial tests and three pure shear tests using kinematic uniform boundary conditions (KUBCs) \cite{Panyasantisuk2015}.
 	Then, the ROI's homogenized stiffness tensor $\mathbb{S}$ was computed from these six independent loadcases.
 	This step is illustrated in Figure \ref{FigHomogenization}.
-	Finally, the resulting stiffness tensor was transformed into the fabric coordinate system and projected onto orthotropy, leading to 12 non-zero components.
+	Finally, the resulting stiffness tensor was transformed into the fabric coordinate system and projected onto orthotropy, leading to 12 non-zero symmetric components.
 
-	\begin{figure}
+	\begin{figure*}
 		\includegraphics[width=\linewidth]{Abaqus}
 		\caption{Schematic representation of the homogenization process leading to the ROI's stiffness tensor.
 				 Note that the deformation is amplified by multiple orders of magnitude in the illustration.}
 		\label{FigHomogenization}
-	\end{figure}
+	\end{figure*}
 
 	\subsection{Group Comparison}
 	The first comparison between the control and diabetic groups was regarding their morphology.
@@ -249,14 +249,14 @@
 	Mann-Whitney test was again used, and a p-value lower than 0.05 was considered significant.
 	This comparison was performed on samples with a $\rho$ < 0.5 and a coefficient of variation (CV) lower than 0.263.
 	Indeed, this CV threshold was determined by \citeauthor{Panyasantisuk2015} \cite{Panyasantisuk2015} as a limit for the homogeneity assumption.
-	A higher CV involves heterogeneous mass distribution, which violates the representative volume element (RVE) homogeneity assumption \cite{Cowin2007}.
+	A higher CV involves heterogeneous mass distribution, which violates the representative volume element (RVE) homogeneity assumption \cite{Cowin2007} underlying our calculations.
 	\\[0.5em]
 	The third comparison of the two groups was performed by fitting the orthotropic stiffness tensor to the Zysset-Curnier model \cite{Zysset1995} and comparing the resulting parameters and their 95\% confidence interval (95\% CI).
 	Briefly, this model expresses the stiffness tensor $\mathbb{S}$ based on the bone volume fraction $\rho$, fabric tensor eigenvalues $m_1 < m_2 < m_3$, three stiffness constants $\lambda_0$, $\lambda_0'$, and $\mu_0$ and two exponents $k$ and $l$.
 	The fitting procedure consisted of a multiple linear regression which was performed on the logarithmic space as shown in Equation \ref{EqFit}, where $\lambda_{ij}$ and $\mu_{ij}$ are the components of the stiffness tensor, $\lambda^{*} = \lambda_0 + 2\mu_0$, and $\epsilon_i$ the residuals.
 	However, as $k$ and $l$ are exponents, it is necessary to impose values for further fabric-elasticity relationship comparison.
 	These imposed values can either be on the exponents (as done in previous work \cite{Simon2022}) or on the stiffness constants.
-	In the present technical note, it was chosen to impose values for $\lambda_0$, $\lambda_0'$, and $\mu_0$ and compare the resulting $k$ and $l$.
+	In the present technical note, it was chosen to impose values for $\lambda_0$, $\lambda_0'$, and $\mu_0$, thus assuming identical tissue properties, and compare the resulting $k$ and $l$.
 	The imposed values were determined by performing the fit on the control and diabetic groups pooled together.
 
 	\begin{equation}
@@ -351,7 +351,7 @@
 
 	\subsection{Morphology and Mechanics}
 	Morphological comparisons are shown in Table \ref{TabMorph}.
-	For each of the analysed trabecular parameters, the interquartile range (IQR) presents a significant overlap between the control and diabetic groups.
+	For each of the analysed trabecular parameters, the interquartile range (0.25-0.75) presents a significant overlap between the control and diabetic groups.
 	This overlap is confirmed by the p-value resulting from the Mann-Whitney test being higher than the significant level of 0.05 for all computed variables.
 	Compo\-nent-wise comparisons of the stiffness tensors resulting from homogenisation are available in Appendix \ref{A1}.
 	As for the morphological comparison, none of the variables compared (stiffness components) shows a significant difference (p-value always lower than 0.05) between the control and the diabetic group.
@@ -433,17 +433,32 @@
 	Homogenisation of the cubic ROIs requires that the bone mass is homogeneously distributed with the volume.
 	Therefore, ROIs presenting a CV higher than a previously defined threshold of 0.263 \cite{Panyasantisuk2015} were filtered out.
 	The component-wise comparison of the resulting stiffness tensors shows no differences between ROIs from control or diabetic patients.
-	This result complements the morphological comparison, showing that, beyond similar morphology, the mechanic driven by trabecular architecture is similar between diabetic and control samples.
+	This result complements the morphological comparison, showing that, beyond similar morphology, the mechanical behavior resulting from the bone structural quality is similar between diabetic and control samples.
 	\\[0.5em]
 	After morphological and mechanical comparison, the relationships between morphology and mechanics are compared using the Zysset-Curnier model \cite{Zysset1995}.
 	As performed in previous work \cite{Simon2022}, ROIs are matched for $\rho$ and DA to perform the fit on similar ranges for both groups.
 	The fit quality assesed using $R_{adj}^{2}$ and NE is in the exptected range, i.e. similar as observed in other studies \cite{Gross2012, Panyasantisuk2015, Simon2022}
 	Moreover, these quality parameters are quite similar among the different data sets used for the regression (grouped, control, and diabetic), representing a first step indicating similar fabric-elasticity relationships between control and diabetic conditions.
-	Going one step further, stiffness parameters ($\lambda_0$, $\lambda_0'$, and $\mu_0$) are fixed to a common value, and the resulting exponents ($k$ and $k$) with their 95\% CI are compared.
-	The two exponents tend to be lower for the diabetic group than the control group, but their 95\% CI overlap. Thus, the existence of a common value for both groups cannot be excluded.
+	Going one step further, stiffness parameters ($\lambda_0$, $\lambda_0'$, and $\mu_0$) are fixed to a common value, assuming identical bulk tissue properties, and the resulting exponents ($k$ and $k$) with their 95\% CI are compared.
+	The two exponents tend to be lower for the diabetic group than the control group, but their 95\% CI overlap.
+	Thus, the existence of a common value for both groups cannot be excluded.
 	Additionally, the 95\% CI overlap for $l$, which is directly linked to the fabric, shows a relatively better overlap, including the value of the other group.
 	On the other hand, the 95\% CI overlap for the $k$ exponent is relatively worse, but it is linked to the bone volume fraction $\rho$.
+	Indeed, the $k$ exponent tends to be closer to 1 for diabetic group than for the control group, indicating even a more efficient organisation of the bone mass.
+	While both the $k$ and $l$ exponents seems to deviate slightly between the groups, their value remains remarkably close.
 	Altogether, these results allow to assume that fabric-elasticity relationships are similar between control and diabetes-diagnosed individuals.
+	\\[0.5em]
+	Nevertheless, this study presents some limitations that need to be addressed.
+	First, the sample were harvested only from the femoral head, thus limiting the generalization of the results to other anatomical locations.
+	However, multiples studies have shown that the fabric-elasticity relationships are extremely robust and and hold similarly across anatomical locations \cite{Gross2012,Panyasantisuk2015,Simon2022}.
+	Second limitations are the downsampling of the original ROIs and the filtering steps.
+	Indeed, the downsampling was performed to mimic the resolution of HR-pQCT, which is the clinical tool used for bone health assessment.
+	This downsampling lead to bulkier structures, which might have slightly modified the morphological and mechanical properties.
+	However, this downsampling was perfmored on both the control and diabetic ROIs similarly, thus not affecting the comparison between the two groups.
+	Regarding the filtering steps, the exclusion of ROIs with a bone volume fraction higher than 0.5 is nessessary to ensure that the ROIs are purely trabecular bone.
+	Additionally, the filtering step removing highly heterogeneous ROIs is also a necessary step because, as stated in the original work \cite{Simon2022}, "homogeneity is a necessary condition underlying the computational homogenisation of mechanical properties and the results of heterogenous samples must be disregarded".
+	Third and finally, \textcolor{red}{(some clinial data that are unkown)} are not available regarding the two cohorts.
+	However, these missing information are not tought to have a significant impact on the results of the present study.
 	\\[0.5em]
 	To conclude, the present work shows that trabecular bone from the femoral head of diabetic conditions presents similar morphology, mechanics, and fabric-elasticity relationships compared to control.
 	As mentioned in the introduction, these fabric-elasticity relationships are a basic assumption of HR-pQCT-based hFE simulations.
@@ -459,13 +474,9 @@
 	
 	\section*{Declaration of competing interest}
 	We wish to confirm that there are no known conflicts of interest associated with this publication and there has been no significant financial support for this work that could have influenced its outcome.
-
-	\section*{Acknowledgments}
-	Dieter Pahr ?
 	
 	\section*{Funding}
-	This work was funded by ?
-	% This work was funded by the Swiss National Science Foundation (SNSF), grant number 200365.
+	This work was funded by the Swiss National Science Foundation (SNSF), grant number 200365.
 
 	\section*{Data availability statement}
 	The data that support the findings of this study are available on request. The data are not publicly available due to privacy/ethical restrictions. The scripts used for the analyses performed in the present study are available on Github: \url{https://github.com/artorg-unibe-ch/FABTIB}
