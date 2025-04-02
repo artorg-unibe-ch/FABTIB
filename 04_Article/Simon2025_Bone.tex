@@ -50,10 +50,10 @@
 	\let\WriteBookmarks\relax
 	\def\floatpagepagefraction{1}
 	\def\textpagefraction{.001}
-	\shorttitle{Fabric-elasticity Relationships of Femoral Head Trabecular Bone are Similar in Type 2 Diabetes and Healthy Individuals}
+	\shorttitle{Fabric-elasticity Relationships of Femoral Head Trabecular Bone are Similar in Type 2 Diabetes and Non-Diabetic Individuals}
 	\shortauthors{Simon et~al.}
 	
-	\title[mode = title]{Fabric-elasticity Relationships of Femoral Head Trabecular Bone are Similar in Type 2 Diabetes and Healthy Individuals}
+	\title[mode = title]{Fabric-elasticity Relationships of Femoral Head Trabecular Bone are Similar in Type 2 Diabetes and Non-Diabetic Individuals}
 	
 	% Autors
 	\author[1]{Mathieu Simon}
@@ -61,7 +61,7 @@
 
     \author[2]{Sasidhar Uppuganti}
     
-    \author[2]{Jeffry S Nyman}
+    \author[2,3]{Jeffry S Nyman}
 
 	\author[1]{Philippe Zysset}
 	
@@ -70,9 +70,11 @@
 	
 	\address[2]{Department of Orthopaedic Surgery, Vanderbilt University Medical Center, Nashville, TN 37232, USA}
 
+	\address[3]{United States Department of Veterans Affairs, Tennessee Valley Healthcare System, Nashville, TN 37212, USA}
 
 	% Abbreviations
 	\abbreviations{%
+		AGEs, advanced glycation endproducts
 		ROI, region of interest;
 		\textmu CT, micro-computed tomography;
 		Type 2 diabetes, T2D;
@@ -106,24 +108,24 @@
 		However, the hFE scheme is based on relationships between the local fabric (anisotropy) and elasticity.
 		These relationships have been shown to hold for healthy controls as well as in the case of osteogenesis imperfecta.
 		Nevertheless, whether these relationships are also valid for T2D-diagnosed patients remains unclear.
-		Therefore, the present work aims to compare fabric-elasticity relationships between T2D and healthy controls.
+		Therefore, the present work aims to compare fabric-elasticity relationships between T2D and non-diabetic controls.
 		\\[0.5em]
-		\noindent The present study collected 56 femoral head trabecular core samples from 28 T2D and 28 control individuals.
-		These samples were embedded and scanned in a micro-CT system at an isotropic 14.8 \textmu m voxel size.
+		\noindent The present study collected 56 trabecular bone cores from the femoral head of 28 T2D and 28 control donors.
+		These cadaveric samples were scanned in a micro-CT system at an isotropic 14.8 \textmu m voxel size.
 		Three cubic regions of interest (ROIs) were selected in each scan.
 		The resolution of these ROIs was downscaled by a factor of 4, mimicking clinical HR-pQCT resolution, and the ROIs were subsequently segmented.
 		Standard morphometric parameters were computed from the segmented ROIs using medtool (v4.8; Dr. Pahr Ingenieurs e.U., Pfaffstätten, Austria).
 		Additionally, their fabric tensor and their apparent stiffness tensors were computed.
 		The ROIs were compared between T2D and control regarding their morphometric and mechanical properties.
-		Finally, ROIs were matched between T2D and control for $\rho$ and degree of anisotropy.
+		Finally, ROIs were matched between T2D and control for bone volume fraction ($\rho$) and degree of anisotropy.
 		The matched dataset allowed the comparison of fabric-elasticity relationships between T2D and control samples.
 		\\[0.5em]
-		\noindent In summary, no significant difference was observed between T2D and control samples, both regarding their morphology and their mechanical properties.
+		\noindent No significant difference was observed between T2D and control samples, both regarding their morphology and their mechanical properties.
 		Specifically, fabric-elasticity relationships were shown to hold for both the control and the T2D groups.
 		A comparison of the resulting exponents related to $\rho$ and DA has highlighted weakly different trends but no significant difference between T2D and control samples.
 		\\[0.5em]
-		\noindent In conclusion, T2D trabecular bone architecture shows significant similarities with healthy controls.
-		Additionally, fabric-elasticity relationships, i.e. morphology-mechanical relationships, in T2D conditions are also similar to healthy.
+		\noindent In conclusion, trabecular bone architecture was similar between T2D and non-T2D donors.
+		Additionally, fabric-elasticity relationships, i.e. morphology-mechanical relationships, are also similar between donors with and without diabetes.
 		Accordingly, HR-pQCT-based hFE analysis could also be used for estimating the bone mechanical properties of T2D patients and for their fracture risk assessment.
 
     \end{abstract}
@@ -155,10 +157,11 @@
 	The lifetime risk of fragility fracture is relatively high, lying between 40-50\% for women and 13-22\% for men \cite{Johnell2005}.
 	This fracture risk is even higher in adults diagnosed with type 2 diabetes (T2D) \cite{Schwartz2001, Ahmed2005}.
 	\\[0.5em]
-	T2D is a chronic disease where cells become insulin resistant, and, over time, insulin production decreases, leading to an elevated glucose level in the blood \cite{Rogli2016}.
-	T2D conditions also lead to chronic inflammation, increasing osteoclast expansion and activity \cite{Lespessailles2017}.
-	Additionally, the decreased insulin concentration also impairs osteoblast activity and, therefore, bone formation \cite{Adami2009}.
-	Thus, T2D can lead to decreased bone mass and potentially also reduced quality.
+	T2D is a chronic disease where cells become insulin resistant, leading to a lower glucose uptake by the cell and thus, an elevated glucose level in the blood \cite{Rogli2016}.
+	T2D conditions also lead to an increase of advanced glycation endproducts (AGEs) in bone collagen \cite{Makita1991}.
+	AGEs is shown to interfere with reducing bone formation \cite{Adami2009} and bone resorption \cite{Valcourt2007} leading to a reduced bone turnover.
+	Additionally, AGEs form non-enzymatic cross-links across and within collagen fibers, leading to more brittle bone matrix and decreasing toughness \cite{Tang2009}.
+	Thus, T2D can lead an increased bone brittleness and potentially also reduced quality \cite{Rubin2016}.
 	\\[0.5em]
 	Currently, fracture risk is usually assessed based on areal bone mineral density (aBMD) from dual-energy X-ray absorptiometry (DXA) measurement performed either at the lumbar spine or the femoral neck \cite{Nuti2018}.
 	However, T2D patients tend to have normal to higher aBMD than healthy individuals \cite{Ma2012}.
@@ -172,11 +175,11 @@
 	FEA can either be performed using so-called micro FE (\textmu FE) approach or homogenised FE (hFE).
 	While \textmu FE convert each voxel to a hexahedral element, thus leading to high computational costs, hFE makes use of local bone volume fraction ($\rho$) and anisotropy (fabric) to assess bone properties within a reasonable computational effort \cite{Pahr2009}.
 	Evidences have shown high correlations between hFE prediction and experimental tests on fresh frozen samples \cite{Varga2011, Hosseini2017, AriasMoreno2019, Schenk2022, Simon2024}.
-	Thus, HR-pQCT-based hFE presents a legitimate alternative to DXA for fracture risk estimations.
+	Thus, HR-pQCT-based hFE can complement DXA in fracture risk estimations.
 	However, hFE relies on bone quality at the structural level, i.e. fabric-elsticity relationships developed for functionally adapted bone \cite{Zysset1998}.
 	It was shown that these fabric-elasticity relationships are valid for the trabecular bone in the radius, the vertebra, and the femur \cite{Gross2012,Panyasantisuk2015} and hold even in the case of osteogenesis imperfecta (OI) \cite{Simon2022}.
-	Thus, the present study aims to compare the trabecular bone microstructure of healthy and T2D bone samples and test the hypothesis of similar fabric-elasticity relationships.
-	Similar fabric-elasticity relationships will allow to further extend the application of HR-pQCT-based hFE of healthy bone to T2D bone at least in the linear elastic regime.
+	Thus, the present study aims to compare the trabecular bone microstructure of non-diabetic and T2D bone samples and test the hypothesis of similar fabric-elasticity relationships.
+	Similar fabric-elasticity relationships will allow to further extend the application of HR-pQCT-based hFE to T2D bone at least in the linear elastic regime.
 
 	%
 	%

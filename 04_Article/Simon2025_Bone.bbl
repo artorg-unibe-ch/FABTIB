@@ -1,4 +1,4 @@
-\begin{thebibliography}{34}
+\begin{thebibliography}{38}
 \expandafter\ifx\csname natexlab\endcsname\relax\def\natexlab#1{#1}\fi
 \providecommand{\url}[1]{\texttt{#1}}
 \providecommand{\href}[2]{#2}
@@ -205,6 +205,19 @@
   \bibinfo{volume}{27}, \bibinfo{pages}{319 -- 332}.
 \newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:1507972}.
 %Type = Article
+\bibitem[{Makita et~al.(1991)Makita, Radoff, Rayfield, Yang, Skolnik, Delaney,
+  Friedman, Cerami and Vlassara}]{Makita1991}
+\bibinfo{author}{Makita, Z.}, \bibinfo{author}{Radoff, S.},
+  \bibinfo{author}{Rayfield, E.J.}, \bibinfo{author}{Yang, Z.},
+  \bibinfo{author}{Skolnik, E.Y.}, \bibinfo{author}{Delaney, V.},
+  \bibinfo{author}{Friedman, E.A.}, \bibinfo{author}{Cerami, A.},
+  \bibinfo{author}{Vlassara, H.}, \bibinfo{year}{1991}.
+\newblock \bibinfo{title}{Advanced glycosylation end products in patients with
+  diabetic nephropathy.}
+\newblock \bibinfo{journal}{The New England journal of medicine}
+  \bibinfo{volume}{325 12}, \bibinfo{pages}{836--42}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:27894901}.
+%Type = Article
 \bibitem[{Moreno et~al.(2014)Moreno, Borga and Smedby}]{Moreno2014}
 \bibinfo{author}{Moreno, R.}, \bibinfo{author}{Borga, M.},
   \bibinfo{author}{Smedby, {\"O}.}, \bibinfo{year}{2014}.
@@ -276,6 +289,14 @@
 \newblock \bibinfo{journal}{International Journal of Noncommunicable Diseases}
   \bibinfo{volume}{1}, \bibinfo{pages}{3--8}.
 \newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:79220088}.
+%Type = Article
+\bibitem[{Rubin and Patsch(2016)}]{Rubin2016}
+\bibinfo{author}{Rubin, M.R.}, \bibinfo{author}{Patsch, J.},
+  \bibinfo{year}{2016}.
+\newblock \bibinfo{title}{Assessment of bone turnover and bone quality in type
+  2 diabetic bone disease: current concepts and future directions}.
+\newblock \bibinfo{journal}{Bone Research} \bibinfo{volume}{4}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:16710722}.
 %Type = Article
 \bibitem[{Samelson et~al.(2018)Samelson, Demissie, Cupples, Zhang, Xu, Liu,
   Boyd, McLean, Broe, Kiel and Bouxsein}]{Samelson2018}
@@ -356,6 +377,29 @@
 \newblock \bibinfo{journal}{Bone Reports} \bibinfo{volume}{21},
   \bibinfo{pages}{101752}.
 \newblock \DOIprefix\doi{10.1016/J.BONR.2024.101752}.
+%Type = Article
+\bibitem[{Tang et~al.(2009)Tang, Allen, Phipps, Burr and Vashishth}]{Tang2009}
+\bibinfo{author}{Tang, S.F.}, \bibinfo{author}{Allen, M.R.},
+  \bibinfo{author}{Phipps, R.J.}, \bibinfo{author}{Burr, D.B.},
+  \bibinfo{author}{Vashishth, D.}, \bibinfo{year}{2009}.
+\newblock \bibinfo{title}{Changes in non-enzymatic glycation and its
+  association with altered mechanical properties following 1-year treatment
+  with risedronate or alendronate}.
+\newblock \bibinfo{journal}{Osteoporosis International} \bibinfo{volume}{20},
+  \bibinfo{pages}{887--894}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:23243437}.
+%Type = Article
+\bibitem[{Valcourt et~al.(2007)Valcourt, Merle, Gineyts, Viguet-Carrin, Delmas
+  and Garnero}]{Valcourt2007}
+\bibinfo{author}{Valcourt, U.}, \bibinfo{author}{Merle, B.},
+  \bibinfo{author}{Gineyts, E.}, \bibinfo{author}{Viguet-Carrin, S.},
+  \bibinfo{author}{Delmas, P.D.}, \bibinfo{author}{Garnero, P.},
+  \bibinfo{year}{2007}.
+\newblock \bibinfo{title}{Non-enzymatic glycation of bone collagen modifies
+  osteoclastic activity and differentiation*}.
+\newblock \bibinfo{journal}{Journal of Biological Chemistry}
+  \bibinfo{volume}{282}, \bibinfo{pages}{5691 -- 5703}.
+\newblock \URLprefix \url{https://api.semanticscholar.org/CorpusID:21254749}.
 %Type = Article
 \bibitem[{Varga et~al.(2011)Varga, Dall'Ara, Pahr, Pretterklieber and
   Zysset}]{Varga2011}

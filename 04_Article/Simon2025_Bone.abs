@@ -6,24 +6,24 @@ Type 2 diabetes (T2D) is a chronic disease leading to an elevated glucose level 
 		However, the hFE scheme is based on relationships between the local fabric (anisotropy) and elasticity.
 		These relationships have been shown to hold for healthy controls as well as in the case of osteogenesis imperfecta.
 		Nevertheless, whether these relationships are also valid for T2D-diagnosed patients remains unclear.
-		Therefore, the present work aims to compare fabric-elasticity relationships between T2D and healthy controls.
+		Therefore, the present work aims to compare fabric-elasticity relationships between T2D and non-diabetic controls.
 		\\[0.5em]
-		\noindent The present study collected 56 femoral head trabecular core samples from 28 T2D and 28 control individuals.
-		These samples were embedded and scanned in a micro-CT system at an isotropic 14.8 \textmu m voxel size.
+		\noindent The present study collected 56 trabecular bone cores from the femoral head of 28 T2D and 28 control donors.
+		These cadaveric samples were scanned in a micro-CT system at an isotropic 14.8 \textmu m voxel size.
 		Three cubic regions of interest (ROIs) were selected in each scan.
 		The resolution of these ROIs was downscaled by a factor of 4, mimicking clinical HR-pQCT resolution, and the ROIs were subsequently segmented.
 		Standard morphometric parameters were computed from the segmented ROIs using medtool (v4.8; Dr. Pahr Ingenieurs e.U., Pfaffstätten, Austria).
 		Additionally, their fabric tensor and their apparent stiffness tensors were computed.
 		The ROIs were compared between T2D and control regarding their morphometric and mechanical properties.
-		Finally, ROIs were matched between T2D and control for $\rho$ and degree of anisotropy.
+		Finally, ROIs were matched between T2D and control for bone volume fraction ($\rho$) and degree of anisotropy.
 		The matched dataset allowed the comparison of fabric-elasticity relationships between T2D and control samples.
 		\\[0.5em]
-		\noindent In summary, no significant difference was observed between T2D and control samples, both regarding their morphology and their mechanical properties.
+		\noindent No significant difference was observed between T2D and control samples, both regarding their morphology and their mechanical properties.
 		Specifically, fabric-elasticity relationships were shown to hold for both the control and the T2D groups.
 		A comparison of the resulting exponents related to $\rho$ and DA has highlighted weakly different trends but no significant difference between T2D and control samples.
 		\\[0.5em]
-		\noindent In conclusion, T2D trabecular bone architecture shows significant similarities with healthy controls.
-		Additionally, fabric-elasticity relationships, i.e. morphology-mechanical relationships, in T2D conditions are also similar to healthy.
+		\noindent In conclusion, trabecular bone architecture was similar between T2D and non-T2D donors.
+		Additionally, fabric-elasticity relationships, i.e. morphology-mechanical relationships, are also similar between donors with and without diabetes.
 		Accordingly, HR-pQCT-based hFE analysis could also be used for estimating the bone mechanical properties of T2D patients and for their fracture risk assessment.
 
     
