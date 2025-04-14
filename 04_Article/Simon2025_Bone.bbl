@@ -221,8 +221,10 @@
 \bibitem[{Moreno et~al.(2014)Moreno, Borga and Smedby}]{Moreno2014}
 \bibinfo{author}{Moreno, R.}, \bibinfo{author}{Borga, M.},
   \bibinfo{author}{Smedby, {\"O}.}, \bibinfo{year}{2014}.
-\newblock \bibinfo{title}{Techniques for computing fabric tensors: A review}
-  \URLprefix \url{https://api.semanticscholar.org/CorpusID:20293504}.
+\newblock \bibinfo{title}{Techniques for computing fabric tensors: A review}.
+\newblock \bibinfo{journal}{Visualization and Processing of Tensors and Higher
+  Order Descriptors for Multi-Valued Data} \URLprefix
+  \url{https://api.semanticscholar.org/CorpusID:20293504}.
 %Type = Article
 \bibitem[{Nuti et~al.(2018)Nuti, Brandi, Checchia, Munno, Dominguez, Falaschi,
   Fiore, Iolascon, Maggi, Michieli, Migliaccio, Minisola, Rossini, Sessa,

@@ -76,8 +76,7 @@
   urlcolor={hscolor},
   citecolor={hscolor},
   filecolor={hscolor},
-  menucolor={hscolor}
-}
+  menucolor={hscolor}}
 
 \let\comma\@empty
 \let\tnotesep\@empty

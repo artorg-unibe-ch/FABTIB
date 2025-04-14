@@ -1,5 +1,5 @@
 <!DOCTYPE MedToolXML>
-<MedToolXML paramfile="C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Parameters.csv" resfile="" exefile="" writeonly="yes" cpu="1" workdir="C:/Users/mathi" level="Expert">
+<MedToolXML cpu="1" level="Expert" resfile="" writeonly="yes" exefile="" paramfile="C:/Users/mathi/OneDrive - Universitaet Bern/FABTIB/02_Results/Parameters.csv" workdir="C:/Users/mathi">
  <_01_ROISelection active="yes" script="mic">
   <modulName>
    <description>mic - medical image converter</description>

@@ -74,14 +74,17 @@
 
 	% Abbreviations
 	\abbreviations{%
-		AGEs, advanced glycation endproducts
-		ROI, region of interest;
-		\textmu CT, micro-computed tomography;
+		Advanced glycation endproducts, AGEs;
+		Region of interest, ROI;
+		Micro-computed tomography, \textmu CT;
 		Type 2 diabetes, T2D;
 		High-resolution peripheral quantitative computed tomography, HR-pQCT;
 		Areal bone mineral density, aBMD;
 		Dual-energy X-ray absorptiometry, DXA;
 		Finite elements analysis, FEA;
+		Diabetic mellitus, DM;
+		Chronic kidney disease, CKD;
+		Phosphate buffered saline, PBS;
 		Trabecular thickness, Tb.Th.;
 		Trabecular spacing, Tb.Sp.;
 		Trabecular number, Tb.N.;
@@ -195,17 +198,27 @@
 	
 	\subsection{Participants, Samples, and Imaging}
 	The control (Ctrl) and diabetic (T2D) groups consisted of 28 donors each.
-	The control group was composed of 14 males and 14 females aged between 51 and 97 years old at death with a mean age of 73 $\pm$ 13 (mean $\pm$ standard deviation).
-	The diabetic group also counted 14 males and 14 females aged between 54 and 97 years old at death, with a mean age of 75 $\pm$ 13.
-	\textcolor{red}{Here we would like to have a despcription of the diabetic conditions like type, glucose level, duration, and treatment.
-	The idea is to describe the clinical info that we have about the two cohorts and cite the ones that we don't have in the limitations}
-	A cylindrical sample of about 10 mm in diameter and 15 mm in height was collected from each donor's femoral head (left or right).
-	After harvesting, samples were flushed with distilled water to remove excess marrow and embedded in polymethylmethacrylate (PMMA).
-	The embedded samples were imaged by micro-computed tomography (\textmu CT50, Scanco Medical AG) at an isotropic voxel size of 14.8 \textmu m with standardized scanning settings (voltage of 60 kVp, 900 \textmu A, 100 ms integration time).
+	The control group was composed of 14 males and 14 females aged between 51 and 97 years old at death with a mean age of 73 $\pm$ 13 years.
+	The diabetic group also counted 14 males and 14 females aged between 54 and 97 years old at death, with a mean age of 75 $\pm$ 13 years.
+	The fresh-frozen cadaveric femurs were procured from two tissue banks in the US, Musculoskeletal Tissue Foundation (MTF) and National Disease Research Interchange (NDRI).
+	The accompanied notes for the diabetic donors listed their disease state as type-2 diabetic mellitus (DM) and DM progression for at least 10 years (22 $\pm$ 9.9 years).
+	Eight diabetic donors (4 male  and 4 female) were also reported to have a stage 3 to 5 chronic kidney disease (CKD).
+	Most of the donors had their DM managed via oral medications such as Metformin, Humalog, and Glipizide.
+	Hypertension and hyperlipidemia also seemed like a prevalent problem across both donor cohorts.
+	\\[0.5em]
+	A cylindrical sample of trabecular bone about 10 mm in diameter and 21 mm in height was collected from each donor's femoral head (left or right).
+	Briefly, the proximal femur was cut to obtain a cube like section that was gripped medially at roughly 25 degree in an angle vise, mounted on a floor drill press, to ensure that the coring axis aligned with the principal orientation of the trabeculae.
+	A diamond embedded trephine drill (TWDCD1150, Eternal Tools, UK) extracted the trabecular core from the posterior quadrant while the bone stayed under constant hydration.
+	The rough core was further trimmed to the exact dimensions by making parallel cuts at either end with a water-irrigated, low-speed circular bone saw.
+	The final cylindrical core was flushed with distilled water to remove any excess marrow and stored in phosphate buffered saline (PBS) at 7.4 pH and -20C until further imaging.
+	The samples were thawed to room temperature prior to imaging.
+	They were loaded into tube holders (Part no. U50813 ø 14 mm x 70 mm L) filled with PBS and secured using foam such that the long axis of the core aligned with the scanning axis.
+	The samples were imaged by micro-computed tomography (\textmu CT50, Scanco Medical AG) with the following settings: voltage of 70kVp, 200 \textmu A, 0.5 mm Al filter, 1 s integration time, and an acquisition rate of 1024 samples per 1000 projections per 360 deg rotation of the tube holder, leading to an isotropic voxel size of 14.8 \textmu m.
    
 	\subsection{Region of Interest}
 	In each scanned sample, three cubic regions of interest (ROIs) of 5.3 mm were selected.
 	For this, the image was divided into three stacks of 5.3 mm (top, centre, and bottom), and a ROI was selected at the centre of mass of the stack.
+	The resolution of the selected ROI was then coarsened by a factor 4, mimicking the resolution available with HR-pQCT.
 	A 3-dimensional rendering of a typical sample and its three cubic ROIs is shown in Figure \ref{FigSample}.
    
 	\begin{figure}
@@ -246,6 +259,7 @@
 	The first comparison between the control and diabetic groups was regarding their morphology.
 	For this, the Mann-Whitney test was performed on samples having a bone volume fraction ($\rho$) lower than 0.5.
 	Indeed, a $\rho$ higher than 0.5 cannot really be considered as purely trabecular bone.
+	ROIs having a $\rho$ > 0.5 leads to unrealistic morphometric values for trabecular bone and thus, have to be excluded.
 	A p-value lower than 0.05 was considered meaning a significant difference between the groups.
 	\\[0.5em]
 	The second comparison was regarding the stiffness tensor components after transformation into the fabric coordinate system and projection onto orthotropy.
@@ -341,7 +355,8 @@
 	\section{Results}
 	Figure \ref{FigCVBVTV} shows the distribution of the ROIs selected according to the bone volume fraction ($\rho$) and coefficient of variation (CV).
 	Filtering ROIs with a bone volume fraction that is too high leads to the exclusion of two controls and three diabetic ROIs.
-	The further filtering according to CV leads to the additional exclusion of two control and four diabetic ROIs.
+	The further filtering according to CV for mechanical and morphology-mechanical relations comparison leads to the additional exclusion of two control and four diabetic ROIs.
+	% Images of the excluded ROIs are available in Appendix \ref{A2}.
 	Finally, matching ROIs for $\rho$ and DA leads to 76 ROIs in each group.
    
 	\begin{figure}
@@ -460,8 +475,9 @@
 	However, this downsampling was perfmored on both the control and diabetic ROIs similarly, thus not affecting the comparison between the two groups.
 	Regarding the filtering steps, the exclusion of ROIs with a bone volume fraction higher than 0.5 is nessessary to ensure that the ROIs are purely trabecular bone.
 	Additionally, the filtering step removing highly heterogeneous ROIs is also a necessary step because, as stated in the original work \cite{Simon2022}, "homogeneity is a necessary condition underlying the computational homogenisation of mechanical properties and the results of heterogenous samples must be disregarded".
-	Third and finally, \textcolor{red}{(some clinial data that are unkown)} are not available regarding the two cohorts.
-	However, these missing information are not tought to have a significant impact on the results of the present study.
+	Third and finally, the medical history of the two cohorts is limited.
+	While the diabetes duration and the medication of the T2D group is known, no detailled information is available about the potential diseases of the control group.
+	However, these missing information are not tought to have a significant impact on the results of the present study as the objective is compare diabetic to non-diabetic conditions.
 	\\[0.5em]
 	To conclude, the present work shows that trabecular bone from the femoral head of diabetic conditions presents similar morphology, mechanics, and fabric-elasticity relationships compared to control.
 	As mentioned in the introduction, these fabric-elasticity relationships are a basic assumption of HR-pQCT-based hFE simulations.
@@ -479,7 +495,7 @@
 	We wish to confirm that there are no known conflicts of interest associated with this publication and there has been no significant financial support for this work that could have influenced its outcome.
 	
 	\section*{Funding}
-	This work was funded by the Swiss National Science Foundation (SNSF), grant number 200365.
+	This work was funded by the Swiss National Science Foundation (SNSF), grant number 200365, Department of Veterans Affairs, Biomedical Laboratory Research and Development Service, grant number BX004297, and the National Institute of Arthritis and Musculoskeletal and Skin Diseases, grant number AR063157.
 
 	\section*{Data availability statement}
 	The data that support the findings of this study are available on request. The data are not publicly available due to privacy/ethical restrictions. The scripts used for the analyses performed in the present study are available on Github: \url{https://github.com/artorg-unibe-ch/FABTIB}
@@ -545,6 +561,72 @@
 
 	\clearpage
 	\appendix
+
+	% \section{Excluded ROIs}\label{A2}
+	% Control samples with a bone volume fraction ($\rho$) higher than 0.5 are shown in Figure \ref{FigCtrlBVTV}.
+	% Figure \ref{FigT2DBVTV} shows the T2D samples with a $\rho$ > 0.5.
+	% These ROIs were excluded from morphometric analysis as they don't correspond to trabecular bone.
+	% The Figure \ref{FigCtrlCV} and \ref{FigT2DCV} shows the samples presenting a coefficient of variation higher than 0.263 for the control group and the T2D group, respectively.
+	% Mechanical and morphology-mechanical relationship comparisons were performed without these ROIs as the violate the homogeneity assumption.
+	% \\
+
+	% \begin{figure}[h!]
+	% 	\centering
+	% 	\begin{subfigure}[b]{0.9\linewidth}
+	% 		\includegraphics[width=\linewidth]{Ctrl_BVTV1}
+	% 	\end{subfigure}
+	% 	\begin{subfigure}[b]{0.9\linewidth}
+	% 		\includegraphics[width=\linewidth]{Ctrl_BVTV2}
+	% 	\end{subfigure}
+	% 	\caption{}
+	% 	\label{FigCtrlBVTV}
+	% \end{figure}
+
+	% \begin{figure}[h!]
+	% 	\centering
+	% 	\begin{subfigure}[b]{0.9\linewidth}
+	% 		\includegraphics[width=\linewidth]{T2D_BVTV1}
+	% 	\end{subfigure}
+	% 	\begin{subfigure}[b]{0.9\linewidth}
+	% 		\includegraphics[width=\linewidth]{T2D_BVTV2}
+	% 	\end{subfigure}
+	% 	\begin{subfigure}[b]{0.9\linewidth}
+	% 		\includegraphics[width=\linewidth]{T2D_BVTV3}
+	% 	\end{subfigure}
+	% 	\caption{}
+	% 	\label{FigT2DBVTV}
+	% \end{figure}
+
+	% \begin{figure}[h!]
+	% 	\centering
+	% 	\begin{subfigure}[b]{0.9\linewidth}
+	% 		\includegraphics[width=\linewidth]{Ctrl_CV1}
+	% 	\end{subfigure}
+	% 	\begin{subfigure}[b]{0.9\linewidth}
+	% 		\includegraphics[width=\linewidth]{Ctrl_CV2}
+	% 	\end{subfigure}
+	% 	\caption{}
+	% 	\label{FigCtrlCV}
+	% \end{figure}
+
+	% \begin{figure}[h!]
+	% 	\centering
+	% 	\begin{subfigure}[b]{0.9\linewidth}
+	% 		\includegraphics[width=\linewidth]{T2D_CV1}
+	% 	\end{subfigure}
+	% 	\begin{subfigure}[b]{0.9\linewidth}
+	% 		\includegraphics[width=\linewidth]{T2D_CV2}
+	% 	\end{subfigure}
+	% 	\begin{subfigure}[b]{0.9\linewidth}
+	% 		\includegraphics[width=\linewidth]{T2D_CV3}
+	% 	\end{subfigure}
+	% 	\begin{subfigure}[b]{0.9\linewidth}
+	% 		\includegraphics[width=\linewidth]{T2D_CV4}
+	% 	\end{subfigure}
+	% 	\caption{}
+	% 	\label{FigT2DCV}
+	% \end{figure}
+
 	\section{Mechanical Comparison}\label{A1}
 	The results of the mechanical comparison for each non-zero component of the apparent stiffness tensor resulting from homogenisation are shown in Figure \ref{FigTensorComp}.
 	\\
@@ -558,7 +640,7 @@
 		\begin{subfigure}[b]{0.9\linewidth}
 			\includegraphics[width=\linewidth]{Lij}
 			% \caption{Off-diagonal elements of the upper left part of the stiffness matrix}
-		\end{subfigure}\hfill
+		\end{subfigure}
 		\begin{subfigure}[b]{0.9\linewidth}
 			\includegraphics[width=\linewidth]{Mii}
 			% \caption{Diagonal elements of the lower right part of the stiffness matrix}
