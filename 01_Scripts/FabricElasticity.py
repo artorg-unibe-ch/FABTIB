@@ -438,7 +438,7 @@ def Mandel2EngineeringNotation(A):
 
     return B
 
-def OLS(X, Y, Alpha=0.95, Colors=[(0,0,1),(0,1,0),(1,0,0)]):
+def OLS(X, Y, FName, Alpha=0.95, Colors=[(0,0,1),(0,1,0),(1,0,0)]):
 
     # Solve linear system
     XTXi = np.linalg.inv(X.T * X)
@@ -523,6 +523,7 @@ def OLS(X, Y, Alpha=0.95, Colors=[(0,0,1),(0,1,0),(1,0,0)]):
     plt.yscale('log')
     plt.legend(loc='upper left')
     plt.subplots_adjust(left=0.15, bottom=0.15)
+    plt.savefig(FName)
     plt.show()
 
     return Parameters, R2adj, NE
@@ -532,11 +533,13 @@ def SolveSeparate(Parameters,Xh,Yh,Xd,Yd):
     # Solve linear systems
     X = np.matrix(np.vstack(Xh))
     Y = np.matrix(np.vstack(Yh))
-    Parametersh, R2adj, NE = OLS(X, Y, Colors=[(0,0,1),(0,0.6,1),(0,1,1)])
+    FName = Path(__file__).parents[1] / '02_Results/FabricElasticity_Ctrl.png'
+    Parametersh, R2adj, NE = OLS(X, Y, FName, Colors=[(0,0,1),(0,0.6,1),(0,1,1)])
 
     X = np.matrix(np.vstack(Xd))
     Y = np.matrix(np.vstack(Yd))
-    Parametersd, R2adj, NE = OLS(X, Y, Colors=[(1,0,0),(1,0,1),(0.6,0,1)])
+    FName = Path(__file__).parents[1] / '02_Results/FabricElasticity_T2D.png'
+    Parametersd, R2adj, NE = OLS(X, Y, FName, Colors=[(1,0,0),(1,0,1),(0.6,0,1)])
 
     # Plot 95% CI
     Colors = [(0,0,0),(0,0,1),(1,0,0)]
@@ -630,6 +633,7 @@ def Solve_Exponents(Parameters, Xh, Yh, Xd, Yd):
             Axis[v].set_xticks(range(3),['Grouped','Ctrl','T2D'])
     Axis[0].set_ylabel('Values (-)')
     plt.tight_layout()
+    plt.savefig(Path(__file__).parents[1] / '02_Results/Stiffness.png')
     plt.show(Figure)
     return
 
@@ -709,6 +713,7 @@ def Solve_Stiffness(Parameters, Xh, Yh, Xd, Yd):
             Axis[v].set_xticks(range(3),['Grouped','Ctrl','T2D'])
     Axis[0].set_ylabel('Values (-)')
     plt.tight_layout()
+    plt.savefig(Path(__file__).parents[1] / '02_Results/Exponents.png')
     plt.show(Figure)
     return
 
@@ -877,7 +882,8 @@ def Main():
     # Determine k and l
     X = np.matrix(np.vstack([np.vstack(Xh),np.vstack(Xd)]))
     Y = np.matrix(np.vstack([np.vstack(Yh),np.vstack(Yd)]))
-    Parameters, R2adjg, NEg = OLS(X, Y)
+    FName = Path(__file__).parents[1] / '02_Results/FabricElasticity_Grouped.png'
+    Parameters, R2adjg, NEg = OLS(X, Y, FName)
 
     # Solve separated linear systems
     SolveSeparate(Parameters, Xh, Yh, Xd, Yd)

@@ -173,6 +173,21 @@ def Main():
     for Col in Data.columns:
         PlotHistogram(Data[Col], [Ctrl&F,T2D&F], Col, DataPath)
 
+    # # Plot variation of BV/TV within the same sample
+    # Mean = Data.groupby(level=0).mean()
+    # Std = Data.groupby(level=0).std()
+    # Figure, Axis = plt.subplots(1,1,dpi=200)
+    # Axis.plot(Mean['BV/TV'][Ctrl], (Std/Mean)['BV/TV'][Ctrl], linestyle='none',
+    #           color=(0,0,1), marker='o', label='Ctrl')
+    # Axis.plot(Mean['BV/TV'][T2D], (Std/Mean)['BV/TV'][T2D], linestyle='none',
+    #           color=(1,0,0), marker='o', label='T2D')
+    # Axis.set_xlabel(r'Mean($\rho$) (-)')
+    # Axis.set_ylabel(r'Sample ROIs Std($\rho$) / Mean($\rho$) (-)')
+    # plt.legend()
+    # # plt.savefig(Path(__file__).parents[1] / '02_Results/SampleMassVariation.png')
+    # plt.show(Figure)
+
+
 
 if __name__ == '__main__':
     # Initiate the parser with a description

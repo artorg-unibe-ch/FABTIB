@@ -474,6 +474,8 @@ def Main():
     Ctrl = np.repeat(MetaData['Group'].values == 'Ctrl',3)
     T2D = np.repeat(MetaData['Group'].values == 'T2D',3)
 
+    # -> Look metadata and morphometry files seem to differ
+
     # Filter out ROIs of cortical bone
     F = Data['BV/TV'] < 0.5
 
@@ -628,6 +630,7 @@ def Main():
             
             if Group.values[0] == 'Ctrl':
                 ConstantsCtrl.append(Constants)
+                print(Row['BV/TV'])
             elif Group.values[0] == 'T2D':
                 ConstantsT2D.append(Constants)
 

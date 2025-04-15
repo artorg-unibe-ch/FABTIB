@@ -218,25 +218,29 @@
 	\subsection{Region of Interest}
 	In each scanned sample, three cubic regions of interest (ROIs) of 5.3 mm were selected.
 	For this, the image was divided into three stacks of 5.3 mm (top, centre, and bottom), and a ROI was selected at the centre of mass of the stack.
-	The resolution of the selected ROI was then coarsened by a factor 4, mimicking the resolution available with HR-pQCT.
-	A 3-dimensional rendering of a typical sample and its three cubic ROIs is shown in Figure \ref{FigSample}.
-   
-	\begin{figure}
-		\includegraphics[width=\linewidth]{Sample}
-		\caption{3-dimensional rendering of a typical trabecular core sample and three cubic regions of interest.}
-		\label{FigSample}
-	\end{figure}
 
 	\subsection{Morphological Analysis}
 	Image analysis was performed using medtool (v4.8; Dr. Pahr Ingenieurs e.U., Pfaffstätten, Austria)
-	The pipeline was defined as segmentation, cleaning, and morphometry.
+	The pipeline was defined as coarsening, segmentation, cleaning, and morphometry.
+	After selection, the ROI resolution was coarsened by a factor 4 to mimic the 61 \textmu m voxel size available with HR-pQCT.
 	The segmentation was performed using a single threshold based on the average Otsu threshold \cite{Otsu1979} of all the scans.
 	The cleaning step consisted of removing isolated islands resulting from the single threshold segmentation.
+	A 3-dimensional rendering of a typical sample, a selected cubic ROI, and the result of preprocessing are shown in Figure \ref{FigSample}.
+
+	\begin{figure*}
+		\includegraphics[width=\linewidth]{SampleNew}
+		\caption{3-dimensional rendering of a typical trabecular core sample, a selected cubic region of interest (ROIs) of 5.3 mm side length and the result of the preprocessing steps.
+			     The trabecular core sample and the selected ROI have an isotropic voxel size of 14.8 \textmu m and the coarsened ROI has an isotropic voxel size of 59.2 \textmu m.}
+		\label{FigSample}
+	\end{figure*}
+
 	Then, standard trabecular morphometric parameters were computed.
 	Namely, the bone volume fraction ($\rho$), trabecular thickness (Tb.Th.), trabecular spacing (Tb.Sp.), and trabecular number (Tb.N.).
 	Additionally, the fabric tensor $\mathbf{M}$ was computed using the mean intercept length (MIL) method \cite{Moreno2014}.
 	The ROI's degree of anisotropy (DA) was computed by dividing the fabric tensor's highest eigenvalue by the lowest.
 	A last morphological parameter, the coefficient of variation (CV), assessing the homogeneity of mass distribution within the ROI was computed as defined by \citeauthor{Panyasantisuk2015} \cite{Panyasantisuk2015}.
+	Briefly, the ROI is divided into 8 cubic sub-volume of identical size and the $\rho$ of each sub-volume is computed.
+	The CV is then computed as the standard deviation of the $\rho$ of the 8 sub-volumes divided by their mean.
 
 	\subsection{Numerical Analysis}
 	After morphological analysis, each ROI underwent numerical homogenization.
@@ -354,9 +358,8 @@
 
 	\section{Results}
 	Figure \ref{FigCVBVTV} shows the distribution of the ROIs selected according to the bone volume fraction ($\rho$) and coefficient of variation (CV).
-	Filtering ROIs with a bone volume fraction that is too high leads to the exclusion of two controls and three diabetic ROIs.
-	The further filtering according to CV for mechanical and morphology-mechanical relations comparison leads to the additional exclusion of two control and four diabetic ROIs.
-	% Images of the excluded ROIs are available in Appendix \ref{A2}.
+	Filtering ROIs with a bone volume fraction that is too high leads to the exclusion of two diabetic and three control ROIs.
+	The further filtering according to CV for mechanical and morphology-mechanical relations comparison leads to the additional exclusion of six control ROIs.
 	Finally, matching ROIs for $\rho$ and DA leads to 76 ROIs in each group.
    
 	\begin{figure}
@@ -380,13 +383,13 @@
 				 The first column shows the variable assessed, the second column is the p-value resulting from the Mann-Whitney test, and the third and fourth columns show the median value for each group with their interquartile range.}
 		\begin{tabular}{l|ccc}
 			Variable & p-value & Ctrl & T2D \\\hline
-			$\rho$ & 0.77 & 0.37 [0.30-0.40] & 0.36 [0.31-0.41] \\
-			Tb.N. & 0.06 & 1.04 [0.96-1.12] & 1.02 [0.93-1.06] \\
-			Tb.Th. &  0.41 & 0.30 [0.28-0.32] & 0.31 [0.28-0.33] \\
-			Tb.Sp. & 0.09 & 0.66 [0.59-0.74] & 0.68 [0.63-0.75] \\
-			Tb.Sp.SD & 0.50 & 0.07 [0.07-0.08] & 0.07 [0.07-0.09] \\
-			DA & 0.29 & 1.69 [1.59-1.82] & 1.66 [1.54-1.81] \\
-			CV & 0.94 & 0.07 [0.05-0.11] & 0.07 [0.05-0.14] \\
+			$\rho$ & 0.22 & 0.36 [0.30-0.40] & 0.37 [0.32-0.41] \\
+			Tb.N. & 0.02 & 0.99 [0.94-1.06] & 1.05 [0.95-1.12] \\
+			Tb.Th. &  0.52 & 0.31 [0.28-0.34] & 0.30 [0.28-0.32] \\
+			Tb.Sp. & 0.04 & 0.69 [0.63-0.76] & 0.65 [0.59-0.73] \\
+			Tb.Sp.SD & 0.05 & 0.08 [0.07-0.09] & 0.07 [0.07-0.08] \\
+			DA & 0.00 & 1.61 [1.52-1.72] & 1.73 [1.62-1.86] \\
+			CV & 0.04 & 0.08 [0.06-0.17] & 0.07 [0.05-0.09] \\
 		\end{tabular}
 		\label{TabMorph}
 	\end{table}
@@ -561,71 +564,6 @@
 
 	\clearpage
 	\appendix
-
-	% \section{Excluded ROIs}\label{A2}
-	% Control samples with a bone volume fraction ($\rho$) higher than 0.5 are shown in Figure \ref{FigCtrlBVTV}.
-	% Figure \ref{FigT2DBVTV} shows the T2D samples with a $\rho$ > 0.5.
-	% These ROIs were excluded from morphometric analysis as they don't correspond to trabecular bone.
-	% The Figure \ref{FigCtrlCV} and \ref{FigT2DCV} shows the samples presenting a coefficient of variation higher than 0.263 for the control group and the T2D group, respectively.
-	% Mechanical and morphology-mechanical relationship comparisons were performed without these ROIs as the violate the homogeneity assumption.
-	% \\
-
-	% \begin{figure}[h!]
-	% 	\centering
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{Ctrl_BVTV1}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{Ctrl_BVTV2}
-	% 	\end{subfigure}
-	% 	\caption{}
-	% 	\label{FigCtrlBVTV}
-	% \end{figure}
-
-	% \begin{figure}[h!]
-	% 	\centering
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_BVTV1}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_BVTV2}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_BVTV3}
-	% 	\end{subfigure}
-	% 	\caption{}
-	% 	\label{FigT2DBVTV}
-	% \end{figure}
-
-	% \begin{figure}[h!]
-	% 	\centering
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{Ctrl_CV1}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{Ctrl_CV2}
-	% 	\end{subfigure}
-	% 	\caption{}
-	% 	\label{FigCtrlCV}
-	% \end{figure}
-
-	% \begin{figure}[h!]
-	% 	\centering
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_CV1}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_CV2}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_CV3}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_CV4}
-	% 	\end{subfigure}
-	% 	\caption{}
-	% 	\label{FigT2DCV}
-	% \end{figure}
 
 	\section{Mechanical Comparison}\label{A1}
 	The results of the mechanical comparison for each non-zero component of the apparent stiffness tensor resulting from homogenisation are shown in Figure \ref{FigTensorComp}.
