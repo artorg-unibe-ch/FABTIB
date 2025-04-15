@@ -471,15 +471,17 @@ def Main():
 
     # Read metadata file
     MetaData = pd.read_csv(Path(__file__).parents[1] / '00_Data/SampleList.csv')
-    Ctrl = np.repeat(MetaData['Group'].values == 'Ctrl',3)
-    T2D = np.repeat(MetaData['Group'].values == 'T2D',3)
+    for i, Row in MetaData.iterrows():
+        Data.loc[Row['Sample'],'Group'] = Row['Group']
+    Ctrl = Data['Group'] == 'Ctrl'
+    T2D = Data['Group'] == 'T2D'
 
     # Filter out ROIs of cortical bone
     F = Data['BV/TV'] < 0.5
 
     # Compare morphometric values
     Stats = pd.DataFrame()
-    for Col in Data.columns:
+    for Col in Data.columns[:-1]:
 
         # Get values
         Controls = Data[Ctrl&F][Col].values
@@ -539,97 +541,95 @@ def Main():
 
     print(Stats.round(2))
 
+    # Filter out ROIs to heterogeneous
+    G = Data['CV'] < 0.263
+
     # Get stiffness values
     Strain = np.array([0.001, 0.001, 0.001, 0.002, 0.002, 0.002])
     ConstantsCtrl, ConstantsT2D = [], []
-    for Idx, Row in Data.iterrows():
+    for Idx, Row in Data[F&G].iterrows():
 
-        if Row['CV'] < 0.263 and Row['BV/TV'] < 0.5:
+        # Step 1: Get fabric info
+        MorphoFile = pd.read_csv(Morpho / (Idx[0] + '_' + str(Idx[1]) + '.csv'), delimiter=';')
+        BVTV = MorphoFile['$BVTV_voxel'].values[0]
 
-            # Determine group and location
-            Group = MetaData[MetaData['Sample'] == Idx[0]]['Group']
+        # Eigenvalues
+        m1 = MorphoFile['$DA_lam_1'].values[0]
+        m2 = MorphoFile['$DA_lam_2'].values[0]
+        m3 = MorphoFile['$DA_lam_3'].values[0]
+        eValues = np.array([m1,m2,m3])
 
-            # Step 1: Get fabric info
-            MorphoFile = pd.read_csv(Morpho / (Idx[0] + '_' + str(Idx[1]) + '.csv'), delimiter=';')
-            BVTV = MorphoFile['$BVTV_voxel'].values[0]
+        # Eigenvectors
+        m11 = MorphoFile['$DA_vec_1x'].values[0]
+        m12 = MorphoFile['$DA_vec_1y'].values[0]
+        m13 = MorphoFile['$DA_vec_1z'].values[0]
 
-            # Eigenvalues
-            m1 = MorphoFile['$DA_lam_1'].values[0]
-            m2 = MorphoFile['$DA_lam_2'].values[0]
-            m3 = MorphoFile['$DA_lam_3'].values[0]
-            eValues = np.array([m1,m2,m3])
+        m21 = MorphoFile['$DA_vec_2x'].values[0]
+        m22 = MorphoFile['$DA_vec_2y'].values[0]
+        m23 = MorphoFile['$DA_vec_2z'].values[0]
 
-            # Eigenvectors
-            m11 = MorphoFile['$DA_vec_1x'].values[0]
-            m12 = MorphoFile['$DA_vec_1y'].values[0]
-            m13 = MorphoFile['$DA_vec_1z'].values[0]
+        m31 = MorphoFile['$DA_vec_3x'].values[0]
+        m32 = MorphoFile['$DA_vec_3y'].values[0]
+        m33 = MorphoFile['$DA_vec_3z'].values[0]
+        eVectors = np.array([[m11,m12,m13], [m21,m22,m23], [m31,m32,m33]])
 
-            m21 = MorphoFile['$DA_vec_2x'].values[0]
-            m22 = MorphoFile['$DA_vec_2y'].values[0]
-            m23 = MorphoFile['$DA_vec_2z'].values[0]
+        # Sort fabric
+        Arg = np.argsort(eValues)
+        eValues = eValues[Arg]
+        eVectors = eVectors[Arg]
+        m1, m2, m3 = eValues
 
-            m31 = MorphoFile['$DA_vec_3x'].values[0]
-            m32 = MorphoFile['$DA_vec_3y'].values[0]
-            m33 = MorphoFile['$DA_vec_3z'].values[0]
-            eVectors = np.array([[m11,m12,m13], [m21,m22,m23], [m31,m32,m33]])
+        # Get stiffness
+        File = open(Abaqus / (Idx[0] + '_' + str(Idx[1]) + '.out')).readlines()
 
-            # Sort fabric
-            Arg = np.argsort(eValues)
-            eValues = eValues[Arg]
-            eVectors = eVectors[Arg]
-            m1, m2, m3 = eValues
+        Stress = np.zeros((6,6))
+        for i in range(6):
+            for j in range(6):
+                Stress[i,j] = float(File[i+4].split()[j+1])
 
-            # Get stiffness
-            File = open(Abaqus / (Idx[0] + '_' + str(Idx[1]) + '.out')).readlines()
+        Stiffness = np.zeros((6,6))
+        for i in range(6):
+            for j in range(6):
+                Stiffness[i,j] = Stress[i,j] / Strain[i]
 
-            Stress = np.zeros((6,6))
-            for i in range(6):
-                for j in range(6):
-                    Stress[i,j] = float(File[i+4].split()[j+1])
+        # Symetrize matrix
+        Stiffness = 1/2 * (Stiffness + Stiffness.T)
 
-            Stiffness = np.zeros((6,6))
-            for i in range(6):
-                for j in range(6):
-                    Stiffness[i,j] = Stress[i,j] / Strain[i]
+        # Write tensor into mandel notation
+        Mandel = Engineering2MandelNotation(Stiffness)
 
-            # Symetrize matrix
-            Stiffness = 1/2 * (Stiffness + Stiffness.T)
+        # Step 3: Transform tensor into fabric coordinate system
+        I = np.eye(3)
+        Q = np.array(eVectors)
+        Transformed = TransformTensor(Mandel, I, Q)
 
-            # Write tensor into mandel notation
-            Mandel = Engineering2MandelNotation(Stiffness)
+        # Project onto orthotropy
+        Orthotropic = np.zeros(Transformed.shape)
+        for i in range(Orthotropic.shape[0]):
+            for j in range(Orthotropic.shape[1]):
+                if i < 3 and j < 3:
+                    Orthotropic[i, j] = Transformed[i, j]
+                elif i == j:
+                    Orthotropic[i, j] = Transformed[i, j]
 
-            # Step 3: Transform tensor into fabric coordinate system
-            I = np.eye(3)
-            Q = np.array(eVectors)
-            Transformed = TransformTensor(Mandel, I, Q)
+        # Get tensor back to engineering notation
+        Stiffness = Mandel2EngineeringNotation(Orthotropic)
 
-            # Project onto orthotropy
-            Orthotropic = np.zeros(Transformed.shape)
-            for i in range(Orthotropic.shape[0]):
-                for j in range(Orthotropic.shape[1]):
-                    if i < 3 and j < 3:
-                        Orthotropic[i, j] = Transformed[i, j]
-                    elif i == j:
-                        Orthotropic[i, j] = Transformed[i, j]
-
-            # Get tensor back to engineering notation
-            Stiffness = Mandel2EngineeringNotation(Orthotropic)
-
-            # Store resulting constants
-            Constants = [Stiffness[0,0],
-                        Stiffness[1,1],
-                        Stiffness[2,2],
-                        Stiffness[0,1],
-                        Stiffness[0,2],
-                        Stiffness[1,2],
-                        Stiffness[3,3],
-                        Stiffness[4,4],
-                        Stiffness[5,5]]
-            
-            if Group.values[0] == 'Ctrl':
-                ConstantsCtrl.append(Constants)
-            elif Group.values[0] == 'T2D':
-                ConstantsT2D.append(Constants)
+        # Store resulting constants
+        Constants = [Stiffness[0,0],
+                    Stiffness[1,1],
+                    Stiffness[2,2],
+                    Stiffness[0,1],
+                    Stiffness[0,2],
+                    Stiffness[1,2],
+                    Stiffness[3,3],
+                    Stiffness[4,4],
+                    Stiffness[5,5]]
+        
+        if Row['Group'] == 'Ctrl':
+            ConstantsCtrl.append(Constants)
+        elif Row['Group'] == 'T2D':
+            ConstantsT2D.append(Constants)
 
     ConstantsCtrl = np.array(ConstantsCtrl)
     ConstantsT2D = np.array(ConstantsT2D)

@@ -218,25 +218,29 @@
 	\subsection{Region of Interest}
 	In each scanned sample, three cubic regions of interest (ROIs) of 5.3 mm were selected.
 	For this, the image was divided into three stacks of 5.3 mm (top, centre, and bottom), and a ROI was selected at the centre of mass of the stack.
-	The resolution of the selected ROI was then coarsened by a factor 4, mimicking the resolution available with HR-pQCT.
-	A 3-dimensional rendering of a typical sample and its three cubic ROIs is shown in Figure \ref{FigSample}.
-   
-	\begin{figure}
-		\includegraphics[width=\linewidth]{Sample}
-		\caption{3-dimensional rendering of a typical trabecular core sample and three cubic regions of interest.}
-		\label{FigSample}
-	\end{figure}
 
 	\subsection{Morphological Analysis}
 	Image analysis was performed using medtool (v4.8; Dr. Pahr Ingenieurs e.U., Pfaffstätten, Austria)
-	The pipeline was defined as segmentation, cleaning, and morphometry.
+	The pipeline was defined as coarsening, segmentation, cleaning, and morphometry.
+	After selection, the ROI resolution was coarsened by a factor 4 to mimic the 61 \textmu m voxel size available with HR-pQCT.
 	The segmentation was performed using a single threshold based on the average Otsu threshold \cite{Otsu1979} of all the scans.
 	The cleaning step consisted of removing isolated islands resulting from the single threshold segmentation.
+	A 3-dimensional rendering of a typical sample, a selected cubic ROI, and the result of preprocessing are shown in Figure \ref{FigSample}.
+
+	\begin{figure*}
+		\includegraphics[width=\linewidth]{SampleNew}
+		\caption{3-dimensional rendering of a typical trabecular core sample, a selected cubic region of interest (ROIs) of 5.3 mm side length and the result of the preprocessing steps.
+			     The trabecular core sample and the selected ROI have an isotropic voxel size of 14.8 \textmu m and the coarsened ROI has an isotropic voxel size of 59.2 \textmu m.}
+		\label{FigSample}
+	\end{figure*}
+
 	Then, standard trabecular morphometric parameters were computed.
 	Namely, the bone volume fraction ($\rho$), trabecular thickness (Tb.Th.), trabecular spacing (Tb.Sp.), and trabecular number (Tb.N.).
 	Additionally, the fabric tensor $\mathbf{M}$ was computed using the mean intercept length (MIL) method \cite{Moreno2014}.
 	The ROI's degree of anisotropy (DA) was computed by dividing the fabric tensor's highest eigenvalue by the lowest.
 	A last morphological parameter, the coefficient of variation (CV), assessing the homogeneity of mass distribution within the ROI was computed as defined by \citeauthor{Panyasantisuk2015} \cite{Panyasantisuk2015}.
+	Briefly, the ROI was divided into 8 cubic sub-volume of identical size and the $\rho$ of each sub-volume was computed.
+	The CV was then computed as the standard deviation of the $\rho$ of the 8 sub-volumes divided by their mean.
 
 	\subsection{Numerical Analysis}
 	After morphological analysis, each ROI underwent numerical homogenization.
@@ -354,9 +358,8 @@
 
 	\section{Results}
 	Figure \ref{FigCVBVTV} shows the distribution of the ROIs selected according to the bone volume fraction ($\rho$) and coefficient of variation (CV).
-	Filtering ROIs with a bone volume fraction that is too high leads to the exclusion of two controls and three diabetic ROIs.
-	The further filtering according to CV for mechanical and morphology-mechanical relations comparison leads to the additional exclusion of two control and four diabetic ROIs.
-	% Images of the excluded ROIs are available in Appendix \ref{A2}.
+	Filtering ROIs with a bone volume fraction that is too high leads to the exclusion of two diabetic and three control ROIs.
+	The further filtering according to CV for mechanical and morphology-mechanical relations comparison leads to the additional exclusion of two diabetic and four controlROIs.
 	Finally, matching ROIs for $\rho$ and DA leads to 76 ROIs in each group.
    
 	\begin{figure}
@@ -380,13 +383,13 @@
 				 The first column shows the variable assessed, the second column is the p-value resulting from the Mann-Whitney test, and the third and fourth columns show the median value for each group with their interquartile range.}
 		\begin{tabular}{l|ccc}
 			Variable & p-value & Ctrl & T2D \\\hline
-			$\rho$ & 0.77 & 0.37 [0.30-0.40] & 0.36 [0.31-0.41] \\
-			Tb.N. & 0.06 & 1.04 [0.96-1.12] & 1.02 [0.93-1.06] \\
-			Tb.Th. &  0.41 & 0.30 [0.28-0.32] & 0.31 [0.28-0.33] \\
-			Tb.Sp. & 0.09 & 0.66 [0.59-0.74] & 0.68 [0.63-0.75] \\
-			Tb.Sp.SD & 0.50 & 0.07 [0.07-0.08] & 0.07 [0.07-0.09] \\
-			DA & 0.29 & 1.69 [1.59-1.82] & 1.66 [1.54-1.81] \\
-			CV & 0.94 & 0.07 [0.05-0.11] & 0.07 [0.05-0.14] \\
+			$\rho$ & 0.77 & 0.36 [0.31-0.41] & 0.37 [0.30-0.40] \\
+			Tb.N. & 0.06 & 1.02 [0.93-1.06] & 1.04 [0.96-1.12] \\
+			Tb.Th. &  0.41 & 0.31 [0.28-0.33] & 0.30 [0.28-0.32] \\
+			Tb.Sp. & 0.09 & 0.68 [0.63-0.75] & 0.66 [0.59-0.74] \\
+			Tb.Sp.SD & 0.50 & 0.07 [0.07-0.09] & 0.07 [0.07-0.08] \\
+			DA & 0.29 & 1.66 [1.54-1.81] & 1.69 [1.59-1.82] \\
+			CV & 0.94 & 0.07 [0.05-0.14] & 0.07 [0.05-0.11] \\
 		\end{tabular}
 		\label{TabMorph}
 	\end{table}
@@ -395,7 +398,7 @@
 	The multiple linear regression fitting control and diabetic group pooled together to the Zysset-Curnier model lead to a $R_{adj}^{2}$ of 0.97 and a norm error of 0.08.
 	The fits performed on the individual groups are shown in Figure \ref{FigLinReg}.
 	The control group reaches a $R_{adj}^{2}$ of 0.97 and a norm error of 0.08, as for the regression using the two groups pooled together.
-	The multiple linear regression performed on the samples from diabetic patients alone reaches a slightly higher $R_{adj}^{2}$ of 0.98 and a norm error of 0.07.
+	The multiple linear regression performed on the samples from diabetic patients alone reaches a slightly higher $R_{adj}^{2}$ of 0.98 and a norm error of 0.08.
 	\\[0.5em]
 
 	\begin{figure*}
@@ -414,15 +417,24 @@
 	\end{figure*}
 
 	Finally, a comparison of the values obtained for the $k$ and $l$ exponents for restricted multiple linear regressions are shown in Figure \ref{FigExponents}.
-	Pooling control and diabetic group together lead to $k$ and $l$ values of 1.7 (1.68-1.71) and 0.65 (0.64-0.67) (value and 95\% CI), respectively.
-	The separation of the groups leads to slightly higher values for the control group than for the diabetic group, but their 95\% CI overlap.
-	The control versus the diabetic group shows a $k$ of 1.71 (1.70-1.71) versus 1.69 (1.69-1.70) and a $l$ of 0.67 (0.64-0.69) versus 0.64 (0.62-0.66), respectively.
+	Pooling control and diabetic group together lead to $k$ and $l$ values of 1.7 (1.68-1.72) and 0.65 (0.64-0.67) (value and 95\% CI), respectively.
+	The separation of the groups leads to lower $k$ value for the control group than for the diabetic group, and their 95\% CI don't overlap but the $l$ exponent presents well overlapping 95\% CI for both group.
+	The control versus the diabetic group shows a $k$ of 1.69 (1.68-1.70) versus 1.71 (1.70-1.72) and a $l$ of 0.65 (0.63-0.67) versus 0.65 (0.63-0.68), respectively.
+	While being different, the relative difference in $k$ exponent between the two group is about 1\%.
+	The effect of this difference on the theorical Young's modulus based on the fabric-elasticity model as function of the bone volume fraction is shown in Figure \ref{FigEvsRho}.
    
 	\begin{figure}
 		\centering
 		\includegraphics[width=\linewidth]{Exponents}
 		\caption{The resulting exponents and their 95\% confidence interval of the restricted multiple linear regression performed on the grouped and individual groups.}
 		\label{FigExponents}
+	\end{figure}
+
+	\begin{figure}
+		\centering
+		\includegraphics[width=\linewidth]{Modulus_vs_Rho}
+		\caption{Evolution of Young's modulus as function of bone volume fraction $\rho$ according to the fabric-elasticity model using the different $k$ exponents obtained by linear regression for the control and diabetic group.}
+		\label{FigEvsRho}
 	\end{figure}
 
 	%
@@ -444,8 +456,8 @@
 	The presence of cortical bone within these excluded ROIs might come from the original anatomical location of the samples and, to a reduced extent, the choice of the single threshold value for segmentation.
 	The comparison of morphological parameters between the control and diabetic groups shows no significant difference.
 	These results mostly agree with similar morphological comparisons performed using HR-pQCT \cite{Burghardt2010, Shu2012, Farr2014, Paccou2015, Samelson2018, vanHulten2024}.
-	While some of these studies have shown no differences between control and T2D \cite{Shu2012, Samelson2018, vanHulten2024}, the significant p-values were comprised between 0.05 and 0.01 in the studies of \cite{Burghardt2010}\cite{Burghardt2010} and \citeauthor{Paccou2015}\cite{Paccou2015} and significant differences vanished after adjustement for body mass index (BMI) in the study of \citeauthor{Farr2014}\cite{Farr2014}.
-	In the present study, specifically $\rho$, Tb. Th., DA and CV are highly unlikely to be different.
+	While some of these studies have shown no differences between control and T2D \cite{Shu2012, Samelson2018, vanHulten2024}, the significant p-values were comprised between 0.05 and 0.01 in the studies of \citeauthor{Burghardt2010}\cite{Burghardt2010} and \citeauthor{Paccou2015}\cite{Paccou2015} and significant differences vanished after adjustement for body mass index (BMI) in the study of \citeauthor{Farr2014}\cite{Farr2014}.
+	In the present study, specifically $\rho$, Tb. Th., Tb. Sp. SD, DA and CV are highly unlikely to be different.
 	Thus, the morphology of femoral head trabecular bone samples presented in this work is highly similar in diabetic conditions as compared to control.
 	\\[0.5em]
 	Homogenisation of the cubic ROIs requires that the bone mass is homogeneously distributed with the volume.
@@ -458,13 +470,12 @@
 	The fit quality assesed using $R_{adj}^{2}$ and NE is in the exptected range, i.e. similar as observed in other studies \cite{Gross2012, Panyasantisuk2015, Simon2022}
 	Moreover, these quality parameters are quite similar among the different data sets used for the regression (grouped, control, and diabetic), representing a first step indicating similar fabric-elasticity relationships between control and diabetic conditions.
 	Going one step further, stiffness parameters ($\lambda_0$, $\lambda_0'$, and $\mu_0$) are fixed to a common value, assuming identical bulk tissue properties, and the resulting exponents ($k$ and $k$) with their 95\% CI are compared.
-	The two exponents tend to be lower for the diabetic group than the control group, but their 95\% CI overlap.
-	Thus, the existence of a common value for both groups cannot be excluded.
-	Additionally, the 95\% CI overlap for $l$, which is directly linked to the fabric, shows a relatively better overlap, including the value of the other group.
-	On the other hand, the 95\% CI overlap for the $k$ exponent is relatively worse, but it is linked to the bone volume fraction $\rho$.
-	Indeed, the $k$ exponent tends to be closer to 1 for diabetic group than for the control group, indicating even a more efficient organisation of the bone mass.
-	While both the $k$ and $l$ exponents seems to deviate slightly between the groups, their value remains remarkably close.
-	Altogether, these results allow to assume that fabric-elasticity relationships are similar between control and diabetes-diagnosed individuals.
+	The $k$ exponent tend to be higher for the diabetic group than the control group, and their 95\% CI don't overlap but the 95\% CI of the $l$ exponents shows important overlap.
+	Thus, the $l$ value, which is directly linked to the fabric, could be assumed to be the same for both groups.
+	On the other hand, the 95\% CI for the $k$ exponent, which is linked to the bone volume fraction $\rho$, is different between the groups.
+	Indeed, the $k$ exponent tends to be closer to 1 for control group than for the diabetic group, indicating a more efficient organisation of the bone mass.
+	However, this difference is relatively small, leading to extremely similar curve of Young's modulus as function of the bone volume fraction.
+	Altogether, these results allow to assume that fabric-elasticity relationships are similar between non-diabetic and diabetes-diagnosed individuals.
 	\\[0.5em]
 	Nevertheless, this study presents some limitations that need to be addressed.
 	First, the sample were harvested only from the femoral head, thus limiting the generalization of the results to other anatomical locations.
@@ -561,71 +572,6 @@
 
 	\clearpage
 	\appendix
-
-	% \section{Excluded ROIs}\label{A2}
-	% Control samples with a bone volume fraction ($\rho$) higher than 0.5 are shown in Figure \ref{FigCtrlBVTV}.
-	% Figure \ref{FigT2DBVTV} shows the T2D samples with a $\rho$ > 0.5.
-	% These ROIs were excluded from morphometric analysis as they don't correspond to trabecular bone.
-	% The Figure \ref{FigCtrlCV} and \ref{FigT2DCV} shows the samples presenting a coefficient of variation higher than 0.263 for the control group and the T2D group, respectively.
-	% Mechanical and morphology-mechanical relationship comparisons were performed without these ROIs as the violate the homogeneity assumption.
-	% \\
-
-	% \begin{figure}[h!]
-	% 	\centering
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{Ctrl_BVTV1}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{Ctrl_BVTV2}
-	% 	\end{subfigure}
-	% 	\caption{}
-	% 	\label{FigCtrlBVTV}
-	% \end{figure}
-
-	% \begin{figure}[h!]
-	% 	\centering
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_BVTV1}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_BVTV2}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_BVTV3}
-	% 	\end{subfigure}
-	% 	\caption{}
-	% 	\label{FigT2DBVTV}
-	% \end{figure}
-
-	% \begin{figure}[h!]
-	% 	\centering
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{Ctrl_CV1}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{Ctrl_CV2}
-	% 	\end{subfigure}
-	% 	\caption{}
-	% 	\label{FigCtrlCV}
-	% \end{figure}
-
-	% \begin{figure}[h!]
-	% 	\centering
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_CV1}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_CV2}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_CV3}
-	% 	\end{subfigure}
-	% 	\begin{subfigure}[b]{0.9\linewidth}
-	% 		\includegraphics[width=\linewidth]{T2D_CV4}
-	% 	\end{subfigure}
-	% 	\caption{}
-	% 	\label{FigT2DCV}
-	% \end{figure}
 
 	\section{Mechanical Comparison}\label{A1}
 	The results of the mechanical comparison for each non-zero component of the apparent stiffness tensor resulting from homogenisation are shown in Figure \ref{FigTensorComp}.
