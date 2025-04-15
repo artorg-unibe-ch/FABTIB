@@ -223,8 +223,19 @@
 	Image analysis was performed using medtool (v4.8; Dr. Pahr Ingenieurs e.U., Pfaffstätten, Austria)
 	The pipeline was defined as coarsening, segmentation, cleaning, and morphometry.
 	After selection, the ROI resolution was coarsened by a factor 4 to mimic the 61 \textmu m voxel size available with HR-pQCT.
+	The pipeline was defined as coarsening, segmentation, cleaning, and morphometry.
+	After selection, the ROI resolution was coarsened by a factor 4 to mimic the 61 \textmu m voxel size available with HR-pQCT.
 	The segmentation was performed using a single threshold based on the average Otsu threshold \cite{Otsu1979} of all the scans.
 	The cleaning step consisted of removing isolated islands resulting from the single threshold segmentation.
+	A 3-dimensional rendering of a typical sample, a selected cubic ROI, and the result of preprocessing are shown in Figure \ref{FigSample}.
+
+	\begin{figure*}
+		\includegraphics[width=\linewidth]{SampleNew}
+		\caption{3-dimensional rendering of a typical trabecular core sample, a selected cubic region of interest (ROIs) of 5.3 mm side length and the result of the preprocessing steps.
+			     The trabecular core sample and the selected ROI have an isotropic voxel size of 14.8 \textmu m and the coarsened ROI has an isotropic voxel size of 59.2 \textmu m.}
+		\label{FigSample}
+	\end{figure*}
+
 	A 3-dimensional rendering of a typical sample, a selected cubic ROI, and the result of preprocessing are shown in Figure \ref{FigSample}.
 
 	\begin{figure*}
