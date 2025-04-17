@@ -741,6 +741,7 @@ def Main():
     Morpho = pd.read_csv(Path(__file__).parents[1] / '02_Results/Morphometry.csv', index_col=[0,1])
     Ctrl_Morpho, T2D_Morpho = [], []
     CtrlList, T2DList = [], []
+    Ctrl_Samples, T2D_Samples = [], []
     for s, Sample in Morpho.iterrows():
         BVTV = Sample['BV/TV']
         DA = Sample['DA']
@@ -748,20 +749,51 @@ def Main():
         if s[0] in Ctrl:
             Ctrl_Morpho.append([BVTV, DA, CV])
             CtrlList.append([s[0], s[1]])
+            Ctrl_Samples.append(f'{Sample.name[0]}_{Sample.name[1]}')
         elif s[0] in T2D:
             T2D_Morpho.append([BVTV, DA, CV])
             T2DList.append([s[0], s[1]])
+            T2D_Samples.append(f'{Sample.name[0]}_{Sample.name[1]}')
     Ctrl_Morpho = np.array(Ctrl_Morpho)
     T2D_Morpho = np.array(T2D_Morpho)
+    Ctrl_Samples = np.array(Ctrl_Samples)
+    T2D_Samples = np.array(T2D_Samples)
 
-    # Filter samples
-    Ctrl_Morpho = Ctrl_Morpho[Ctrl_Morpho[:, 0] < 0.5]
-    T2D_Morpho = T2D_Morpho[T2D_Morpho[:, 0] < 0.5]
-    Ctrl_Morpho = Ctrl_Morpho[Ctrl_Morpho[:, 2] < 0.263]
-    T2D_Morpho = T2D_Morpho[T2D_Morpho[:, 2] < 0.263]
+    # Filter samples according to BV/TV and CV
+    MaxDA = np.max([Ctrl_Morpho[:,1].max(), T2D_Morpho[:,1].max()])
+    Thresholds = np.array([0.5, MaxDA+0.1, 0.263])
+    Ctrl_Samples = Ctrl_Samples[np.min(Ctrl_Morpho < Thresholds, axis=1)]
+    Ctrl_Morpho = Ctrl_Morpho[np.min(Ctrl_Morpho < Thresholds, axis=1)]
+    T2D_Samples = T2D_Samples[np.min(T2D_Morpho < Thresholds, axis=1)]
+    T2D_Morpho = T2D_Morpho[np.min(T2D_Morpho < Thresholds, axis=1)]
+    
+    # Keep only BV/TV and DA
     Ctrl_Morpho = Ctrl_Morpho[:,:2]
     T2D_Morpho = T2D_Morpho[:,:2]
-    
+
+    # # Compute new limits
+    # Min = np.max([Ctrl_Morpho.min(axis=0), T2D_Morpho.min(axis=0)], axis=0)
+    # Max = np.min([Ctrl_Morpho.max(axis=0), T2D_Morpho.max(axis=0)], axis=0)
+
+    # # Plot limits
+    # Figure, Axis = plt.subplots(1,1)
+    # Axis.scatter(Ctrl_Morpho[:,0], Ctrl_Morpho[:,1], color=(0,0,1), label='Ctrl')
+    # Axis.scatter(T2D_Morpho[:,0], T2D_Morpho[:,1], color=(1,0,0), label='T2D')
+    # Axis.plot([Min[0],Max[0]],[Min[1],Min[1]], linestyle='--', color=(0,0,0))
+    # Axis.plot([Min[0],Max[0]],[Max[1],Max[1]], linestyle='--', color=(0,0,0))
+    # Axis.plot([Min[0],Min[0]],[Min[1],Max[1]], linestyle='--', color=(0,0,0))
+    # Axis.plot([Max[0],Max[0]],[Min[1],Max[1]], linestyle='--', color=(0,0,0), label='Limits')
+    # Axis.set_xlabel(r'$\rho$ (-)')
+    # Axis.set_ylabel('Degree of anisotropy (-)')
+    # plt.legend()
+    # plt.show()
+
+    # # Filter to fit over the same range
+    # Ctrl_Samples = Ctrl_Samples[np.min(Ctrl_Morpho > Min, axis=1)]
+    # Ctrl_Morpho = Ctrl_Morpho[np.min(Ctrl_Morpho < Max, axis=1)]
+    # T2D_Samples = T2D_Samples[np.min(T2D_Morpho > Min, axis=1)]
+    # T2D_Morpho = T2D_Morpho[np.min(T2D_Morpho < Max, axis=1)]
+
     # Compute samples differences
     Differences = Ctrl_Morpho[:, np.newaxis, :] - T2D_Morpho[np.newaxis, :, :]
     Distances = np.sqrt(np.sum(Differences**2, axis=2))
